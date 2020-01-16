@@ -1,0 +1,17 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>netcoreapp3.1</TargetFramework>
+  </PropertyGroup>
+  
+  <ItemGroup>
+    <PackageReference Include="VegaLite.NET" Version="1.0.1" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\OilGas.Data.RRC.Texas\OilGas.Data.RRC.Texas.csproj" />
+    <ProjectReference Include="..\OilGas.Data\OilGas.Data.csproj" />
+  </ItemGroup>
+
+</Project>

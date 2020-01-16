@@ -1,0 +1,29 @@
+﻿<#@ template debug="false" hostspecific="false" language="C#" #>
+<#@ assembly name="System.Core" #>
+<#@ import namespace="System.Linq" #>
+<#@ import namespace="System.Text" #>
+<#@ import namespace="System.Collections.Generic" #>
+<#@ output extension=".cs" #>
+// ReSharper disable ConvertToAutoProperty
+// ReSharper disable InconsistentNaming
+
+using System.Collections;
+using System.Collections.Generic;
+using System.Runtime.CompilerServices;
+
+namespace OilGas.Data.RRC.Texas
+{
+<#
+List<string> enumTypeIDValueNames = new List<string>(){"Current", "Historical", "Both"};
+List<string> enumTypeIDValueValues = new List<string>(){"Y", "N", "Both"};
+
+string enumTypeIDName = "ScheduleType";
+string valueTypeIDType = "string";
+int indentLevel = 1;
+
+string typeEnum = ENUM_BUILDER(enumTypeIDName, enumTypeIDValueNames, enumTypeIDValueValues, valueTypeIDType, indentLevel);
+#>
+<#=typeEnum#>
+}
+
+<#@ include file="..\..\..\OilGas.Data\Data\Tools\EnumStringBuilder.ttinclude" #>

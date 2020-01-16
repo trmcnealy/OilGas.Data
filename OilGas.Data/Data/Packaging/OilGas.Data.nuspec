@@ -1,0 +1,29 @@
+<?xml version="1.0"?>
+<package >
+    <metadata>
+        <id>OilGas.Data</id>
+        <version>1.0.0</version>
+        <authors>Timothy R. McNealy</authors>
+        <owners>Timothy R. McNealy</owners>
+        <license type="expression">MIT</license>
+        <projectUrl>https://github.com/trmcnealy/OilGas.Data</projectUrl>
+        <icon>nindra.png</icon>
+        <requireLicenseAcceptance>false</requireLicenseAcceptance>
+        <description>Oil &amp; Gas Production query tool</description>
+        <releaseNotes></releaseNotes>
+        <copyright>Copyright 2020</copyright>
+        <tags></tags>
+		<dependencies>
+      <dependency id="AngleSharp" version="[0.14.0,)" />
+      <dependency id="LiteDB" version="[5.0.0,)" />
+      <dependency id="Microsoft.Data.Analysis" version="0.2.0" />
+      <dependency id="System.Data.Common" version="4.3.0" />
+		</dependencies>
+    </metadata>
+    <files>
+		<file src="D:\TFS_Sources\Github\Compilation\trmcnealy\nindra.png" target="" />
+		
+    <file src="D:\TFS_Sources\Github\Compilation\trmcnealy\OilGas.Data\OilGas.Data.RRC.Texas\bin\Release\netcoreapp3.1\OilGas.Data.dll" target="lib\netcoreapp3.1" />
+    <file src="D:\TFS_Sources\Github\Compilation\trmcnealy\OilGas.Data\OilGas.Data.RRC.Texas\bin\Release\netcoreapp3.1\OilGas.Data.RRC.Texas.dll" target="lib\netcoreapp3.1" />
+    </files>
+</package>
