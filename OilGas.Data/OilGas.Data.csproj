@@ -28,7 +28,7 @@
     <PackageReference Include="LiteDB" Version="5.0.0-beta" />
     <PackageReference Include="Microsoft.Data.Analysis" Version="0.2.0" />
     <PackageReference Include="System.Data.Common" Version="4.3.0" />
-    <PackageReference Include="VegaLite.NET" Version="1.0.3" />
+    <PackageReference Include="VegaLite.NET" Version="1.0.4" />
   </ItemGroup>
 
   <ItemGroup>
