@@ -163,7 +163,7 @@ namespace RRC.Texas.Driver
         {
             ApiNumber api = "42-123-32309";
 
-            WellProduction wellProduction = RrcTexasDataAdapter.GetProductionByApi(api).Result;
+            WellProduction wellProduction = RrcTexasDataAdapter.GetProductionByApi(api, true).Result;
 
             Chart chart = wellProduction.BuildChart();
 

@@ -53,8 +53,13 @@ namespace OilGas.Data
 
         private static bool IsInitializeCollection_TCollection = false;
 
-        public static void Initialize(DataStorage dbPath = default)
+        public static void Initialize(DataStorage dbPath)
         {
+            if(dbPath == null)
+            {
+                throw new NullReferenceException(nameof(dbPath));
+            }
+
             if(Instance.DataBase == null)
             {
                 Instance.DataBase = new DataBase(dbPath);

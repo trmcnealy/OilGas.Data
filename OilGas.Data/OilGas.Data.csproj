@@ -7,7 +7,7 @@
     <PublishReadyToRunEmitSymbols>true</PublishReadyToRunEmitSymbols>
     <PublishTrimmed>true</PublishTrimmed>
     <NuspecFile>D:\TFS_Sources\Github\Compilation\trmcnealy\OilGas.Data\OilGas.Data\Data\Packaging\OilGas.Data.nuspec</NuspecFile>
-    <GeneratePackageOnBuild Condition="'$(Configuration)'=='Release'">true</GeneratePackageOnBuild>
+    <GeneratePackageOnBuild Condition="'$(Configuration)'=='Release'">false</GeneratePackageOnBuild>
     <PackageIcon>nindra.png</PackageIcon>
     <PackageIconUrl />
     <Copyright>2020</Copyright>

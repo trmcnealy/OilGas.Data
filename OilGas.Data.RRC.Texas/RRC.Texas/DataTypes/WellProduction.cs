@@ -85,7 +85,7 @@ namespace OilGas.Data.RRC.Texas
         [BsonId(true)]
         public int Id { get; set; }
 
-        [BsonRef]
+        [BsonRef("Records")]
         public WellProduction WellProduction { get; set; }
 
         public int Month { get; set; }
@@ -136,7 +136,7 @@ namespace OilGas.Data.RRC.Texas
         [BsonId(true)]
         public int Id { get; set; }
 
-        public ApiNumber Api { get; set; }
+        public string Api { get; set; }
 
         public WellProductionDate StartDate { get; set; }
 
@@ -166,7 +166,7 @@ namespace OilGas.Data.RRC.Texas
                               string                      fieldNumber,
                               List<WellProductionRecord> records = null)
         {
-            Api            = api;
+            Api            = api.ToString();
             StartDate      = startDate;
             EndDate        = endDate;
             OperatorName   = operatorName;

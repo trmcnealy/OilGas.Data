@@ -37,11 +37,11 @@ namespace OilGas.Data.RRC.Texas
 
         public static async Task<WellProduction> GetProductionByApi(ApiNumber   api,
                                                                     bool        persistentData = false,
-                                                                    DataStorage dbPath         = default)
+                                                                    DataStorage dbPath         = default(DataStorage))
         {
             if(persistentData)
             {
-                PersistentData.Initialize(dbPath);
+                PersistentData.Initialize(dbPath ?? new DataStorage());
 
                 try
                 {
