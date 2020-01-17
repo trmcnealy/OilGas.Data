@@ -6,6 +6,7 @@
   </PropertyGroup>
   
   <ItemGroup>
+    <PackageReference Include="System.Data.SqlClient" Version="4.8.0" />
     <PackageReference Include="VegaLite.NET" Version="1.0.4" />
   </ItemGroup>
   

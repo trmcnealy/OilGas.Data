@@ -15,6 +15,8 @@ using OilGas.Data.RRC.Texas;
 
 using VegaLite;
 
+using System.Data.SqlClient;
+
 namespace RRC.Texas.Driver
 {
     internal class Program
@@ -23,7 +25,49 @@ namespace RRC.Texas.Driver
 
         private static void Main(string[] args)
         {
-            Test5();
+            //Test5();
+
+            string queryString = "SELECT TOP (10) [pKey],"                                                                                    +
+                                 "[JobStartDate],[JobEndDate],[APINumber],[StateNumber],[CountyNumber],[OperatorName],[WellName],[Latitude]," +
+                                 "[Longitude],[Projection],[TVD],[TotalBaseWaterVolume],[TotalBaseNonWaterVolume],[StateName],[CountyName],"  +
+                                 "[FFVersion],[FederalWell],[IndianWell],[Source],[DTMOD] FROM [FracFocusRegistry].[dbo].[RegistryUpload] " +
+                                 "WHERE [StateName] = 'Texas'";
+
+            //string connectionString = "Server=HELLSCOMPUTER;Database=FracFocusRegistry;Integrated Security=True;";
+            SqlConnectionStringBuilder connectionBuilder = new SqlConnectionStringBuilder
+            {
+                ["Server"]              = "HELLSCOMPUTER",
+                ["Database"]            = "FracFocusRegistry",
+                ["Integrated Security"] = "True"
+            };
+
+            using(SqlConnection connection = new SqlConnection(connectionBuilder.ToString()))
+            {
+                SqlCommand command = new SqlCommand(queryString,
+                                                    connection);
+
+                connection.Open();
+
+                using(SqlDataReader reader = command.ExecuteReader())
+                {
+                    if(reader.HasRows)
+                    {
+                        while(reader.Read())
+                        {
+                            for(int i = 0; i < reader.VisibleFieldCount; ++i)
+                            {
+                                Console.Write("{0}\t",
+                                              reader.GetValue(i));
+                            }
+                            Console.WriteLine();
+                        }
+                    }
+                    else
+                    {
+                        Console.WriteLine("No rows found.");
+                    }
+                }
+            }
 #if DEBUG
             Console.WriteLine("press any key to exit.");
             Console.ReadKey();
