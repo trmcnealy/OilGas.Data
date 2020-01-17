@@ -46,7 +46,7 @@ namespace OilGas.Data.RRC.Texas
         }
 
         public WellProductionDate(string month,
-                                   string year)
+                                  string year)
         {
             if(!string.IsNullOrEmpty(month))
             {
@@ -83,7 +83,7 @@ namespace OilGas.Data.RRC.Texas
     public sealed class WellProductionRecord : IDataTable
     {
         [BsonId(true)]
-        public int Id { get; set; }
+        public long Id { get; set; }
 
         [BsonRef("Records")]
         public WellProduction WellProduction { get; set; }
@@ -99,14 +99,14 @@ namespace OilGas.Data.RRC.Texas
         }
 
         public WellProductionRecord(WellProduction wellProduction,
-                                     int             month,
-                                     float           monthlyOil,
-                                     float           monthlyGas)
+                                    int            month,
+                                    float          monthlyOil,
+                                    float          monthlyGas)
         {
             WellProduction = wellProduction;
-            Month           = month;
-            MonthlyOil      = monthlyOil;
-            MonthlyGas      = monthlyGas;
+            Month          = month;
+            MonthlyOil     = monthlyOil;
+            MonthlyGas     = monthlyGas;
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
@@ -134,7 +134,7 @@ namespace OilGas.Data.RRC.Texas
     public sealed class WellProduction : IDataTable
     {
         [BsonId(true)]
-        public int Id { get; set; }
+        public long Id { get; set; }
 
         public string Api { get; set; }
 
@@ -157,13 +157,13 @@ namespace OilGas.Data.RRC.Texas
             Records = new List<WellProductionRecord>();
         }
 
-        public WellProduction(ApiNumber api,
+        public WellProduction(ApiNumber                  api,
                               WellProductionDate         startDate,
                               WellProductionDate         endDate,
-                              string                      operatorName,
-                              string                      operatorNumber,
-                              string                      fieldName,
-                              string                      fieldNumber,
+                              string                     operatorName,
+                              string                     operatorNumber,
+                              string                     fieldName,
+                              string                     fieldNumber,
                               List<WellProductionRecord> records = null)
         {
             Api            = api.ToString();
@@ -204,12 +204,12 @@ namespace OilGas.Data.RRC.Texas
             }
 
             WellProduction wellProduction = new WellProduction(firstRow.Api,
-                                                                  new WellProductionDate(firstRow.Date),
-                                                                  new WellProductionDate(lastRow.Date),
-                                                                  firstRow.Operator_Name,
-                                                                  firstRow.Operator_No,
-                                                                  firstRow.Field_Name,
-                                                                  firstRow.Field_No);
+                                                               new WellProductionDate(firstRow.Date),
+                                                               new WellProductionDate(lastRow.Date),
+                                                               firstRow.Operator_Name,
+                                                               firstRow.Operator_No,
+                                                               firstRow.Field_Name,
+                                                               firstRow.Field_No);
 
             int month = 0;
 
@@ -228,9 +228,9 @@ namespace OilGas.Data.RRC.Texas
                 }
 
                 wellProduction.Records.Add(new WellProductionRecord(wellProduction,
-                                                                      ++month,
-                                                                      monthlyOil,
-                                                                      monthlyGas));
+                                                                    ++month,
+                                                                    monthlyOil,
+                                                                    monthlyGas));
             }
 
             return wellProduction;
@@ -377,7 +377,7 @@ namespace OilGas.Data.RRC.Texas
 
             return dataFrame;
         }
-        
+
         public Chart BuildChart()
         {
             List<InlineDatasetElement> dataset = new List<InlineDatasetElement>();

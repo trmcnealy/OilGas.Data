@@ -11,19 +11,42 @@ namespace OilGas.Data.RRC.Texas
     public sealed class ScheduleType : IEnumerable<ScheduleType>
     {
         private readonly string _value;
-        public string Value { [MethodImpl(MethodImplOptions.AggressiveInlining)] get { return _value; } }
+
+        public string Value
+        {
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
+            get { return _value; }
+        }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        private ScheduleType(string value) { _value = value; }
+        private ScheduleType(string value)
+        {
+            _value = value;
+        }
 
         private static readonly ScheduleType CurrentType = new ScheduleType("Y");
-        public static ScheduleType Current { [MethodImpl(MethodImplOptions.AggressiveInlining)] get { return CurrentType; } }
+
+        public static ScheduleType Current
+        {
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
+            get { return CurrentType; }
+        }
 
         private static readonly ScheduleType HistoricalType = new ScheduleType("N");
-        public static ScheduleType Historical { [MethodImpl(MethodImplOptions.AggressiveInlining)] get { return HistoricalType; } }
+
+        public static ScheduleType Historical
+        {
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
+            get { return HistoricalType; }
+        }
 
         private static readonly ScheduleType BothType = new ScheduleType("Both");
-        public static ScheduleType Both { [MethodImpl(MethodImplOptions.AggressiveInlining)] get { return BothType; } }
+
+        public static ScheduleType Both
+        {
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
+            get { return BothType; }
+        }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public IEnumerator<ScheduleType> GetEnumerator()
@@ -58,33 +81,89 @@ namespace OilGas.Data.RRC.Texas
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public bool Equals(ScheduleType other) { if(ReferenceEquals(null, other)) { return false; } if(ReferenceEquals(this, other)) { return true; } return Value == other.Value; }
+        public bool Equals(ScheduleType other)
+        {
+            if(ReferenceEquals(null,
+                               other))
+            {
+                return false;
+            }
+
+            if(ReferenceEquals(this,
+                               other))
+            {
+                return true;
+            }
+
+            return Value == other.Value;
+        }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public override bool Equals(object obj) { if(ReferenceEquals(null, obj)) { return false; } if(ReferenceEquals(this, obj)) { return true; } return obj is ScheduleType kind && Equals(kind); }
+        public override bool Equals(object obj)
+        {
+            if(ReferenceEquals(null,
+                               obj))
+            {
+                return false;
+            }
+
+            if(ReferenceEquals(this,
+                               obj))
+            {
+                return true;
+            }
+
+            return obj is ScheduleType kind && Equals(kind);
+        }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public override int GetHashCode() { return Value.GetHashCode(); }
+        public override int GetHashCode()
+        {
+            return Value.GetHashCode();
+        }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static bool operator ==(ScheduleType left, ScheduleType right) { return Equals(left, right); }
+        public static bool operator ==(ScheduleType left,
+                                       ScheduleType right)
+        {
+            return Equals(left,
+                          right);
+        }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static bool operator ==(ScheduleType left, string right) { return left?.Value == right; }
+        public static bool operator ==(ScheduleType left,
+                                       string       right)
+        {
+            return left?.Value == right;
+        }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static bool operator ==(string left, ScheduleType right) { return left == right?.Value; }
+        public static bool operator ==(string       left,
+                                       ScheduleType right)
+        {
+            return left == right?.Value;
+        }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static bool operator !=(ScheduleType left, ScheduleType right) { return !Equals(left, right); }
+        public static bool operator !=(ScheduleType left,
+                                       ScheduleType right)
+        {
+            return !Equals(left,
+                           right);
+        }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static bool operator !=(ScheduleType left, string right) { return left?.Value != right; }
+        public static bool operator !=(ScheduleType left,
+                                       string       right)
+        {
+            return left?.Value != right;
+        }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static bool operator !=(string left, ScheduleType right) { return left != right?.Value; }
-
+        public static bool operator !=(string       left,
+                                       ScheduleType right)
+        {
+            return left != right?.Value;
+        }
     }
-
 }
-

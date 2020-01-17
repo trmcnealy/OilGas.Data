@@ -164,7 +164,7 @@ namespace OilGas.Data
             where TInclude : class
         {
             if(!includeExpressions.TryGetValue(typeof(TInclude),
-                                                out Expression expression))
+                                               out Expression expression))
             {
                 throw new Exception("Must call Initialize method first.");
             }
@@ -178,7 +178,7 @@ namespace OilGas.Data
             if(!includeExpressions.ContainsKey(typeof(TInclude)))
             {
                 includeExpressions.GetOrAdd(typeof(TInclude),
-                                             includeExpr);
+                                            includeExpr);
             }
 
             LiteCollection<TCollection> collection = GetCollection<TCollection>(Database).Include(includeExpr);

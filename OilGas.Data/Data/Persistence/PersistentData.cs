@@ -9,8 +9,9 @@ using System.Threading.Tasks;
 
 using LiteDB;
 
-[assembly:InternalsVisibleTo("OilGas.Data.RRC.Texas")]
-[assembly:InternalsVisibleTo("OilGas.Data.FracFocus")]
+[assembly: InternalsVisibleTo("OilGas.Data.RRC.Texas")]
+[assembly: InternalsVisibleTo("OilGas.Data.FracFocus")]
+
 namespace OilGas.Data
 {
     public sealed class PersistentData

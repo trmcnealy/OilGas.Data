@@ -9,7 +9,7 @@ namespace OilGas.Data
 {
     public class CsvReader : IDisposable
     {
-        private MemoryStream     _inputStream;
+        private MemoryStream   _inputStream;
         private BufferedStream _inputBuffered;
         private StreamReader   _inputReader;
 

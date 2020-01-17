@@ -4,6 +4,7 @@ using System.Globalization;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
+using System.Text;
 using System.Threading.Tasks;
 
 using AngleSharp;
@@ -84,15 +85,19 @@ namespace OilGas.Data.RRC.Texas
 
         private static IHtmlDocument CreateDocument(string responseString)
         {
-            IBrowsingContext context = BrowsingContext.New(Configuration.Default);
+            IConfiguration config = Configuration.Default;
+
+            IBrowsingContext context = BrowsingContext.New(config);
 
             HtmlParserOptions options = new HtmlParserOptions()
             {
                 IsScripting = context != null && context.IsScripting()
             };
 
-            IHtmlDocument document = new HtmlParser(options,
-                                                    context).ParseDocument(responseString);
+            HtmlParser parser = new HtmlParser(options,
+                                               context);
+
+            IHtmlDocument document = parser.ParseDocument(responseString);
 
             return document;
         }
@@ -104,9 +109,6 @@ namespace OilGas.Data.RRC.Texas
             try
             {
                 responseString = await client.GetStringAsync(uri);
-
-                //StreamReader reader = new StreamReader(stream);
-                //responseString = reader.ReadToEnd();
             }
             catch(HttpRequestException e)
             {
@@ -127,6 +129,7 @@ namespace OilGas.Data.RRC.Texas
             try
             {
                 FormUrlEncodedContent content = new FormUrlEncodedContent(request_params);
+                content.Headers.ContentType.CharSet = "utf-8";
                 //content.Headers.ContentType = new MediaTypeHeaderValue("application/x-www-form-urlencoded;charset=utf-8");
 
                 //var buffer      = System.Text.Encoding.UTF8.GetBytes(myContent);
@@ -187,11 +190,11 @@ namespace OilGas.Data.RRC.Texas
                                             ScheduleType.Both);
         }
 
-        public static async Task<IHtmlDocument> WellboreQueryByApi(ApiNumber api,
+        public static async Task<IHtmlDocument> WellboreQueryByApi(ApiNumber    api,
                                                                    ScheduleType scheduleType)
         {
-            string pre = api.CountyCode.ToString();
-            string suf = api.UniqueWellIdentifier.ToString();
+            string pre = api.CountyCode;
+            string suf = api.UniqueWellIdentifier;
 
             Dictionary<string, string> requestParams = new Dictionary<string, string>
             {
@@ -287,7 +290,7 @@ namespace OilGas.Data.RRC.Texas
                                                            ScheduleType.Both);
         }
 
-        public static async Task<string> SpecificLeaseProductionQueryByApi(ApiNumber api,
+        public static async Task<string> SpecificLeaseProductionQueryByApi(ApiNumber    api,
                                                                            ScheduleType scheduleType)
         {
             IHtmlDocument wellboreQueryResult = WellboreQueryByApi(api,

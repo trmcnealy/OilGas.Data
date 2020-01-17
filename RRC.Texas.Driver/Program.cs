@@ -10,6 +10,7 @@ using System.Reflection;
 using Microsoft.Data.Analysis;
 
 using OilGas.Data;
+using OilGas.Data.FracFocus;
 using OilGas.Data.RRC.Texas;
 
 using VegaLite;
@@ -23,11 +24,17 @@ namespace RRC.Texas.Driver
         private static void Main(string[] args)
         {
             Test5();
-
 #if DEBUG
             Console.WriteLine("press any key to exit.");
             Console.ReadKey();
 #endif
+        }
+
+        private static void FillFracFocusDb()
+        {
+            //FracFocusDataAdapter.RegistryUploadCsvToDb(@"T:\registryupload_1.csv", @"C:\Users\tehgo\FracFocus.db");
+            //FracFocusDataAdapter.RegistryUploadCsvToDb(@"T:\registryupload_2.csv", @"C:\Users\tehgo\FracFocus.db");
+            ////FracFocusDataAdapter.RegistryUploadCsvToDb(@"T:\FracFocusRegistry_1.csv");
         }
 
         private static void Test1()
@@ -163,11 +170,15 @@ namespace RRC.Texas.Driver
         {
             ApiNumber api = "42-285-33615";
 
-            WellProduction wellProduction = RrcTexasDataAdapter.GetProductionByApi(api, true).Result;
+            WellProduction wellProduction = RrcTexasDataAdapter.GetProductionByApi(api,
+                                                                                   true).Result;
 
             Chart chart = wellProduction.BuildChart();
 
             chart.ShowInBrowser();
+
+            Console.WriteLine(chart.ToString());
+            Console.ReadKey();
         }
     }
 }
