@@ -26,7 +26,7 @@ namespace AngleSharp.Text
         /// <param name="chr">The character to look for.</param>
         /// <param name="index">The index of the character.</param>
         /// <returns>True if the value has the char, otherwise false.</returns>
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public static Boolean Has(this String value, Char chr, Int32 index = 0)
         {
             return value != null && value.Length > index && value[index] == chr;
@@ -335,7 +335,7 @@ namespace AngleSharp.Text
         /// <param name="current">The current string.</param>
         /// <param name="other">The other string.</param>
         /// <returns>True if both are equal, false otherwise.</returns>
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public static Boolean Is(this String current, String other) =>
             String.Equals(current, other, StringComparison.Ordinal);
 
@@ -345,7 +345,7 @@ namespace AngleSharp.Text
         /// <param name="current">The current string.</param>
         /// <param name="other">The other string.</param>
         /// <returns>True if both are equal, false otherwise.</returns>
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public static Boolean Isi(this String current, String other) =>
             String.Equals(current, other, StringComparison.OrdinalIgnoreCase);
 
@@ -356,7 +356,7 @@ namespace AngleSharp.Text
         /// <param name="item1">The first item to compare to.</param>
         /// <param name="item2">The second item to compare to.</param>
         /// <returns>True if the element is equal to one of the elements, otherwise false.</returns>
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public static Boolean IsOneOf(this String element, String item1, String item2)
             => element.Is(item1) || element.Is(item2);
 
@@ -368,7 +368,7 @@ namespace AngleSharp.Text
         /// <param name="item2">The second item to compare to.</param>
         /// <param name="item3">The third item to compare to.</param>
         /// <returns>True if the element is equal to one of the elements, otherwise false.</returns>
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public static Boolean IsOneOf(this String element, String item1, String item2, String item3) =>
             element.Is(item1) || element.Is(item2) || element.Is(item3);
 
@@ -381,7 +381,7 @@ namespace AngleSharp.Text
         /// <param name="item3">The third item to compare to.</param>
         /// <param name="item4">The fourth item to compare to.</param>
         /// <returns>True if the element is equal to one of the elements, otherwise false.</returns>
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public static Boolean IsOneOf(this String element, String item1, String item2, String item3, String item4) =>
             element.Is(item1) || element.Is(item2) || element.Is(item3) || element.Is(item4);
 
@@ -395,7 +395,7 @@ namespace AngleSharp.Text
         /// <param name="item4">The fourth item to compare to.</param>
         /// <param name="item5">The fifth item to compare to.</param>
         /// <returns>True if the element is equal to one of the elements, otherwise false.</returns>
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public static Boolean IsOneOf(this String element, String item1, String item2, String item3, String item4, String item5) =>
             element.Is(item1) || element.Is(item2) || element.Is(item3) || element.Is(item4) || element.Is(item5);
 
@@ -434,7 +434,7 @@ namespace AngleSharp.Text
         /// </summary>
         /// <param name="str">The string to examine.</param>
         /// <returns>A new string, which excludes the leading and tailing spaces.</returns>
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public static String StripLeadingTrailingSpaces(this String str) =>
             StripLeadingTrailingSpaces(str.ToCharArray());
 
@@ -443,7 +443,7 @@ namespace AngleSharp.Text
         /// </summary>
         /// <param name="array">The array of characters to examine.</param>
         /// <returns>A new string, which excludes the leading and tailing spaces.</returns>
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public static String StripLeadingTrailingSpaces(this Char[] array)
         {
             var start = 0;
@@ -468,7 +468,7 @@ namespace AngleSharp.Text
         /// <param name="str">The string to examine.</param>
         /// <param name="c">The delimiter character.</param>
         /// <returns>The list of tokens.</returns>
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public static String[] SplitWithoutTrimming(this String str, Char c) =>
             SplitWithoutTrimming(str.ToCharArray(), c);
 
@@ -509,7 +509,7 @@ namespace AngleSharp.Text
         /// </summary>
         /// <param name="str">The string to examine.</param>
         /// <returns>The list of tokens.</returns>
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public static String[] SplitCommas(this String str) =>
             str.SplitWithTrimming(',');
 
@@ -521,7 +521,7 @@ namespace AngleSharp.Text
         /// <param name="value">The value to check against.</param>
         /// <param name="comparison">The string comparison mode.</param>
         /// <returns>True if the string is exactly equal to or starts with the given value.</returns>
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public static Boolean HasHyphen(this String str, String value, StringComparison comparison = StringComparison.Ordinal) =>
             String.Equals(str, value, comparison) ||
             (str.Length > value.Length && str.StartsWith(value, comparison) && str[value.Length] == Symbols.Minus);
@@ -604,7 +604,7 @@ namespace AngleSharp.Text
         /// </summary>
         /// <param name="s">The hexadecimal representation.</param>
         /// <returns>The integer number.</returns>
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public static Int32 FromHex(this String s) =>
             Int32.Parse(s, NumberStyles.HexNumber, CultureInfo.InvariantCulture);
 
@@ -613,7 +613,7 @@ namespace AngleSharp.Text
         /// </summary>
         /// <param name="s">The decimal representation.</param>
         /// <returns>The integer number.</returns>
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public static Int32 FromDec(this String s) =>
             Int32.Parse(s, NumberStyles.Integer, CultureInfo.InvariantCulture);
 
@@ -624,7 +624,7 @@ namespace AngleSharp.Text
         /// <param name="value">The value to sanatize.</param>
         /// <param name="encoding">The encoding to consider.</param>
         /// <returns>The sanatized value.</returns>
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public static String HtmlEncode(this String value, Encoding encoding)
         {
             //In the PCL we don't have access to EncoderFallback and cannot

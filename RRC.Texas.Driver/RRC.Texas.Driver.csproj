@@ -7,16 +7,12 @@
   
   <ItemGroup>
     <PackageReference Include="Microsoft.Data.Analysis" Version="0.2.0" />
-    <PackageReference Include="Microsoft.EntityFrameworkCore.InMemory" Version="3.1.1" />
-    <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite.Core" Version="3.1.1" />
-    <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="3.1.1">
-      <PrivateAssets>all</PrivateAssets>
-      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
-    </PackageReference>
+    <PackageReference Include="Microsoft.EntityFrameworkCore" Version="3.1.1" />
     <PackageReference Include="Microsoft.Extensions.Caching.Memory" Version="3.1.1" />
+    <PackageReference Include="VegaLite.NET" Version="1.0.4" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite.Core" Version="3.1.1" />
     <PackageReference Include="SQLitePCLRaw.bundle_winsqlite3" Version="2.0.2" />
     <PackageReference Include="System.Data.SqlClient" Version="4.8.0" />
-    <PackageReference Include="VegaLite.NET" Version="1.0.4" />
   </ItemGroup>
   
   <ItemGroup>

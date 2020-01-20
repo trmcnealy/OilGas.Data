@@ -120,7 +120,7 @@ namespace OilGas.Data
             return ToUid(apiNumber);
         }
         
-        [MethodImpl(MethodImplOptions.AggressiveInlining |MethodImplOptions.AggressiveOptimization)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public static ulong ToUid(ApiNumber apiNumber)
         {
             ulong dec = (ulong)apiNumber._stateCode * 1000000000000;
@@ -137,13 +137,13 @@ namespace OilGas.Data
             return StateCode + "-" + CountyCode + "-" + UniqueWellIdentifier + "-" + DirectionalSidetrackCode + "-" + EventSequenceCode;
         }
         
-        [MethodImpl(MethodImplOptions.AggressiveInlining |MethodImplOptions.AggressiveOptimization)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public override bool Equals(object obj)
         {
             return obj is ApiNumber other && Equals(other);
         }
         
-        [MethodImpl(MethodImplOptions.AggressiveInlining |MethodImplOptions.AggressiveOptimization)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public bool Equals(ApiNumber other)
         {
             return _stateCode                == other._stateCode                &&
@@ -153,7 +153,7 @@ namespace OilGas.Data
                    _eventSequenceCode        == other._eventSequenceCode;
         }
         
-        [MethodImpl(MethodImplOptions.AggressiveInlining |MethodImplOptions.AggressiveOptimization)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public bool Equals(string otherString)
         {
             ApiNumber other = otherString;
@@ -179,42 +179,42 @@ namespace OilGas.Data
             return (int)GetHashCode64();
         }
         
-        [MethodImpl(MethodImplOptions.AggressiveInlining |MethodImplOptions.AggressiveOptimization)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public static bool operator ==(ApiNumber left,
                                        ApiNumber right)
         {
             return left.Equals(right);
         }
         
-        [MethodImpl(MethodImplOptions.AggressiveInlining |MethodImplOptions.AggressiveOptimization)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public static bool operator ==(string left,
                                        ApiNumber right)
         {
             return right.Equals(left);
         }
         
-        [MethodImpl(MethodImplOptions.AggressiveInlining |MethodImplOptions.AggressiveOptimization)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public static bool operator ==(ApiNumber left,
                                        string right)
         {
             return left.Equals(right);
         }
         
-        [MethodImpl(MethodImplOptions.AggressiveInlining |MethodImplOptions.AggressiveOptimization)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public static bool operator !=(ApiNumber left,
                                        ApiNumber right)
         {
             return !left.Equals(right);
         }
         
-        [MethodImpl(MethodImplOptions.AggressiveInlining |MethodImplOptions.AggressiveOptimization)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public static bool operator !=(string left,
                                        ApiNumber right)
         {
             return !right.Equals(left);
         }
         
-        [MethodImpl(MethodImplOptions.AggressiveInlining |MethodImplOptions.AggressiveOptimization)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public static bool operator !=(ApiNumber left,
                                        string right)
         {

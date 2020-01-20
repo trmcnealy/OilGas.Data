@@ -148,13 +148,13 @@ namespace AngleSharp.Html.Parser
             }
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public static void AddScopeMarker(this List<Element> formatting)
         {
             formatting.Add(null);
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public static void AddComment(this Element parent, HtmlToken token)
         {
             parent.AddNode(token.IsProcessingInstruction
@@ -162,7 +162,7 @@ namespace AngleSharp.Html.Parser
                 : new Comment(parent.Owner, token.Data));
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public static void AddComment(this Document parent, HtmlToken token)
         {
             parent.AddNode(token.IsProcessingInstruction

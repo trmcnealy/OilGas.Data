@@ -318,7 +318,7 @@ namespace OilGas.Data
                                   32U);
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         private static void Initialize(out ulong v1,
                                        out ulong v2,
                                        out ulong v3,
@@ -330,7 +330,7 @@ namespace OilGas.Data
             v4 = s_seed - 2654435761U;
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         private static ulong Round(ulong hash,
                                    ulong input)
         {
@@ -339,7 +339,7 @@ namespace OilGas.Data
                    2654435761U;
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         private static ulong QueueRound(ulong hash,
                                         ulong queuedValue)
         {
@@ -348,7 +348,7 @@ namespace OilGas.Data
                    668265263U;
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         private static ulong MixState(ulong v1,
                                       ulong v2,
                                       ulong v3,
@@ -369,7 +369,7 @@ namespace OilGas.Data
             return s_seed + 374761393U;
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         private static ulong MixFinal(ulong hash)
         {
             hash ^= hash >> 15;

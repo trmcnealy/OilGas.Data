@@ -14,22 +14,22 @@ Func<string, List<string>, List<string>, string, int, string> ENUM_BUILDER = (st
     sb.AppendLine(indent + "{");
 
     sb.AppendLine(indent + string.Format("    private readonly {0} _value;", valueType));
-    sb.AppendLine(indent + string.Format("    public {0} Value {{ [MethodImpl(MethodImplOptions.AggressiveInlining)] get {{ return _value; }} }}", valueType));
-    //sb.AppendLine(indent + string.Format("                          [MethodImpl(MethodImplOptions.AggressiveInlining)] private set {{ _value = value; }} ", valueType));
+    sb.AppendLine(indent + string.Format("    public {0} Value {{ [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)] get {{ return _value; }} }}", valueType));
+    //sb.AppendLine(indent + string.Format("                          [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)] private set {{ _value = value; }} ", valueType));
     sb.AppendLine("");
 
-    sb.AppendLine(indent + "    [MethodImpl(MethodImplOptions.AggressiveInlining)]");
+    sb.AppendLine(indent + "    [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]");
     sb.AppendLine(indent + string.Format("    private {0}({1} value) {{ _value = value; }}", enumName, valueType));
     sb.AppendLine("");
 
     for (int i = 0; i < enumValueNames.Count; i++)
     {
         sb.AppendLine(indent + string.Format("    private static readonly {0} {1}Type = new {0}(\"{2}\");", enumName, enumValueNames[i], enumValueValues[i]));
-        sb.AppendLine(indent + string.Format("    public static {0} {1} {{ [MethodImpl(MethodImplOptions.AggressiveInlining)] get {{ return {1}Type; }} }}", enumName, enumValueNames[i]));
+        sb.AppendLine(indent + string.Format("    public static {0} {1} {{ [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)] get {{ return {1}Type; }} }}", enumName, enumValueNames[i]));
         sb.AppendLine("");
     }
 
-    sb.AppendLine(indent + "    [MethodImpl(MethodImplOptions.AggressiveInlining)]");
+    sb.AppendLine(indent + "    [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]");
     sb.AppendLine(indent + string.Format("    public IEnumerator<{0}> GetEnumerator()", enumName));
     sb.AppendLine(indent + "    {");
     for (int i = 0; i < enumValueNames.Count; i++)
@@ -39,28 +39,28 @@ Func<string, List<string>, List<string>, string, int, string> ENUM_BUILDER = (st
     sb.AppendLine(indent + "    }");
     sb.AppendLine("");
 
-    sb.AppendLine(indent + "    [MethodImpl(MethodImplOptions.AggressiveInlining)]");
+    sb.AppendLine(indent + "    [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]");
     sb.AppendLine(indent + string.Format("    IEnumerator IEnumerable.GetEnumerator()"));
     sb.AppendLine(indent + "    {");
     sb.AppendLine(indent + string.Format("        return GetEnumerator();"));
     sb.AppendLine(indent + "    }");
     sb.AppendLine("");
 
-    sb.AppendLine(indent + "    [MethodImpl(MethodImplOptions.AggressiveInlining)]");
+    sb.AppendLine(indent + "    [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]");
     sb.AppendLine(indent + "    public override string ToString()");
     sb.AppendLine(indent + "    {");
     sb.AppendLine(indent + "        return _value;");
     sb.AppendLine(indent + "    }");
     sb.AppendLine("");
 
-    sb.AppendLine(indent + "    [MethodImpl(MethodImplOptions.AggressiveInlining)]");
+    sb.AppendLine(indent + "    [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]");
     sb.AppendLine(indent + string.Format("    public static implicit operator {2}({0} {1})", enumName, enumName.ToLower(), valueType));
     sb.AppendLine(indent + "    {");
     sb.AppendLine(indent + string.Format("        return {0}.Value;", enumName.ToLower()));
     sb.AppendLine(indent + "    }");
     sb.AppendLine("");
 
-    sb.AppendLine(indent + "    [MethodImpl(MethodImplOptions.AggressiveInlining)]");
+    sb.AppendLine(indent + "    [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]");
 
     sb.AppendLine(indent + string.Format("    public static implicit operator {0}({1} value)", enumName, valueType));
     sb.AppendLine(indent + "    {");
@@ -68,39 +68,39 @@ Func<string, List<string>, List<string>, string, int, string> ENUM_BUILDER = (st
     sb.AppendLine(indent + "    }");
     sb.AppendLine("");
 
-    sb.AppendLine(indent + "    [MethodImpl(MethodImplOptions.AggressiveInlining)]");
+    sb.AppendLine(indent + "    [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]");
     sb.AppendLine(indent + string.Format("    public bool Equals({0} other) {{ if(ReferenceEquals(null, other)) {{ return false; }} if(ReferenceEquals(this, other)) {{ return true; }} return Value == other.Value; }}", enumName, valueType));
     sb.AppendLine("");
     
-    sb.AppendLine(indent + "    [MethodImpl(MethodImplOptions.AggressiveInlining)]");
+    sb.AppendLine(indent + "    [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]");
     sb.AppendLine(indent + string.Format("    public override bool Equals(object obj) {{ if(ReferenceEquals(null, obj)) {{ return false; }} if(ReferenceEquals(this, obj)) {{ return true; }} return obj is {0} kind && Equals(kind); }}", enumName, valueType));
     sb.AppendLine("");
     
-    sb.AppendLine(indent + "    [MethodImpl(MethodImplOptions.AggressiveInlining)]");
+    sb.AppendLine(indent + "    [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]");
     sb.AppendLine(indent + string.Format("    public override int GetHashCode() {{ return Value.GetHashCode(); }}", enumName, valueType));
     sb.AppendLine("");
     
-    sb.AppendLine(indent + "    [MethodImpl(MethodImplOptions.AggressiveInlining)]");
+    sb.AppendLine(indent + "    [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]");
     sb.AppendLine(indent + string.Format("    public static bool operator ==({0} left, {0} right) {{ return Equals(left, right); }}", enumName, valueType));
     sb.AppendLine("");
     
-    sb.AppendLine(indent + "    [MethodImpl(MethodImplOptions.AggressiveInlining)]");
+    sb.AppendLine(indent + "    [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]");
     sb.AppendLine(indent + string.Format("    public static bool operator ==({0} left, {1} right) {{ return left?.Value == right; }}", enumName, valueType));
     sb.AppendLine("");
     
-    sb.AppendLine(indent + "    [MethodImpl(MethodImplOptions.AggressiveInlining)]");
+    sb.AppendLine(indent + "    [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]");
     sb.AppendLine(indent + string.Format("    public static bool operator ==({1} left, {0} right) {{ return left == right?.Value; }}", enumName, valueType));
     sb.AppendLine("");
     
-    sb.AppendLine(indent + "    [MethodImpl(MethodImplOptions.AggressiveInlining)]");
+    sb.AppendLine(indent + "    [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]");
     sb.AppendLine(indent + string.Format("    public static bool operator !=({0} left, {0} right) {{ return !Equals(left, right); }}", enumName, valueType));
     sb.AppendLine("");
     
-    sb.AppendLine(indent + "    [MethodImpl(MethodImplOptions.AggressiveInlining)]");
+    sb.AppendLine(indent + "    [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]");
     sb.AppendLine(indent + string.Format("    public static bool operator !=({0} left, {1} right) {{ return left?.Value != right; }}", enumName, valueType));
     sb.AppendLine("");
     
-    sb.AppendLine(indent + "    [MethodImpl(MethodImplOptions.AggressiveInlining)]");
+    sb.AppendLine(indent + "    [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]");
     sb.AppendLine(indent + string.Format("    public static bool operator !=({1} left, {0} right) {{ return left != right?.Value; }}", enumName, valueType));
     sb.AppendLine("");
 
