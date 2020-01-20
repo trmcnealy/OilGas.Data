@@ -6,11 +6,9 @@ namespace OilGas.Data
 {
     internal abstract class HomeDataStorage
     {
-        internal const string RrcTexasDatabaseName = "OilGas.Data.db";
-
         internal static readonly string HomePath = GetHomePath();
 
-        internal static readonly string HomeDatabasePath = GetDbPath(HomePath);
+        //internal static readonly string HomeDatabasePath = GetDbPath(HomePath);
 
         [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         internal static bool IsValidPath(string path)
@@ -66,10 +64,11 @@ namespace OilGas.Data
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
-        internal static string GetDbPath(string homePath)
+        internal static string GetDbPath(string homePath,
+                                         string fileName)
         {
             return Path.Combine(homePath,
-                                RrcTexasDatabaseName);
+                                fileName);
         }
     }
 
@@ -81,22 +80,23 @@ namespace OilGas.Data
 
         public string FullPath { get; }
 
-        public DataStorage()
+        //public DataStorage()
+        //{
+        //    FullPath = HomeDataStorage.HomeDatabasePath;
+        //}
+
+        private static string EnsureFileName(string fileName)
         {
-            FullPath = HomeDataStorage.HomeDatabasePath;
+            return Path.GetExtension(fileName) != ".db"
+                       ? Path.ChangeExtension(fileName,
+                                              ".db")
+                       : fileName;
         }
 
-        public DataStorage(string fullPath)
+        public DataStorage(string fileName)
+            : this(HomeDataStorage.HomePath,
+                   fileName)
         {
-            if(!Path.HasExtension(fullPath))
-            {
-                throw new Exception("Instance path must point to a file.");
-            }
-
-            FullPath = Path.GetExtension(fullPath) != ".db"
-                           ? Path.ChangeExtension(fullPath,
-                                                  ".db")
-                           : fullPath;
         }
 
         public DataStorage(string directoryPath,
@@ -104,6 +104,11 @@ namespace OilGas.Data
         {
             FullPath = Path.Combine(directoryPath,
                                     fileName);
+
+            if (!File.Exists(FullPath))
+            {
+                File.Create(FullPath).Close();
+            }
         }
 
         public static implicit operator DataStorage(string fullPath)

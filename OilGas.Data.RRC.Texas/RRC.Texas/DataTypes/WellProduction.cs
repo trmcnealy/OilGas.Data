@@ -4,24 +4,35 @@ using System.Globalization;
 using System.Linq;
 using System.Reflection;
 using System.Runtime.CompilerServices;
-
-using LiteDB;
+using System.Runtime.Serialization;
 
 using Microsoft.Data.Analysis;
+
+using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 using VegaLite;
 
 namespace OilGas.Data.RRC.Texas
 {
+    [Serializable]
+    [DataContract]
     public sealed class WellProductionDate
     {
-        [BsonIgnore]
+        [IgnoreDataMember]
+        [NotMapped]
         public int Month { get; set; }
 
-        [BsonIgnore]
+        [IgnoreDataMember]
+        [NotMapped]
         public int Year { get; set; }
 
+        [DataMember]
         public string Date { get { return ToString(); } }
+
+        public WellProductionDate()
+        {
+        }
 
         public WellProductionDate(string date)
         {
@@ -79,19 +90,27 @@ namespace OilGas.Data.RRC.Texas
         }
     }
 
-    [DataTable(nameof(WellProductionRecord))]
-    public sealed class WellProductionRecord : IDataTable
+    [Serializable]
+    [DataContract]
+    [Table("WellProductionRecords")]
+    public sealed class WellProductionRecord : IDataTable<long>
     {
-        [BsonId(true)]
+        [DataMember]
+        [Required]
+        [Key]
         public long Id { get; set; }
 
-        [BsonRef("Records")]
+        [DataMember]
+        [ForeignKey("Records")]
         public WellProduction WellProduction { get; set; }
 
+        [DataMember]
         public int Month { get; set; }
 
+        [DataMember]
         public float MonthlyOil { get; set; }
 
+        [DataMember]
         public float MonthlyGas { get; set; }
 
         public WellProductionRecord()
@@ -130,26 +149,38 @@ namespace OilGas.Data.RRC.Texas
         }
     }
 
-    [DataTable(nameof(WellProduction))]
-    public sealed class WellProduction : IDataTable
+    [Serializable]
+    [DataContract]
+    [Table("WellProduction")]
+    public sealed class WellProduction : IDataTable<long>
     {
-        [BsonId(true)]
+        [DataMember]
+        [Required]
+        [Key]
         public long Id { get; set; }
 
+        [DataMember]
         public string Api { get; set; }
 
-        public WellProductionDate StartDate { get; set; }
+        [DataMember]
+        public string StartDate { get; set; }
 
-        public WellProductionDate EndDate { get; set; }
+        [DataMember]
+        public string EndDate { get; set; }
 
+        [DataMember]
         public string OperatorName { get; set; }
 
+        [DataMember]
         public string OperatorNumber { get; set; }
 
+        [DataMember]
         public string FieldName { get; set; }
 
+        [DataMember]
         public string FieldNumber { get; set; }
 
+        [DataMember]
         public List<WellProductionRecord> Records { get; set; }
 
         public WellProduction()
@@ -167,8 +198,8 @@ namespace OilGas.Data.RRC.Texas
                               List<WellProductionRecord> records = null)
         {
             Api            = api.ToString();
-            StartDate      = startDate;
-            EndDate        = endDate;
+            StartDate      = startDate.Date;
+            EndDate        = endDate.Date;
             OperatorName   = operatorName;
             OperatorNumber = operatorNumber;
             FieldName      = fieldName;
@@ -249,8 +280,8 @@ namespace OilGas.Data.RRC.Texas
 
             foreach(PropertyInfo property in properties)
             {
-                if(property.CustomAttributes.Any(attribute => attribute.AttributeType == typeof(BsonIdAttribute)) ||
-                   property.CustomAttributes.Any(attribute => attribute.AttributeType == typeof(BsonRefAttribute)))
+                if(property.CustomAttributes.Any(attribute => attribute.AttributeType == typeof(KeyAttribute)) ||
+                   property.CustomAttributes.Any(attribute => attribute.AttributeType == typeof(ForeignKeyAttribute)))
                 {
                     continue;
                 }
@@ -343,37 +374,10 @@ namespace OilGas.Data.RRC.Texas
                 for(int j = 0; j < values.Length; ++j)
                 {
                     dataFrame[i,
-                              j] = values[j];
+                              j] = Convert.ChangeType(values[j],
+                                                      columns[j].DataType);
                 }
             }
-
-            // Formatter<DataFrame>.Register((df, writer) =>
-            //                               {
-            //                                   var headers = new List<IHtmlContent>();
-            //                                   headers.Add(th(i("index")));
-            //                                   headers.AddRange(df.Columns.Select(c => (IHtmlContent) th(c.Name)));
-            //                                   var rows = new List<List<IHtmlContent>>();
-            //                                   var take = 20;
-            //                                   for (var i = 0; i < Math.Min(take, df.Rows.Count); i++)
-            //                                   {
-            //                                       var cells = new List<IHtmlContent>();
-            //                                       cells.Add(td(i));
-            //                                       foreach (var obj in df.Rows[i])
-            //                                       {
-            //                                           cells.Add(td(obj));
-            //                                       }
-            //                                       rows.Add(cells);
-            //                                   }
-            //
-            //                                   var t = table(
-            //                                                 thead(
-            //                                                       headers),
-            //                                                 tbody(
-            //                                                       rows.Select(
-            //                                                                   r => tr(r))));
-            //
-            //                                   writer.Write(t);
-            //                               }, "text/html");
 
             return dataFrame;
         }

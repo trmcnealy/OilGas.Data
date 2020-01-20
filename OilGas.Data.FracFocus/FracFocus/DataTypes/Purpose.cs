@@ -1,63 +1,136 @@
 ﻿using System;
+using System.Data.Common;
 using System.Linq;
-
-using LiteDB;
+using System.Runtime.Serialization;
 
 namespace OilGas.Data.FracFocus
 {
-    public class PurposeTable : IDataTable
+    [Serializable]
+    [DataContract]
+    public class RegistryPurpose : IDataTable<Guid>
     {
-        [BsonId(true)]
-        public long Id { get; set; }
-
         /// <summary>
         /// Key index for the table
         /// </summary>
-        public Guid Key { get; set; }
+        [DataMember]
+        public Guid Id { get; set; }
 
         /// <summary>
         /// Foreign key linking to the Registry table.
         /// </summary>
-        [BsonRef]
-        public Registry Registry { get; set; }
+        [DataMember]
+        public Guid KeyRegistry { get; set; }
 
         /// <summary>
         /// The name of the product as defined by the supplier.
         /// </summary>
+        [DataMember]
         public string TradeName { get; set; }
 
         /// <summary>
         ///  The name of the company that supplied the product for the hydraulic fracturing job (Usually the service company).
         /// </summary>
+        [DataMember]
         public string Supplier { get; set; }
 
         /// <summary>
         /// The reason the product was used (e.g. Surfactant, Biocide, Proppant).
         /// </summary>
+        [DataMember]
         public string Purpose { get; set; }
 
-        public string SystemApproach { get; set; }
+        [DataMember]
+        public bool? SystemApproach { get; set; }
 
-        public bool IsWater { get; set; }
+        [DataMember]
+        public bool? IsWater { get; set; }
 
-        public string PurposePercentHfJob { get; set; }
+        [DataMember]
+        public double? PurposePercentHfJob { get; set; }
 
-        public string PurposeIngredientMsds { get; set; }
+        [DataMember]
+        public double? IngredientMsds { get; set; }
 
-        public PurposeTable(Registry             registry,
-                            ReadOnlySpan<string> csvData)
+        public RegistryPurpose()
         {
-            Registry = registry;
+        }
+
+        private static T CheckAndGetValue<T>(DbDataReader dbReader,
+                                             int          index)
+        {
+            object value = dbReader.GetValue(index);
+
+            if(DBNull.Value == value)
+            {
+                return default;
+            }
+
+            return (T)value;
+        }
+
+        private static T CheckAndGetValue<T>(ReadOnlySpan<string> csvData,
+                                             int                  index)
+        {
+            string value = csvData[index];
+
+            if(string.IsNullOrEmpty(value))
+            {
+                return default;
+            }
+
+            if(typeof(T) == typeof(bool) || typeof(T) == typeof(bool?))
+            {
+                return (T)(object)(value != "False");
+            }
+
+            if(typeof(T) == typeof(double) || typeof(T) == typeof(double?))
+            {
+                return (T)(object)double.Parse(value);
+            }
+
+            if(typeof(T) == typeof(DateTime) || typeof(T) == typeof(DateTime?))
+            {
+                return (T)(object)DateTime.Parse(value);
+            }
+
+            if(typeof(T) == typeof(Guid) || typeof(T) == typeof(Guid?))
+            {
+                return (T)(object)Guid.Parse(value);
+            }
+
+            throw new Exception();
+        }
+
+#nullable enable
+        public RegistryPurpose(DbDataReader dbReader)
+        {
             int index = 0;
 
-            Key                   = new Guid(csvData[index++]);
-            TradeName             = csvData[index++];
-            Supplier              = csvData[index++];
-            Purpose               = csvData[index++];
-            SystemApproach        = csvData[index++];
-            IsWater               = csvData[index++] == "TRUE" ? true : false;
-            PurposePercentHfJob   = csvData[index++];
-            PurposeIngredientMsds = csvData[index];
+            Id = dbReader.GetGuid(index++);
+
+            KeyRegistry = dbReader.GetGuid(index++);
+
+            TradeName = CheckAndGetValue<string?>(dbReader,
+                                                  index++);
+
+            Supplier = CheckAndGetValue<string?>(dbReader,
+                                                 index++);
+
+            Purpose = CheckAndGetValue<string>(dbReader,
+                                               index++);
+
+            SystemApproach = CheckAndGetValue<bool?>(dbReader,
+                                                     index++);
+
+            IsWater = CheckAndGetValue<bool?>(dbReader,
+                                              index++);
+
+            PurposePercentHfJob = CheckAndGetValue<double?>(dbReader,
+                                                            index++);
+
+            IngredientMsds = CheckAndGetValue<double?>(dbReader,
+                                                       index);
         }
+#nullable disable
     }
 }

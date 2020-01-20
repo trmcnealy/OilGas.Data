@@ -1,7 +1,9 @@
-﻿namespace OilGas.Data
+﻿using System;
+
+namespace OilGas.Data
 {
-    public interface IDataTable
+    public interface IDataTable<T>
     {
-        long Id { get; set; }
+        public T Id { get; set; }
     }
 }

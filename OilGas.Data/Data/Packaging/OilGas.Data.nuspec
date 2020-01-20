@@ -3,7 +3,7 @@
 <package>
   <metadata>
     <id>OilGas.Data</id>
-    <version>1.0.4</version>
+    <version>1.0.5</version>
     <authors>Timothy R. McNealy</authors>
     <owners>Timothy R. McNealy</owners>
     <license type="expression">MIT</license>
@@ -15,14 +15,14 @@
     <copyright>Copyright 2020</copyright>
     <tags></tags>
     <dependencies>
-      <dependency id="AngleSharp"
-                  version="0.14.0-alpha-788" />
-      <dependency id="LiteDB"
-                  version="5.0.0-beta" />
-      <dependency id="Microsoft.Data.Analysis"
-                  version="0.2.0" />
-      <dependency id="System.Data.Common"
-                  version="4.3.0" />
+      <dependency id="Microsoft.EntityFrameworkCore.InMemory" version="3.1.1" />
+      <dependency id="Microsoft.EntityFrameworkCore.Sqlite.Core" version="3.1.1" />
+      <dependency id="Microsoft.EntityFrameworkCore.Tools" version="3.1.1"/>
+      <dependency id="Microsoft.Extensions.Caching.Memory" version="3.1.1"/>
+      <dependency id="SQLitePCLRaw.bundle_winsqlite3" version="2.0.2" />
+      <dependency id="Microsoft.Data.Analysis" version="0.2.0" />
+      <dependency id="System.Data.Common" version="4.3.0" />
+      <dependency id="VegaLite.NET" version="1.0.4" />
     </dependencies>
   </metadata>
   <files>
@@ -30,6 +30,8 @@
           target="" />
 
     <file src="D:\TFS_Sources\Github\Compilation\trmcnealy\OilGas.Data\OilGas.Data.RRC.Texas\bin\Release\netcoreapp3.1\OilGas.Data.dll"
+          target="lib\netcoreapp3.1" />
+    <file src="D:\TFS_Sources\Github\Compilation\trmcnealy\OilGas.Data\OilGas.Data.FracFocus\bin\Release\netcoreapp3.1\OilGas.Data.FracFocus.dll"
           target="lib\netcoreapp3.1" />
     <file src="D:\TFS_Sources\Github\Compilation\trmcnealy\OilGas.Data\OilGas.Data.RRC.Texas\bin\Release\netcoreapp3.1\OilGas.Data.RRC.Texas.dll"
           target="lib\netcoreapp3.1" />

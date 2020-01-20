@@ -1,97 +1,185 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Runtime.CompilerServices;
+using System.Threading.Tasks;
 
-using LiteDB;
+using AngleSharp.Html.Dom;
+
+using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.ChangeTracking;
+using Microsoft.EntityFrameworkCore.Sqlite;
+using Microsoft.Extensions.Caching.Memory;
 
 namespace OilGas.Data.FracFocus
 {
-    public abstract class FracFocusDataAdapter
+    public sealed class FracFocusContext : DbContext
     {
+        public DbSet<Registry> Registries { get; set; }
+
+        public DataStorage DataStorage { get; }
+
+        public FracFocusContext()
+        {
+            DataStorage = new DataStorage("FracFocus.db");
+        }
+
+        public FracFocusContext(DataStorage dataStorage)
+        {
+            DataStorage = dataStorage;
+        }
+
+        public FracFocusContext(DbContextOptions<FracFocusContext> options)
+            : base(options)
+        {
+        }
+
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
+        {
+            modelBuilder.Entity<Registry>();
+
+            //modelBuilder.Conventions.Remove<OneToManyCascadeDeleteConvention>();
+
+            //modelBuilder.RegisterEntityType(typeof(UnitMeasure));
+
+            //modelBuilder.RegisterEntityType(typeof(UnitSystem));
+        }
+
+        protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+        {
+            optionsBuilder.UseMemoryCache(new MemoryCache(new MemoryDistributedCacheOptions()));
+            optionsBuilder.UseSqlite($@"Data Source={DataStorage.FullPath}");
+        }
+    }
+
+    public sealed class FracFocusDataAdapter : IDisposable
+    {
+        private static readonly FracFocusDataAdapter instance = new FracFocusDataAdapter();
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+        private static FracFocusDataAdapter GetInstance()
+        {
+            return instance;
+        }
+
+        internal static FracFocusDataAdapter Instance
+        {
+            [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+            get { return GetInstance(); }
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+        static FracFocusDataAdapter()
+        {
+            AppDomain.CurrentDomain.ProcessExit += RrcTexasDataAdapter_Dtor;
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+        private static void RrcTexasDataAdapter_Dtor(object    sender,
+                                                     EventArgs e)
+        {
+            Instance.Dispose();
+        }
+
+        internal FracFocusContext DbContext
+        {
+            [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+            get;
+            [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+            private set;
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         private FracFocusDataAdapter()
         {
+            DbContext = new FracFocusContext();
         }
 
-        public static async void RegistryUploadCsvToDb(string      filePath,
-                                                       DataStorage dbPath = default(DataStorage))
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+        public void Dispose()
         {
-            string fileContents = File.ReadAllText(filePath);
+            DbContext.Dispose();
+        }
 
-            CsvReader csvReader = new CsvReader(fileContents);
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+        public static void Initialize(DataStorage dbPath = null)
+        {
+            Instance.DbContext.Database.EnsureCreated();
 
-            List<string[]> data = csvReader.ReadFile(1);
-
-            List<Registry> registryUploadList = new List<Registry>(data.Count);
-
-            foreach(string[] entry in data)
+            if(dbPath == null)
             {
-                //pKey	JobStartDate	JobEndDate	APINumber	StateNumber	CountyNumber	OperatorName	WellName	Latitude	Longitude	Projection	TVD	TotalBaseWaterVolume	TotalBaseNonWaterVolume	StateName	CountyName	FFVersion	FederalWell	IndianWell
-
-                registryUploadList.Add(new Registry(entry));
+                return;
             }
 
-            PersistentData.Initialize(dbPath ?? new DataStorage());
+            if(Instance.DbContext == null)
+            {
+                Instance.DbContext = new FracFocusContext(dbPath);
+            }
+            else if(Instance.DbContext.Database.GetDbConnection().Database != dbPath.FullPath)
+            {
+                Instance.DbContext.Dispose();
 
-            PersistentData.InitializeCollection<Registry>();
-            //PersistentData.InitializeCollection<WellProduction, List<WellProductionRecord>>(x => x.Records);
-
-            await PersistentData.AddRange(registryUploadList);
-
-            //await PersistentData.Add<WellProduction, List<WellProductionRecord>>(wellProduction);
+                Instance.DbContext = new FracFocusContext(dbPath);
+            }
         }
 
-        public static async void FracFocusRegistryCsvToDb(string      filePath,
-                                                          DataStorage dbPath = default(DataStorage))
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+        public static async Task<Registry> GetWellByApi(ApiNumber api)
         {
-            string fileContents = File.ReadAllText(filePath);
-
-            CsvReader csvReader = new CsvReader(fileContents);
-
-            List<string[]> data = csvReader.ReadFile(1);
-
-            List<Registry> registryUploadList = new List<Registry>(data.Count);
-
-            List<PurposeTable> purposeTableList = new List<PurposeTable>(data.Count);
-
-            List<Ingredients> ingredientsList = new List<Ingredients>(data.Count);
-
-            Registry     registry;
-            PurposeTable purposeTable;
-
-            foreach(string[] entry in data)
+            try
             {
-                registry = new Registry(entry.Take(20).ToArray());
-                registryUploadList.Add(registry);
+                Registry record = await Instance.DbContext.Registries.FirstOrDefaultAsync(x => x.ApiNumber == api);
 
-                BsonExpression registryKey = Query.EQ("Key",
-                                                      registry.Key.ToString());
-
-                if(await PersistentData.Contains<Registry>(registryKey))
+                if(record != null)
                 {
-                    registry = PersistentData.FindBy<Registry>(registryKey).First();
+                    return record;
+                }
+            }
+            catch(Exception ex)
+            {
+                Debug.WriteLine(ex.Message);
+            }
+
+            return null;
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+        public static async Task<bool> Add(Registry registry)
+        {
+            try
+            {
+                Registry record = await Instance.DbContext.Registries.FirstOrDefaultAsync(x => x.Id == registry.Id);
+
+                EntityEntry<Registry> entry;
+
+                if(record == null)
+                {
+                    entry = await Instance.DbContext.Registries.AddAsync(registry);
+                }
+                else
+                {
+                    entry = Instance.DbContext.Registries.Update(registry);
                 }
 
-                purposeTable = new PurposeTable(registry,
-                                                entry.Skip(21).Take(8).ToArray());
-
-                purposeTableList.Add(purposeTable);
-
-                ingredientsList.Add(new Ingredients(purposeTable,
-                                                    entry.Skip(29).ToArray()));
+                if(entry != null)
+                {
+                    return true;
+                }
+            }
+            catch(Exception ex)
+            {
+                Debug.WriteLine(ex.Message);
             }
 
-            PersistentData.Initialize(dbPath ?? new DataStorage());
+            return false;
+        }
 
-            PersistentData.InitializeCollection<PurposeTable, Registry>(x => x.Registry);
-            PersistentData.InitializeCollection<Ingredients, PurposeTable>(x => x.PurposeTable);
-            //PersistentData.InitializeCollection<WellProduction, List<WellProductionRecord>>(x => x.Records);
-
-            await PersistentData.AddRange(registryUploadList);
-
-            await PersistentData.AddRange<PurposeTable, Registry>(purposeTableList);
-
-            await PersistentData.AddRange<Ingredients, PurposeTable>(ingredientsList);
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+        public static async Task<int> Commit()
+        {
+            return await Instance.DbContext.SaveChangesAsync();
         }
     }
 }

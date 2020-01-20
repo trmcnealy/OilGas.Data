@@ -7,8 +7,6 @@ using System.Linq.Expressions;
 using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 
-using LiteDB;
-
 [assembly: InternalsVisibleTo("OilGas.Data.RRC.Texas")]
 [assembly: InternalsVisibleTo("OilGas.Data.FracFocus")]
 
@@ -34,7 +32,7 @@ namespace OilGas.Data
         //    '/', '\\', '"', ':', '|', '<', '>', '?', '*'
         //};
 
-        internal DataBase DataBase
+        internal Database Database
         {
             [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
             get;
@@ -46,6 +44,11 @@ namespace OilGas.Data
         {
         }
 
+        ~PersistentData()
+        {
+            Instance.Database.Dispose();
+        }
+
         internal static PersistentData Instance
         {
             [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
@@ -53,7 +56,8 @@ namespace OilGas.Data
         }
 
         private static bool IsInitializeCollection_TCollection = false;
-
+        
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public static void Initialize(DataStorage dbPath)
         {
             if(dbPath == null)
@@ -61,159 +65,186 @@ namespace OilGas.Data
                 throw new NullReferenceException(nameof(dbPath));
             }
 
-            if(Instance.DataBase == null)
+            if(Instance.Database == null)
             {
-                Instance.DataBase = new DataBase(dbPath);
+                Instance.Database = new Database(dbPath);
             }
-            else if(Instance.DataBase.DatabasePath != dbPath.FullPath)
+            else if(Instance.Database.DatabasePath != dbPath.FullPath)
             {
-                Instance.DataBase.Dispose();
+                Instance.Database.Dispose();
 
-                Instance.DataBase = new DataBase(dbPath);
+                Instance.Database = new Database(dbPath);
             }
         }
-
+        
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public static void InitializeCollection<TCollection>()
-            where TCollection : class, IDataTable
+            where TCollection : class, IDataTable<Guid>
         {
             if(!IsInitializeCollection_TCollection)
             {
-                Instance.DataBase.Initialize<TCollection>();
+                Instance.Database.Initialize<TCollection>();
                 IsInitializeCollection_TCollection = true;
             }
         }
-
-        private static bool IsInitializeCollection_TCollection_TInclude = false;
-
-        public static void InitializeCollection<TCollection, TInclude>(Expression<Func<TCollection, TInclude>> includeExpr)
-            where TCollection : class, IDataTable where TInclude : class
+        
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+        public static void Commit()
         {
-            if(!IsInitializeCollection_TCollection_TInclude)
-            {
-                Instance.DataBase.Initialize<TCollection, TInclude>(includeExpr);
-                IsInitializeCollection_TCollection_TInclude = true;
-            }
+            Instance.Database.Commit();
         }
 
-        #region TCollection, TInclude
+        //private static bool IsInitializeCollection_TCollection_TInclude = false;
 
+        //public static void InitializeCollection<TCollection, TInclude>(Expression<Func<TCollection, TInclude>> includeExpr)
+        //    where TCollection : class, IDataTable<Guid> where TInclude : class
+        //{
+        //    if(!IsInitializeCollection_TCollection_TInclude)
+        //    {
+        //        Instance.Database.Initialize<TCollection, TInclude>(includeExpr);
+        //        IsInitializeCollection_TCollection_TInclude = true;
+        //    }
+        //}
+
+        #region TCollection
+        
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public static async Task<bool> Contains<TCollection>(TCollection item)
-            where TCollection : class, IDataTable
+            where TCollection : class, IDataTable<Guid>
         {
-            return await Instance.DataBase.Contains(item);
+            return await Instance.Database.Contains(item);
+        }
+        
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+        public static async Task<bool> Contains<TCollection>(Guid id)
+            where TCollection : class, IDataTable<Guid>
+        {
+            return await Instance.Database.Contains<TCollection>(id);
         }
 
-        public static async Task<bool> Contains<TCollection>(int id)
-            where TCollection : class, IDataTable
+        //public static async Task<bool> Contains<TCollection>(Expression expression)
+        //    where TCollection : class, IDataTable<Guid>
+        //{
+        //    return await Instance.Database.Contains<TCollection>(expression);
+        //}
+        
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+        public static async Task<bool> Add<TCollection>(TCollection item)
+            where TCollection : class, IDataTable<Guid>
         {
-            return await Instance.DataBase.Contains<TCollection>(id);
+            return await Instance.Database.Add(item);
         }
-
-        public static async Task<bool> Contains<TCollection>(BsonExpression expression)
-            where TCollection : class, IDataTable
-        {
-            return await Instance.DataBase.Contains<TCollection>(expression);
-        }
-
-        public static async Task<BsonValue> Add<TCollection>(TCollection item)
-            where TCollection : class, IDataTable
-        {
-            return await Instance.DataBase.Add(item);
-        }
-
+        
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public static async Task AddRange<TCollection>(IEnumerable<TCollection> items)
-            where TCollection : class, IDataTable
+            where TCollection : class, IDataTable<Guid>
         {
-            await Instance.DataBase.AddRange(items);
+            await Instance.Database.AddRange(items);
         }
-
+        
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public static async Task<bool> Delete<TCollection>(TCollection item)
-            where TCollection : class, IDataTable
+            where TCollection : class, IDataTable<Guid>
         {
-            return await Instance.DataBase.Delete(item);
+            return await Instance.Database.Delete(item);
         }
 
-        public static async Task<bool> Update<TCollection>(TCollection item)
-            where TCollection : class, IDataTable
+        //public static async Task<bool> Update<TCollection>(TCollection item)
+        //    where TCollection : class, IDataTable<Guid>
+        //{
+        //    return await Instance.Database.Update(item);
+        //}
+
+        //public static async Task<IEnumerable<TCollection>> FindBy<TCollection>(Query query)
+        //    where TCollection : class, IDataTable<Guid>
+        //{
+        //    return await Instance.Database.FindBy<TCollection>(query);
+        //}
+        
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+        public static async Task<TCollection> FindBy<TCollection>(Guid key)
+            where TCollection : class, IDataTable<Guid>
         {
-            return await Instance.DataBase.Update(item);
+            return await Instance.Database.FindBy<TCollection>(key);
+        }
+        
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+        public static async Task<TCollection> FindBy<TCollection>(Func<TCollection, bool> expression)
+            where TCollection : class, IDataTable<Guid>
+        {
+            return await Instance.Database.FindBy<TCollection>(expression);
         }
 
-        public static async Task<IEnumerable<TCollection>> FindBy<TCollection>(Query query)
-            where TCollection : class, IDataTable
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+        public static async Task<IEnumerable<KeyValuePair<Guid, TCollection>>> FindAll<TCollection>()
+            where TCollection : class, IDataTable<Guid>
         {
-            return await Instance.DataBase.FindBy<TCollection>(query);
-        }
-
-        public static IEnumerable<TCollection> FindBy<TCollection>(BsonExpression expression)
-            where TCollection : class, IDataTable
-        {
-            return Instance.DataBase.FindBy<TCollection>(expression);
+            return await Instance.Database.FindAll<TCollection>();
         }
 
         #endregion
 
         #region TCollection, TInclude
 
-        public static async Task<bool> Contains<TCollection, TInclude>(TCollection item)
-            where TCollection : class, IDataTable where TInclude : class
-        {
-            return await Instance.DataBase.Contains(item);
-        }
+        //public static async Task<bool> Contains<TCollection, TInclude>(TCollection item)
+        //    where TCollection : class, IDataTable<Guid> where TInclude : class
+        //{
+        //    return await Instance.Database.Contains(item);
+        //}
 
-        public static async Task<bool> Contains<TCollection, TInclude>(int id)
-            where TCollection : class, IDataTable where TInclude : class
-        {
-            return await Instance.DataBase.Contains<TCollection, TInclude>(id);
-        }
+        //public static async Task<bool> Contains<TCollection, TInclude>(int id)
+        //    where TCollection : class, IDataTable<Guid> where TInclude : class
+        //{
+        //    return await Instance.Database.Contains<TCollection, TInclude>(id);
+        //}
 
-        public static async Task<bool> Contains<TCollection, TInclude>(BsonExpression expression)
-            where TCollection : class, IDataTable where TInclude : class
-        {
-            return await Instance.DataBase.Contains<TCollection, TInclude>(expression);
-        }
+        //public static async Task<bool> Contains<TCollection, TInclude>(Expression expression)
+        //    where TCollection : class, IDataTable<Guid> where TInclude : class
+        //{
+        //    return await Instance.Database.Contains<TCollection, TInclude>(expression);
+        //}
 
-        public static async Task<BsonValue> Add<TCollection, TInclude>(TCollection item)
-            where TCollection : class, IDataTable where TInclude : class
-        {
-            return await Instance.DataBase.Add(item);
-        }
+        //public static async Task<BsonValue> Add<TCollection, TInclude>(TCollection item)
+        //    where TCollection : class, IDataTable<Guid> where TInclude : class
+        //{
+        //    return await Instance.Database.Add(item);
+        //}
 
-        public static async Task AddRange<TCollection, TInclude>(IEnumerable<TCollection> items)
-            where TCollection : class, IDataTable where TInclude : class
-        {
-            await Instance.DataBase.AddRange(items);
-        }
+        //public static async Task AddRange<TCollection, TInclude>(IEnumerable<TCollection> items)
+        //    where TCollection : class, IDataTable<Guid> where TInclude : class
+        //{
+        //    await Instance.Database.AddRange(items);
+        //}
 
-        public static async Task<bool> Delete<TCollection, TInclude>(TCollection item)
-            where TCollection : class, IDataTable where TInclude : class
-        {
-            return await Instance.DataBase.Delete(item);
-        }
+        //public static async Task<bool> Delete<TCollection, TInclude>(TCollection item)
+        //    where TCollection : class, IDataTable<Guid> where TInclude : class
+        //{
+        //    return await Instance.Database.Delete(item);
+        //}
 
-        public static async Task<bool> Update<TCollection, TInclude>(TCollection item)
-            where TCollection : class, IDataTable where TInclude : class
-        {
-            return await Instance.DataBase.Update(item);
-        }
+        //public static async Task<bool> Update<TCollection, TInclude>(TCollection item)
+        //    where TCollection : class, IDataTable<Guid> where TInclude : class
+        //{
+        //    return await Instance.Database.Update(item);
+        //}
 
-        public static async Task<IEnumerable<TCollection>> FindBy<TCollection, TInclude>(Query query)
-            where TCollection : class, IDataTable where TInclude : class
-        {
-            return await Instance.DataBase.FindBy<TCollection, TInclude>(query);
-        }
+        ////public static async Task<IEnumerable<TCollection>> FindBy<TCollection, TInclude>(Query query)
+        ////    where TCollection : class, IDataTable<Guid> where TInclude : class
+        ////{
+        ////    return await Instance.Database.FindBy<TCollection, TInclude>(query);
+        ////}
 
-        public static IEnumerable<TCollection> FindBy<TCollection, TInclude>(BsonExpression expression)
-            where TCollection : class, IDataTable where TInclude : class
-        {
-            return Instance.DataBase.FindBy<TCollection, TInclude>(expression);
-        }
+        //public static IEnumerable<TCollection> FindBy<TCollection, TInclude>(Expression expression)
+        //    where TCollection : class, IDataTable<Guid> where TInclude : class
+        //{
+        //    return Instance.Database.FindBy<TCollection, TInclude>(expression);
+        //}
 
-        public static IEnumerable<TCollection> FindBy<TCollection, TInclude>(Expression<Func<TCollection, bool>> expression)
-            where TCollection : class, IDataTable where TInclude : class
-        {
-            return Instance.DataBase.FindBy<TCollection, TInclude>(expression);
-        }
+        //public static IEnumerable<TCollection> FindBy<TCollection, TInclude>(Expression<Func<TCollection, bool>> expression)
+        //    where TCollection : class, IDataTable<Guid> where TInclude : class
+        //{
+        //    return Instance.Database.FindBy<TCollection, TInclude>(expression);
+        //}
 
         #endregion
     }

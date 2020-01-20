@@ -1,74 +1,131 @@
 ﻿using System;
-
-using LiteDB;
+using System.Data.Common;
+using System.Runtime.Serialization;
 
 namespace OilGas.Data.FracFocus
 {
-    public class Ingredients : IDataTable
+    [Serializable]
+    [DataContract]
+    public class RegistryIngredients : IDataTable<Guid>
     {
-        [BsonId(true)]
-        public long Id { get; set; }
+        [DataMember]
+        public Guid Id { get; set; }
 
-        /// <summary>
-        /// Key index for the table
-        /// </summary>
-        public Guid Key { get; set; }
+        [DataMember]
+        public Guid? KeyPurpose { get; set; }
 
-        /// <summary>
-        /// Foreign key linking to the RegistryUploadPurpose table.
-        /// </summary>
-        [BsonRef]
-        public PurposeTable PurposeTable { get; set; }
-
-        /// <summary>
-        /// Name of the chemical or for Trade Secret chemicals the chemical family name.
-        /// </summary>
+        [DataMember]
         public string IngredientName { get; set; }
 
-        /// <summary>
-        ///  The Chemical Abstract Service identification number.
-        /// </summary>
+        [DataMember]
         public string CasNumber { get; set; }
 
-        /// <summary>
-        /// The percent of the ingredient in the Trade Name product in % (Top of the range from MSDS).
-        /// </summary>
-        public string PercentHighAdditive { get; set; }
+        [DataMember]
+        public double? PercentHighAdditive { get; set; }
 
-        /// <summary>
-        /// The amount of the ingredient in the total hydraulic fracturing volume in % by Mass.
-        /// </summary>
-        public string PercentHfJob { get; set; }
+        [DataMember]
+        public double? PercentHfJob { get; set; }
 
-        /// <summary>
-        /// Any comments related to the specific ingredient.
-        /// </summary>
+        [DataMember]
         public string IngredientComment { get; set; }
 
-        public string IngredientMsds { get; set; }
+        [DataMember]
+        public bool IngredientMsds { get; set; }
 
-        public string MassIngredient { get; set; }
+        [DataMember]
+        public double? MassIngredient { get; set; }
 
+        [DataMember]
         public string ClaimantCompany { get; set; }
 
-        public Guid DisclosureKey { get; set; }
+        [DataMember]
+        public Guid KeyDisclosure { get; set; }
 
-        public Ingredients(PurposeTable         purposeTable,
-                           ReadOnlySpan<string> csvData)
+        public RegistryIngredients()
         {
-            PurposeTable = purposeTable;
-            int index = 0;
-
-            Key                 = new Guid(csvData[index++]);
-            IngredientName      = csvData[index++];
-            CasNumber           = csvData[index++];
-            PercentHighAdditive = csvData[index++];
-            PercentHfJob        = csvData[index++];
-            IngredientComment   = csvData[index++];
-            IngredientMsds      = csvData[index++];
-            MassIngredient      = csvData[index++];
-            ClaimantCompany     = csvData[index++];
-            DisclosureKey       = new Guid(csvData[index]);
         }
+
+        private static T CheckAndGetValue<T>(DbDataReader dbReader,
+                                             int          index)
+        {
+            object value = dbReader.GetValue(index);
+
+            if(DBNull.Value == value)
+            {
+                return default;
+            }
+
+            return (T)value;
+        }
+
+        private static T CheckAndGetValue<T>(ReadOnlySpan<string> csvData,
+                                             int                  index)
+        {
+            string value = csvData[index];
+
+            if(string.IsNullOrEmpty(value))
+            {
+                return default;
+            }
+
+            if(typeof(T) == typeof(bool) || typeof(T) == typeof(bool?))
+            {
+                return (T)(object)(value != "False");
+            }
+
+            if(typeof(T) == typeof(double) || typeof(T) == typeof(double?))
+            {
+                return (T)(object)double.Parse(value);
+            }
+
+            if(typeof(T) == typeof(DateTime) || typeof(T) == typeof(DateTime?))
+            {
+                return (T)(object)DateTime.Parse(value);
+            }
+
+            if(typeof(T) == typeof(Guid) || typeof(T) == typeof(Guid?))
+            {
+                return (T)(object)Guid.Parse(value);
+            }
+
+            throw new Exception();
+        }
+
+#nullable enable
+        public RegistryIngredients(DbDataReader dbReader)
+        {
+            int index = 0;
+            Id = dbReader.GetGuid(index++);
+
+            KeyPurpose = CheckAndGetValue<Guid?>(dbReader,
+                                                 index++);
+
+            IngredientName = CheckAndGetValue<string>(dbReader,
+                                                      index++);
+
+            CasNumber = CheckAndGetValue<string>(dbReader,
+                                                 index++);
+
+            PercentHighAdditive = CheckAndGetValue<double?>(dbReader,
+                                                            index++);
+
+            PercentHfJob = CheckAndGetValue<double?>(dbReader,
+                                                     index++);
+
+            IngredientComment = CheckAndGetValue<string?>(dbReader,
+                                                         index++);
+
+            IngredientMsds = CheckAndGetValue<bool>(dbReader,
+                                                    index++);
+
+            MassIngredient = CheckAndGetValue<double>(dbReader,
+                                                      index++);
+
+            ClaimantCompany = CheckAndGetValue<string?>(dbReader,
+                                                       index++);
+
+            KeyDisclosure = dbReader.GetGuid(index);
+        }
+#nullable disable
     }
 }

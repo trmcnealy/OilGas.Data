@@ -1,12 +1,23 @@
-﻿namespace OilGas.Data.RRC.Texas
+﻿using System;
+using System.Runtime.Serialization;
+
+namespace OilGas.Data.RRC.Texas
 {
-    public struct Lease
+    [Serializable]
+    [DataContract]
+    public class Lease
     {
+        [DataMember]
         public string Number { get; set; }
-
+        
+        [DataMember]
         public DistrictCode DistrictCode { get; set; }
-
+        
+        [DataMember]
         public LeaseType LeaseType { get; set; }
+
+        public Lease()
+        {}
 
         public Lease(string       number,
                      DistrictCode districtCode,
