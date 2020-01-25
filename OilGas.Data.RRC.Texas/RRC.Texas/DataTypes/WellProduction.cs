@@ -36,7 +36,7 @@ namespace OilGas.Data.RRC.Texas
 
         public WellProductionDate(string date)
         {
-            string[] parts = date.Split(' ',
+            string[] parts = date.Split(new char[]{' '},
                                         StringSplitOptions.RemoveEmptyEntries);
 
             if(!int.TryParse(parts[0],

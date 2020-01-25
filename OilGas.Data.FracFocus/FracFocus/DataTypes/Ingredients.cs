@@ -91,7 +91,6 @@ namespace OilGas.Data.FracFocus
             throw new Exception();
         }
 
-#nullable enable
         public RegistryIngredients(DbDataReader dbReader)
         {
             int index = 0;
@@ -112,7 +111,7 @@ namespace OilGas.Data.FracFocus
             PercentHfJob = CheckAndGetValue<double?>(dbReader,
                                                      index++);
 
-            IngredientComment = CheckAndGetValue<string?>(dbReader,
+            IngredientComment = CheckAndGetValue<string>(dbReader,
                                                           index++);
 
             IngredientMsds = CheckAndGetValue<bool>(dbReader,
@@ -121,11 +120,10 @@ namespace OilGas.Data.FracFocus
             MassIngredient = CheckAndGetValue<double>(dbReader,
                                                       index++);
 
-            ClaimantCompany = CheckAndGetValue<string?>(dbReader,
+            ClaimantCompany = CheckAndGetValue<string>(dbReader,
                                                         index++);
 
             KeyDisclosure = dbReader.GetGuid(index);
         }
-#nullable disable
     }
 }

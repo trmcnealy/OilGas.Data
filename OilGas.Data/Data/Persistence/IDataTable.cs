@@ -2,6 +2,6 @@
 {
     public interface IDataTable<T>
     {
-        public T Id { get; set; }
+        T Id { get; set; }
     }
 }

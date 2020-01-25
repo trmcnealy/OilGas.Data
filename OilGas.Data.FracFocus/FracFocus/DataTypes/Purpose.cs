@@ -101,7 +101,6 @@ namespace OilGas.Data.FracFocus
             throw new Exception();
         }
 
-#nullable enable
         public RegistryPurpose(DbDataReader dbReader)
         {
             int index = 0;
@@ -110,10 +109,10 @@ namespace OilGas.Data.FracFocus
 
             KeyRegistry = dbReader.GetGuid(index++);
 
-            TradeName = CheckAndGetValue<string?>(dbReader,
+            TradeName = CheckAndGetValue<string>(dbReader,
                                                   index++);
 
-            Supplier = CheckAndGetValue<string?>(dbReader,
+            Supplier = CheckAndGetValue<string>(dbReader,
                                                  index++);
 
             Purpose = CheckAndGetValue<string>(dbReader,
@@ -131,6 +130,5 @@ namespace OilGas.Data.FracFocus
             IngredientMsds = CheckAndGetValue<double?>(dbReader,
                                                        index);
         }
-#nullable disable
     }
 }

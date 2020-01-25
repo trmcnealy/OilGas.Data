@@ -1,9 +1,6 @@
 ﻿using System;
 using System.Data.Common;
-using System.Diagnostics;
 using System.Runtime.Serialization;
-using System.Runtime.Serialization.Formatters.Binary;
-using System.Threading;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
@@ -233,7 +230,6 @@ namespace OilGas.Data.FracFocus
             throw new Exception();
         }
 
-#nullable enable
         public Registry(ReadOnlySpan<string> csvData)
         {
             int index = 0;
@@ -247,10 +243,10 @@ namespace OilGas.Data.FracFocus
 
             ApiNumber = csvData[index++];
 
-            StateNumber = CheckAndGetValue<string?>(csvData,
+            StateNumber = CheckAndGetValue<string>(csvData,
                                                     index++);
 
-            CountyNumber = CheckAndGetValue<string?>(csvData,
+            CountyNumber = CheckAndGetValue<string>(csvData,
                                                      index++);
 
             OperatorName = csvData[index++];
@@ -268,10 +264,10 @@ namespace OilGas.Data.FracFocus
             TotalBaseNonWaterVolume = CheckAndGetValue<double?>(csvData,
                                                                 index++);
 
-            StateName = CheckAndGetValue<string?>(csvData,
+            StateName = CheckAndGetValue<string>(csvData,
                                                   index++);
 
-            CountyName = CheckAndGetValue<string?>(csvData,
+            CountyName = CheckAndGetValue<string>(csvData,
                                                    index++);
 
             FfVersion = CheckAndGetValue<float?>(csvData,
@@ -282,7 +278,7 @@ namespace OilGas.Data.FracFocus
 
             IndianWell = csvData[index++] != "False";
 
-            Source = CheckAndGetValue<string?>(csvData,
+            Source = CheckAndGetValue<string>(csvData,
                                                index++);
 
             DtMod = CheckAndGetValue<DateTime>(csvData,
@@ -302,10 +298,10 @@ namespace OilGas.Data.FracFocus
 
             ApiNumber = dbReader.GetString(index++);
 
-            StateNumber = CheckAndGetValue<string?>(dbReader,
+            StateNumber = CheckAndGetValue<string>(dbReader,
                                                     index++);
 
-            CountyNumber = CheckAndGetValue<string?>(dbReader,
+            CountyNumber = CheckAndGetValue<string>(dbReader,
                                                      index++);
 
             OperatorName = dbReader.GetString(index++);
@@ -323,10 +319,10 @@ namespace OilGas.Data.FracFocus
             TotalBaseNonWaterVolume = CheckAndGetValue<double?>(dbReader,
                                                                 index++);
 
-            StateName = CheckAndGetValue<string?>(dbReader,
+            StateName = CheckAndGetValue<string>(dbReader,
                                                   index++);
 
-            CountyName = CheckAndGetValue<string?>(dbReader,
+            CountyName = CheckAndGetValue<string>(dbReader,
                                                    index++);
 
             FfVersion = CheckAndGetValue<float?>(dbReader,
@@ -337,13 +333,12 @@ namespace OilGas.Data.FracFocus
 
             IndianWell = dbReader.GetBoolean(index++);
 
-            Source = CheckAndGetValue<string?>(dbReader,
+            Source = CheckAndGetValue<string>(dbReader,
                                                index++);
 
             DtMod = CheckAndGetValue<DateTime>(dbReader,
                                                index);
         }
-#nullable disable
 
         public override string ToString()
         {

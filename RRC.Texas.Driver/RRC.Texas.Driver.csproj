@@ -6,7 +6,7 @@
   </PropertyGroup>
   
   <ItemGroup>
-    <PackageReference Include="OilGas.Data" Version="1.0.9" />
+    <PackageReference Include="OilGas.Data" Version="1.0.12" />
     <PackageReference Include="System.Data.SqlClient" Version="4.8.0" />
   </ItemGroup>
 
