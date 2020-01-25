@@ -3,7 +3,7 @@
 <package>
   <metadata>
     <id>OilGas.Data</id>
-    <version>1.0.7</version>
+    <version>1.0.8</version>
     <authors>Timothy R. McNealy</authors>
     <owners>Timothy R. McNealy</owners>
     <license type="expression">MIT</license>
@@ -22,7 +22,7 @@
         <dependency id="Microsoft.Extensions.Caching.Memory" version="3.1.1"/>
         <dependency id="SQLitePCLRaw.bundle_winsqlite3" version="2.0.2"/>
         <dependency id="System.Data.Common" version="4.3.0" />
-        <dependency id="VegaLite.NET" version="1.0.4"/>
+        <dependency id="VegaLite.NET" version="1.0.8"/>
       </group>
     </dependencies>
   </metadata>

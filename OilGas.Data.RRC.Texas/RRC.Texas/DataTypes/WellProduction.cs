@@ -409,10 +409,10 @@ namespace OilGas.Data.RRC.Texas
                 });
             }
 
-            VegaLiteSpecification specification = new VegaLiteSpecification
+            Specification specification = new Specification
             {
                 //Description = "Stock prices of 5 Tech Companies over Time.",
-                Data = new UrlData()
+                Data = new DataSource()
                 {
                     Values = dataset
                 },
