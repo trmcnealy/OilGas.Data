@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace OilGas.Data
+﻿namespace OilGas.Data
 {
     public interface IDataTable<T>
     {

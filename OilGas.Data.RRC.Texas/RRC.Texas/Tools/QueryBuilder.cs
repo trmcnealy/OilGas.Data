@@ -370,7 +370,7 @@ namespace OilGas.Data.RRC.Texas
                     "searchArgs.districtCodeArg", districtCode.ToString()
                 },
                 {
-                    "searchArgs.oilOrGasArg", (leaseType == LeaseType.Oil) ? "O" : "G"
+                    "searchArgs.oilOrGasArg", leaseType == LeaseType.Oil ? "O" : "G"
                 },
                 {
                     "searchArgs.startMonthArg", "01"

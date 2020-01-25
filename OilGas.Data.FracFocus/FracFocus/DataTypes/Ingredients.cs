@@ -113,7 +113,7 @@ namespace OilGas.Data.FracFocus
                                                      index++);
 
             IngredientComment = CheckAndGetValue<string?>(dbReader,
-                                                         index++);
+                                                          index++);
 
             IngredientMsds = CheckAndGetValue<bool>(dbReader,
                                                     index++);
@@ -122,7 +122,7 @@ namespace OilGas.Data.FracFocus
                                                       index++);
 
             ClaimantCompany = CheckAndGetValue<string?>(dbReader,
-                                                       index++);
+                                                        index++);
 
             KeyDisclosure = dbReader.GetGuid(index);
         }

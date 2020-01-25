@@ -283,7 +283,7 @@ namespace OilGas.Data
                 return true;
             }
 
-            if(obj.GetType() != this.GetType())
+            if(obj.GetType() != GetType())
             {
                 return false;
             }

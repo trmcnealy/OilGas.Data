@@ -17,7 +17,9 @@ namespace OilGas.Data.FracFocus
         /// <summary>
         /// Key index for the table
         /// </summary>
-        [DataMember, Required, Key]
+        [DataMember]
+        [Required]
+        [Key]
         public Guid Id { get; set; }
 
         /// <summary>
@@ -199,7 +201,7 @@ namespace OilGas.Data.FracFocus
         }
 
         private static T CheckAndGetValue<T>(ReadOnlySpan<string> csvData,
-                                             int index)
+                                             int                  index)
         {
             string value = csvData[index];
 
@@ -230,7 +232,7 @@ namespace OilGas.Data.FracFocus
 
             throw new Exception();
         }
-        
+
 #nullable enable
         public Registry(ReadOnlySpan<string> csvData)
         {
@@ -345,7 +347,8 @@ namespace OilGas.Data.FracFocus
 
         public override string ToString()
         {
-            return $"{Id} {JobStartDate} {JobEndDate} {ApiNumber} {StateNumber} {CountyNumber} {OperatorName} {WellName} {Latitude} {Longitude} {Projection} {Tvd} {TotalBaseWaterVolume} {TotalBaseNonWaterVolume} {StateName} {CountyName} {FfVersion} {FederalWell} {IndianWell} {Source} {DtMod}";
+            return
+                $"{Id} {JobStartDate} {JobEndDate} {ApiNumber} {StateNumber} {CountyNumber} {OperatorName} {WellName} {Latitude} {Longitude} {Projection} {Tvd} {TotalBaseWaterVolume} {TotalBaseNonWaterVolume} {StateName} {CountyName} {FfVersion} {FederalWell} {IndianWell} {Source} {DtMod}";
         }
     }
 }

@@ -1,7 +1,6 @@
 namespace AngleSharp.Dom
 {
     using System;
-    using System.IO;
 
     /// <summary>
     /// The base class for all characterdata implementations.

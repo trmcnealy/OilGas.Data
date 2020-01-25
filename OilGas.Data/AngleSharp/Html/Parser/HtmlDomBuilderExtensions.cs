@@ -147,14 +147,22 @@ namespace AngleSharp.Html.Parser
                 }
             }
         }
-
+        
+#if NETCOREAPP
         [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+#else
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+#endif
         public static void AddScopeMarker(this List<Element> formatting)
         {
             formatting.Add(null);
         }
 
+#if NETCOREAPP
         [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+#else
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+#endif
         public static void AddComment(this Element parent, HtmlToken token)
         {
             parent.AddNode(token.IsProcessingInstruction
@@ -162,7 +170,11 @@ namespace AngleSharp.Html.Parser
                 : new Comment(parent.Owner, token.Data));
         }
 
+#if NETCOREAPP
         [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+#else
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+#endif
         public static void AddComment(this Document parent, HtmlToken token)
         {
             parent.AddNode(token.IsProcessingInstruction

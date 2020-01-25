@@ -128,7 +128,11 @@ namespace OilGas.Data.RRC.Texas
             MonthlyGas     = monthlyGas;
         }
 
+#if NETCOREAPP
         [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+#else
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+#endif
         public object[] ToArray()
         {
             object[] array = new object[]
@@ -139,7 +143,11 @@ namespace OilGas.Data.RRC.Texas
             return array;
         }
 
+#if NETCOREAPP
         [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+#else
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+#endif
         public IEnumerable<object> ToEnumerable()
         {
             yield return Id;
@@ -155,8 +163,8 @@ namespace OilGas.Data.RRC.Texas
     public sealed class WellProduction : IDataTable<long>
     {
         [DataMember]
-        [Required]
-        [Key]
+        //[Required]
+        //[Key]
         public long Id { get; set; }
 
         [DataMember]

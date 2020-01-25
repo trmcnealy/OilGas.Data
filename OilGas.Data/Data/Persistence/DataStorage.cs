@@ -10,7 +10,11 @@ namespace OilGas.Data
 
         //internal static readonly string HomeDatabasePath = GetDbPath(HomePath);
 
+#if NETCOREAPP
         [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+#else
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+#endif
         internal static bool IsValidPath(string path)
         {
             if(string.IsNullOrEmpty(path) || !Directory.Exists(path))
@@ -21,7 +25,11 @@ namespace OilGas.Data
             return true;
         }
 
+#if NETCOREAPP
         [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+#else
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+#endif
         internal static string GetHomePath()
         {
             string homePath = Environment.GetEnvironmentVariable("HOME");
@@ -63,7 +71,11 @@ namespace OilGas.Data
             return homePath;
         }
 
+#if NETCOREAPP
         [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+#else
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+#endif
         internal static string GetDbPath(string homePath,
                                          string fileName)
         {
@@ -105,7 +117,7 @@ namespace OilGas.Data
             FullPath = Path.Combine(directoryPath,
                                     fileName);
 
-            if (!File.Exists(FullPath))
+            if(!File.Exists(FullPath))
             {
                 File.Create(FullPath).Close();
             }

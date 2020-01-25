@@ -17,6 +17,7 @@ using OilGas.Data.FracFocus;
 using VegaLite;
 
 using System.Data.SqlClient;
+using System.Numerics;
 using System.Runtime.Serialization.Formatters.Binary;
 using System.Threading.Tasks;
 
@@ -252,14 +253,14 @@ namespace RRC.Texas.Driver
         //private static void Test4()
         //{
         //    string api = "42-285-33615";
-
+        //
         //    WellProduction wellProduction = RrcTexasDataAdapter.GetProductionByApi(api).Result;
-
+        //
         //    DataFrame dataFrame = wellProduction.ToDataFrame();
-
+        //
         //    PrimitiveDataFrameColumn<int>   month      = (PrimitiveDataFrameColumn<int>)dataFrame["Month"];
         //    PrimitiveDataFrameColumn<float> monthlyOil = (PrimitiveDataFrameColumn<float>)dataFrame["MonthlyOil"];
-
+        //
         //    string spec_json = "{\n"                                                                     +
         //                       "    \"$schema\": \"https://vega.github.io/schema/vega-lite/v4.json\",\n" +
         //                       "    \"description\": \"Stock prices of 5 Tech Companies over Time.\",\n" +
@@ -290,11 +291,11 @@ namespace RRC.Texas.Driver
         //                       "        }\n"                                                             +
         //                       "    }\n"                                                                 +
         //                       "}";
-
+        //
         //    //var vegaLiteSpecification = VegaLiteSpecification.FromJson(spec_json);
-
+        //
         //    //vegaLiteSpecification.Data.Values = rows;
-
+        //
         //    VegaLiteSpecification vegaLiteSpecification = new VegaLiteSpecification
         //    {
         //        Description = "Stock prices of 5 Tech Companies over Time.",
@@ -330,12 +331,12 @@ namespace RRC.Texas.Driver
         //            }
         //        }
         //    };
-
+        //
         //    Chart chart = new Chart("Stock prices of 5 Tech Companies over Time.",
         //                            vegaLiteSpecification,
         //                            500,
         //                            500);
-
+        //
         //    chart.ShowInBrowser();
         //}
 
@@ -348,12 +349,14 @@ namespace RRC.Texas.Driver
             WellProduction wellProduction = RrcTexasDataAdapter.GetProductionByApi(api,
                                                                                    true).Result;
 
+            RrcTexasDataAdapter.Commit();
+
             Chart chart = wellProduction.BuildChart();
 
             chart.ShowInBrowser();
 
-            Console.WriteLine(chart.ToString());
-            Console.ReadKey();
+            //Console.WriteLine(chart.ToString());
+            //Console.ReadKey();
         }
     }
 }

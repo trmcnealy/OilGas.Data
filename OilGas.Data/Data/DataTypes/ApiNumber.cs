@@ -1,11 +1,8 @@
 ﻿using System;
-using System.Data;
-using System.Diagnostics.CodeAnalysis;
+using System.Collections.Generic;
 using System.Runtime.CompilerServices;
 using System.Runtime.Serialization;
 using System.Runtime.Versioning;
-
-using Microsoft.EntityFrameworkCore.Storage;
 
 namespace OilGas.Data
 {
@@ -18,29 +15,47 @@ namespace OilGas.Data
 
         [IgnoreDataMember]
         public string StateCode { get { return $"{_stateCode:D2}"; } }
-        
+
         private readonly uint _countyCode;
 
         [IgnoreDataMember]
         public string CountyCode { get { return $"{_countyCode:D3}"; } }
-        
+
         private readonly uint _uniqueWellIdentifier;
 
         [IgnoreDataMember]
         public string UniqueWellIdentifier { get { return $"{_uniqueWellIdentifier:D5}"; } }
-        
+
         private readonly byte _directionalSidetrackCode;
 
         [IgnoreDataMember]
         public string DirectionalSidetrackCode { get { return $"{_directionalSidetrackCode:D2}"; } }
-        
+
         private readonly byte _eventSequenceCode;
 
         [IgnoreDataMember]
         public string EventSequenceCode { get { return $"{_eventSequenceCode:D2}"; } }
-        
+
         [IgnoreDataMember]
         public string Api { get { return StateCode + CountyCode + UniqueWellIdentifier + DirectionalSidetrackCode + EventSequenceCode; } }
+
+        public ApiNumber(long apiNumber)
+        {
+            _stateCode                = (byte)(apiNumber / 1000000000000);
+            _countyCode               = (uint)(apiNumber / 1000000000) % 1000;
+            _uniqueWellIdentifier     = (uint)(apiNumber / 10000)      % 100000;
+            _directionalSidetrackCode = (byte)(apiNumber / 100 % 100);
+            _eventSequenceCode        = (byte)(apiNumber       % 100);
+        }
+
+        public ApiNumber(ulong apiNumber)
+        {
+            _stateCode                = (byte)(apiNumber / 1000000000000);
+            _countyCode               = (uint)(apiNumber / 1000000000) % 1000;
+            _uniqueWellIdentifier     = (uint)(apiNumber / 10000)      % 100000;
+            _directionalSidetrackCode = (byte)(apiNumber / 100 % 100);
+            _eventSequenceCode        = (byte)(apiNumber       % 100);
+        }
 
         public ApiNumber(string apiNumber)
         {
@@ -119,8 +134,17 @@ namespace OilGas.Data
         {
             return ToUid(apiNumber);
         }
-        
+
+        public static explicit operator long(ApiNumber apiNumber)
+        {
+            return (long)ToUid(apiNumber);
+        }
+
+#if NETCOREAPP
         [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+#else
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+#endif
         public static ulong ToUid(ApiNumber apiNumber)
         {
             ulong dec = (ulong)apiNumber._stateCode * 1000000000000;
@@ -131,19 +155,27 @@ namespace OilGas.Data
 
             return dec;
         }
-        
+
         public override string ToString()
         {
             return StateCode + "-" + CountyCode + "-" + UniqueWellIdentifier + "-" + DirectionalSidetrackCode + "-" + EventSequenceCode;
         }
-        
+
+#if NETCOREAPP
         [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+#else
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+#endif
         public override bool Equals(object obj)
         {
             return obj is ApiNumber other && Equals(other);
         }
-        
+
+#if NETCOREAPP
         [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+#else
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+#endif
         public bool Equals(ApiNumber other)
         {
             return _stateCode                == other._stateCode                &&
@@ -152,8 +184,12 @@ namespace OilGas.Data
                    _directionalSidetrackCode == other._directionalSidetrackCode &&
                    _eventSequenceCode        == other._eventSequenceCode;
         }
-        
+
+#if NETCOREAPP
         [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+#else
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+#endif
         public bool Equals(string otherString)
         {
             ApiNumber other = otherString;
@@ -178,48 +214,71 @@ namespace OilGas.Data
         {
             return (int)GetHashCode64();
         }
-        
+
+#if NETCOREAPP
         [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+#else
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+#endif
         public static bool operator ==(ApiNumber left,
                                        ApiNumber right)
         {
             return left.Equals(right);
         }
-        
+
+#if NETCOREAPP
         [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
-        public static bool operator ==(string left,
+#else
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+#endif
+        public static bool operator ==(string    left,
                                        ApiNumber right)
         {
             return right.Equals(left);
         }
-        
+
+#if NETCOREAPP
         [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+#else
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+#endif
         public static bool operator ==(ApiNumber left,
-                                       string right)
+                                       string    right)
         {
             return left.Equals(right);
         }
-        
+
+#if NETCOREAPP
         [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+#else
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+#endif
         public static bool operator !=(ApiNumber left,
                                        ApiNumber right)
         {
             return !left.Equals(right);
         }
-        
+
+#if NETCOREAPP
         [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
-        public static bool operator !=(string left,
+#else
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+#endif
+        public static bool operator !=(string    left,
                                        ApiNumber right)
         {
             return !right.Equals(left);
         }
-        
+
+#if NETCOREAPP
         [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+#else
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+#endif
         public static bool operator !=(ApiNumber left,
-                                       string right)
+                                       string    right)
         {
             return !left.Equals(right);
         }
     }
-
 }

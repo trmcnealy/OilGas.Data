@@ -47,7 +47,8 @@ namespace OilGas.Data.RRC.Texas
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            modelBuilder.Entity<WellProduction>().HasIndex(b => b.Id).IsUnique();
+            modelBuilder.Entity<WellProduction>().HasIndex(b => b.Api).IsUnique();
+
             modelBuilder.Entity<WellProductionRecord>().HasIndex(b => b.Id).IsUnique();
         }
     }
@@ -56,7 +57,11 @@ namespace OilGas.Data.RRC.Texas
     {
         private static readonly RrcTexasDataAdapter instance = new RrcTexasDataAdapter();
 
+#if NETCOREAPP
         [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+#else
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+#endif
         private static RrcTexasDataAdapter GetInstance()
         {
             return instance;
@@ -64,17 +69,29 @@ namespace OilGas.Data.RRC.Texas
 
         internal static RrcTexasDataAdapter Instance
         {
-            [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+#if NETCOREAPP
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+#else
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
+#endif
             get { return GetInstance(); }
         }
 
+#if NETCOREAPP
         [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+#else
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+#endif
         static RrcTexasDataAdapter()
         {
             AppDomain.CurrentDomain.ProcessExit += RrcTexasDataAdapter_Dtor;
         }
 
+#if NETCOREAPP
         [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+#else
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+#endif
         private static void RrcTexasDataAdapter_Dtor(object    sender,
                                                      EventArgs e)
         {
@@ -83,25 +100,46 @@ namespace OilGas.Data.RRC.Texas
 
         internal RrcTexasContext DbContext
         {
-            [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+#if NETCOREAPP
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+#else
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
+#endif
             get;
-            [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+#if NETCOREAPP
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+#else
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
+#endif
             private set;
         }
 
+#if NETCOREAPP
         [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+#else
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+#endif
         private RrcTexasDataAdapter()
         {
             DbContext = new RrcTexasContext();
         }
 
+#if NETCOREAPP
         [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+#else
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+#endif
         public void Dispose()
         {
+            DbContext.SaveChanges();
             DbContext.Dispose();
         }
 
+#if NETCOREAPP
         [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+#else
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+#endif
         public static void Initialize(DataStorage dbPath = null)
         {
             Instance.DbContext.Database.EnsureCreated();
@@ -123,7 +161,11 @@ namespace OilGas.Data.RRC.Texas
             }
         }
 
+#if NETCOREAPP
         [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+#else
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+#endif
         public static async Task<bool> Add(WellProduction wellProduction)
         {
             try
@@ -154,12 +196,17 @@ namespace OilGas.Data.RRC.Texas
             return false;
         }
 
+#if NETCOREAPP
         [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+#else
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+#endif
         public static async Task<bool> Add(WellProductionRecord wellProductionRecord)
         {
             try
             {
-                WellProductionRecord record = await Instance.DbContext.WellProductionRecords.FirstOrDefaultAsync(x => x.WellProduction == wellProductionRecord.WellProduction && x.Month == wellProductionRecord.Month);
+                WellProductionRecord record =
+                    await Instance.DbContext.WellProductionRecords.FirstOrDefaultAsync(x => x.WellProduction == wellProductionRecord.WellProduction && x.Month == wellProductionRecord.Month);
 
                 EntityEntry<WellProductionRecord> entry;
 
@@ -185,11 +232,15 @@ namespace OilGas.Data.RRC.Texas
             return false;
         }
 
+#if NETCOREAPP
         [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+#else
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+#endif
         public static async Task<bool> AddRange(IEnumerable<WellProductionRecord> wellProductionRecords)
         {
             bool result = true;
-            
+
             foreach(WellProductionRecord record in wellProductionRecords)
             {
                 result &= await Add(record);
@@ -198,13 +249,21 @@ namespace OilGas.Data.RRC.Texas
             return result;
         }
 
+#if NETCOREAPP
         [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+#else
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+#endif
         public static async Task<int> Commit()
         {
             return await Instance.DbContext.SaveChangesAsync();
         }
 
+#if NETCOREAPP
         [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+#else
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+#endif
         public static async Task<IEnumerable<Lease>> GetLeaseByApi(ApiNumber api)
         {
             IHtmlDocument htmlDoc = await QueryBuilder.WellboreQueryByApi(api);
@@ -224,7 +283,11 @@ namespace OilGas.Data.RRC.Texas
             return leases;
         }
 
+#if NETCOREAPP
         [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+#else
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+#endif
         public static async Task<WellProduction> GetProductionByApi(ApiNumber api,
                                                                     bool      persistentData = true)
         {
@@ -232,7 +295,7 @@ namespace OilGas.Data.RRC.Texas
             {
                 try
                 {
-                    WellProduction records = await Instance.DbContext.WellProductions.Include(x => x.Records).FirstOrDefaultAsync(x => x.Api.StartsWith(api.Api.Substring(0, 10)));
+                    WellProduction records = await Instance.DbContext.WellProductions.Include(x => x.Records).FirstOrDefaultAsync(x => x.Api == api.ToString());
 
                     if(records != null)
                     {

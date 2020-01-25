@@ -1,7 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel;
-using System.Numerics;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 
@@ -318,7 +316,11 @@ namespace OilGas.Data
                                   32U);
         }
 
+#if NETCOREAPP
         [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+#else
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+#endif
         private static void Initialize(out ulong v1,
                                        out ulong v2,
                                        out ulong v3,
@@ -330,38 +332,68 @@ namespace OilGas.Data
             v4 = s_seed - 2654435761U;
         }
 
+#if NETCOREAPP
         [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+#else
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+#endif
+        public static uint RotateLeft(uint value,
+                                      int  offset) =>
+            (value << offset) | (value >> (32 - offset));
+
+#if NETCOREAPP
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+#else
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+#endif
+        public static ulong RotateLeft(ulong value,
+                                       int   offset) =>
+            (value << offset) | (value >> (64 - offset));
+
+#if NETCOREAPP
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+#else
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+#endif
         private static ulong Round(ulong hash,
                                    ulong input)
         {
-            return BitOperations.RotateLeft(hash + input * 2246822519U,
-                                            13) *
+            return RotateLeft(hash + input * 2246822519U,
+                              13) *
                    2654435761U;
         }
 
+#if NETCOREAPP
         [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+#else
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+#endif
         private static ulong QueueRound(ulong hash,
                                         ulong queuedValue)
         {
-            return BitOperations.RotateLeft(hash + queuedValue * 3266489917U,
-                                            17) *
+            return RotateLeft(hash + queuedValue * 3266489917U,
+                              17) *
                    668265263U;
         }
 
+#if NETCOREAPP
         [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+#else
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+#endif
         private static ulong MixState(ulong v1,
                                       ulong v2,
                                       ulong v3,
                                       ulong v4)
         {
-            return BitOperations.RotateLeft(v1,
-                                            1) +
-                   BitOperations.RotateLeft(v2,
-                                            7) +
-                   BitOperations.RotateLeft(v3,
-                                            12) +
-                   BitOperations.RotateLeft(v4,
-                                            18);
+            return RotateLeft(v1,
+                              1) +
+                   RotateLeft(v2,
+                              7) +
+                   RotateLeft(v3,
+                              12) +
+                   RotateLeft(v4,
+                              18);
         }
 
         private static ulong MixEmptyState()
@@ -369,7 +401,11 @@ namespace OilGas.Data
             return s_seed + 374761393U;
         }
 
+#if NETCOREAPP
         [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+#else
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+#endif
         private static ulong MixFinal(ulong hash)
         {
             hash ^= hash >> 15;

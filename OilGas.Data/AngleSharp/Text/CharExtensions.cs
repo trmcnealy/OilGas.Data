@@ -53,7 +53,11 @@ namespace AngleSharp.Text
         /// <param name="lower">The lower bound of the range.</param>
         /// <param name="upper">The upper bound of the range.</param>
         /// <returns>The result of the test.</returns>
+#if NETCOREAPP
         [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+#else
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+#endif
         public static Boolean IsInRange(this Char c, Int32 lower, Int32 upper)
         {
             return c >= lower && c <= upper;
@@ -64,7 +68,12 @@ namespace AngleSharp.Text
         /// </summary>
         /// <param name="c">The character to examine.</param>
         /// <returns>The result of the test.</returns>
+#if NETCOREAPP
         [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+#else
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+#endif
+
         public static Boolean IsNormalQueryCharacter(this Char c)
         {
             return c.IsInRange(0x21, 0x7e) && c != Symbols.DoubleQuote &&
@@ -77,7 +86,12 @@ namespace AngleSharp.Text
         /// </summary>
         /// <param name="c">The character to examine.</param>
         /// <returns>The result of the test.</returns>
+#if NETCOREAPP
         [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+#else
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+#endif
+
         public static Boolean IsNormalPathCharacter(this Char c)
         {
             return c.IsInRange(0x20, 0x7e) && c != Symbols.DoubleQuote &&
@@ -93,7 +107,12 @@ namespace AngleSharp.Text
         /// </summary>
         /// <param name="c">The character to examine.</param>
         /// <returns>The result of the test.</returns>
+#if NETCOREAPP
         [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+#else
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+#endif
+
         public static Boolean IsUppercaseAscii(this Char c)
         {
             return c >= 0x41 && c <= 0x5a;
@@ -106,7 +125,12 @@ namespace AngleSharp.Text
         /// </summary>
         /// <param name="c">The character to examine.</param>
         /// <returns>The result of the test.</returns>
+#if NETCOREAPP
         [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+#else
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+#endif
+
         public static Boolean IsLowercaseAscii(this Char c)
         {
             return c >= 0x61 && c <= 0x7a;
@@ -119,7 +143,12 @@ namespace AngleSharp.Text
         /// </summary>
         /// <param name="c">The character to examine.</param>
         /// <returns>The result of the test.</returns>
+#if NETCOREAPP
         [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+#else
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+#endif
+
         public static Boolean IsAlphanumericAscii(this Char c)
         {
             return c.IsDigit() || c.IsUppercaseAscii() || c.IsLowercaseAscii();
@@ -132,7 +161,12 @@ namespace AngleSharp.Text
         /// </summary>
         /// <param name="c">The character to examine.</param>
         /// <returns>The result of the test.</returns>
+#if NETCOREAPP
         [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+#else
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+#endif
+
         public static Boolean IsHex(this Char c)
         {
             return c.IsDigit() || (c >= 0x41 && c <= 0x46) || (c >= 0x61 && c <= 0x66);
@@ -143,7 +177,12 @@ namespace AngleSharp.Text
         /// </summary>
         /// <param name="c">The character to examine.</param>
         /// <returns>The result of the test.</returns>
+#if NETCOREAPP
         [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+#else
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+#endif
+
         public static Boolean IsNonAscii(this Char c)
         {
             return c != Symbols.EndOfFile && c >= 0x80;
@@ -155,7 +194,12 @@ namespace AngleSharp.Text
         /// </summary>
         /// <param name="c">The character to examine.</param>
         /// <returns>The result of the test.</returns>
+#if NETCOREAPP
         [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+#else
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+#endif
+
         public static Boolean IsNonPrintable(this Char c)
         {
             return (c >= 0x0 && c <= 0x8) || (c >= 0xe && c <= 0x1f) || (c >= 0x7f && c <= 0x9f);
@@ -166,7 +210,12 @@ namespace AngleSharp.Text
         /// </summary>
         /// <param name="c">The character to examine.</param>
         /// <returns>The result of the test.</returns>
+#if NETCOREAPP
         [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+#else
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+#endif
+
         public static Boolean IsLetter(this Char c)
         {
             return IsUppercaseAscii(c) || IsLowercaseAscii(c);
@@ -177,7 +226,12 @@ namespace AngleSharp.Text
         /// </summary>
         /// <param name="c">The character to examine.</param>
         /// <returns>The result of the test.</returns>
+#if NETCOREAPP
         [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+#else
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+#endif
+
         public static Boolean IsName(this Char c)
         {
             return c.IsNonAscii() || c.IsLetter() || c == Symbols.Underscore || c == Symbols.Minus || c.IsDigit();
@@ -189,7 +243,12 @@ namespace AngleSharp.Text
         /// </summary>
         /// <param name="c">The character to examine.</param>
         /// <returns>The result of the test.</returns>
+#if NETCOREAPP
         [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+#else
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+#endif
+
         public static Boolean IsNameStart(this Char c)
         {
             return c.IsNonAscii() || c.IsUppercaseAscii() || c.IsLowercaseAscii() || c == Symbols.Underscore;
@@ -202,7 +261,12 @@ namespace AngleSharp.Text
         /// </summary>
         /// <param name="c">The character to examine.</param>
         /// <returns>The result of the test.</returns>
+#if NETCOREAPP
         [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+#else
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+#endif
+
         public static Boolean IsLineBreak(this Char c)
         {
             return c == Symbols.LineFeed || c == Symbols.CarriageReturn;
@@ -215,7 +279,12 @@ namespace AngleSharp.Text
         /// </summary>
         /// <param name="c">The character to examine.</param>
         /// <returns>The result of the test.</returns>
+#if NETCOREAPP
         [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+#else
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+#endif
+
         public static Boolean IsSpaceCharacter(this Char c)
         {
             return c == Symbols.Space || c == Symbols.Tab || c == Symbols.LineFeed || c == Symbols.CarriageReturn || c == Symbols.FormFeed;
@@ -228,7 +297,12 @@ namespace AngleSharp.Text
         /// </summary>
         /// <param name="c">The character to examine.</param>
         /// <returns>The result of the test.</returns>
+#if NETCOREAPP
         [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+#else
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+#endif
+
         public static Boolean IsWhiteSpaceCharacter(this Char c)
         {
             return c.IsInRange(0x0009, 0x000d) || c == 0x0020 || c == 0x0085 || c == 0x00a0 ||
@@ -243,7 +317,12 @@ namespace AngleSharp.Text
         /// </summary>
         /// <param name="c">The character to examine.</param>
         /// <returns>The result of the test.</returns>
+#if NETCOREAPP
         [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+#else
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+#endif
+
         public static Boolean IsDigit(this Char c)
         {
             return c >= 0x30 && c <= 0x39;
@@ -275,7 +354,12 @@ namespace AngleSharp.Text
         /// </summary>
         /// <param name="c">The character to examine.</param>
         /// <returns>The result of the test.</returns>
+#if NETCOREAPP
         [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+#else
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+#endif
+
         public static Boolean IsInvalid(this Int32 c)
         {
             return c == 0 || c > Symbols.MaximumCodepoint || (c > 0xD800 && c < 0xDFFF);
@@ -288,7 +372,12 @@ namespace AngleSharp.Text
         /// <param name="a">The first option.</param>
         /// <param name="b">The second option.</param>
         /// <returns>The result of the test.</returns>
+#if NETCOREAPP
         [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+#else
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+#endif
+
         public static Boolean IsOneOf(this Char c, Char a, Char b)
         {
             return a == c || b == c;
@@ -302,7 +391,12 @@ namespace AngleSharp.Text
         /// <param name="o2">The second option.</param>
         /// <param name="o3">The third option.</param>
         /// <returns>The result of the test.</returns>
+#if NETCOREAPP
         [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+#else
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+#endif
+
         public static Boolean IsOneOf(this Char c, Char o1, Char o2, Char o3)
         {
             return c == o1 || c == o2 || c == o3;
@@ -317,7 +411,12 @@ namespace AngleSharp.Text
         /// <param name="o3">The third option.</param>
         /// <param name="o4">The fourth option.</param>
         /// <returns>The result of the test.</returns>
+#if NETCOREAPP
         [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+#else
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+#endif
+
         public static Boolean IsOneOf(this Char c, Char o1, Char o2, Char o3, Char o4)
         {
             return c == o1 || c == o2 || c == o3 || c == o4;

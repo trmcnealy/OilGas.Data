@@ -58,7 +58,11 @@ namespace OilGas.Data.FracFocus
     {
         private static readonly FracFocusDataAdapter instance = new FracFocusDataAdapter();
 
+#if NETCOREAPP
         [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+#else
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+#endif
         private static FracFocusDataAdapter GetInstance()
         {
             return instance;
@@ -66,17 +70,29 @@ namespace OilGas.Data.FracFocus
 
         internal static FracFocusDataAdapter Instance
         {
-            [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+#if NETCOREAPP
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+#else
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
+#endif
             get { return GetInstance(); }
         }
 
+#if NETCOREAPP
         [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+#else
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+#endif
         static FracFocusDataAdapter()
         {
             AppDomain.CurrentDomain.ProcessExit += RrcTexasDataAdapter_Dtor;
         }
 
+#if NETCOREAPP
         [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+#else
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+#endif
         private static void RrcTexasDataAdapter_Dtor(object    sender,
                                                      EventArgs e)
         {
@@ -85,25 +101,45 @@ namespace OilGas.Data.FracFocus
 
         internal FracFocusContext DbContext
         {
-            [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+#if NETCOREAPP
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+#else
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
+#endif
             get;
-            [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+#if NETCOREAPP
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+#else
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
+#endif
             private set;
         }
 
+#if NETCOREAPP
         [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+#else
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+#endif
         private FracFocusDataAdapter()
         {
             DbContext = new FracFocusContext();
         }
 
+#if NETCOREAPP
         [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+#else
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+#endif
         public void Dispose()
         {
             DbContext.Dispose();
         }
 
+#if NETCOREAPP
         [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+#else
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+#endif
         public static void Initialize(DataStorage dbPath = null)
         {
             Instance.DbContext.Database.EnsureCreated();
@@ -125,7 +161,11 @@ namespace OilGas.Data.FracFocus
             }
         }
 
+#if NETCOREAPP
         [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+#else
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+#endif
         public static async Task<Registry> GetWellByApi(ApiNumber api)
         {
             try
@@ -145,7 +185,11 @@ namespace OilGas.Data.FracFocus
             return null;
         }
 
+#if NETCOREAPP
         [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+#else
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+#endif
         public static async Task<bool> Add(Registry registry)
         {
             try
@@ -176,7 +220,11 @@ namespace OilGas.Data.FracFocus
             return false;
         }
 
+#if NETCOREAPP
         [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+#else
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+#endif
         public static async Task<int> Commit()
         {
             return await Instance.DbContext.SaveChangesAsync();

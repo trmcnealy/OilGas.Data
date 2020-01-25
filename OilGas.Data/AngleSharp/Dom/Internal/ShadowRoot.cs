@@ -4,7 +4,6 @@ namespace AngleSharp.Dom
     using AngleSharp.Html;
     using AngleSharp.Text;
     using System;
-    using System.IO;
     using System.Linq;
 
     /// <summary>
