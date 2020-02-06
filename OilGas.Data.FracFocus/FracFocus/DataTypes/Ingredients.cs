@@ -9,36 +9,47 @@ namespace OilGas.Data.FracFocus
     public class RegistryIngredients : IDataTable<Guid>
     {
         [DataMember]
+        
         public Guid Id { get; set; }
 
         [DataMember]
+        
         public Guid? KeyPurpose { get; set; }
 
         [DataMember]
+        
         public string IngredientName { get; set; }
 
         [DataMember]
+        
         public string CasNumber { get; set; }
 
         [DataMember]
+        
         public double? PercentHighAdditive { get; set; }
 
         [DataMember]
+        
         public double? PercentHfJob { get; set; }
 
         [DataMember]
+        
         public string IngredientComment { get; set; }
 
         [DataMember]
+        
         public bool IngredientMsds { get; set; }
 
         [DataMember]
+        
         public double? MassIngredient { get; set; }
 
         [DataMember]
+        
         public string ClaimantCompany { get; set; }
 
         [DataMember]
+        
         public Guid KeyDisclosure { get; set; }
 
         public RegistryIngredients()
@@ -112,7 +123,7 @@ namespace OilGas.Data.FracFocus
                                                      index++);
 
             IngredientComment = CheckAndGetValue<string>(dbReader,
-                                                          index++);
+                                                         index++);
 
             IngredientMsds = CheckAndGetValue<bool>(dbReader,
                                                     index++);
@@ -121,7 +132,7 @@ namespace OilGas.Data.FracFocus
                                                       index++);
 
             ClaimantCompany = CheckAndGetValue<string>(dbReader,
-                                                        index++);
+                                                       index++);
 
             KeyDisclosure = dbReader.GetGuid(index);
         }

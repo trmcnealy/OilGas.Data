@@ -92,6 +92,8 @@ namespace OilGas.Data
 
         public string FullPath { get; }
 
+        public string ConnectionString { get; }
+
         //public DataStorage()
         //{
         //    FullPath = HomeDataStorage.HomeDatabasePath;
@@ -99,29 +101,39 @@ namespace OilGas.Data
 
         private static string EnsureFileName(string fileName)
         {
-            return Path.GetExtension(fileName) != ".db"
-                       ? Path.ChangeExtension(fileName,
-                                              ".db")
-                       : fileName;
+            return fileName.EndsWith(".db") ? fileName : fileName + ".db";
+        }
+
+        public DataStorage()
+        {
+            FullPath = ":memory:";
+
+            ConnectionString = $@"Data Source={FullPath}";
         }
 
         public DataStorage(string fileName)
             : this(HomeDataStorage.HomePath,
-                   fileName)
+                   EnsureFileName(fileName))
         {
         }
+
+        //@"Server=.\;Database=Northwind;Trusted_Connection=True;Enlist=False;"
 
         public DataStorage(string directoryPath,
                            string fileName)
         {
             FullPath = Path.Combine(directoryPath,
-                                    fileName);
+                                    EnsureFileName(fileName));
 
-            if(!File.Exists(FullPath))
-            {
-                File.Create(FullPath).Close();
-            }
+            ConnectionString = $@"Data Source={FullPath}";
         }
+
+        //public DataStorage(SQLiteConnectionStringBuilder builder)
+        //{
+        //    FullPath = builder.DataSource;
+        //
+        //    ConnectionString = builder.ConnectionString;
+        //}
 
         public static implicit operator DataStorage(string fullPath)
         {

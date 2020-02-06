@@ -1,15 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 using System.Globalization;
 using System.Linq;
 using System.Reflection;
-using System.Runtime.CompilerServices;
 using System.Runtime.Serialization;
 
 using Microsoft.Data.Analysis;
-
-using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
 
 using VegaLite;
 
@@ -17,155 +15,12 @@ namespace OilGas.Data.RRC.Texas
 {
     [Serializable]
     [DataContract]
-    public sealed class WellProductionDate
-    {
-        [IgnoreDataMember]
-        [NotMapped]
-        public int Month { get; set; }
-
-        [IgnoreDataMember]
-        [NotMapped]
-        public int Year { get; set; }
-
-        [DataMember]
-        public string Date { get { return ToString(); } }
-
-        public WellProductionDate()
-        {
-        }
-
-        public WellProductionDate(string date)
-        {
-            string[] parts = date.Split(new char[]{' '},
-                                        StringSplitOptions.RemoveEmptyEntries);
-
-            if(!int.TryParse(parts[0],
-                             out int month))
-            {
-                month = (int)MonthType.FromMonthName(parts[0]);
-            }
-
-            Month = month;
-
-            if(!int.TryParse(parts[1],
-                             out int year))
-            {
-                year = 1993;
-            }
-
-            Year = year;
-        }
-
-        public WellProductionDate(string month,
-                                  string year)
-        {
-            if(!string.IsNullOrEmpty(month))
-            {
-                Month = (int)MonthType.FromMonthName(month);
-            }
-            else
-            {
-                Month = 1;
-            }
-
-            if(!string.IsNullOrEmpty(year))
-            {
-                if(!int.TryParse(year,
-                                 out int _year))
-                {
-                    _year = 1993;
-                }
-
-                Year = _year;
-            }
-            else
-            {
-                Year = 1993;
-            }
-        }
-
-        public override string ToString()
-        {
-            return $"{Month} {Year}";
-        }
-    }
-
-    [Serializable]
-    [DataContract]
-    [Table("WellProductionRecords")]
-    public sealed class WellProductionRecord : IDataTable<long>
-    {
-        [DataMember]
-        [Required]
-        [Key]
-        public long Id { get; set; }
-
-        [DataMember]
-        [ForeignKey("Records")]
-        public WellProduction WellProduction { get; set; }
-
-        [DataMember]
-        public int Month { get; set; }
-
-        [DataMember]
-        public float MonthlyOil { get; set; }
-
-        [DataMember]
-        public float MonthlyGas { get; set; }
-
-        public WellProductionRecord()
-        {
-        }
-
-        public WellProductionRecord(WellProduction wellProduction,
-                                    int            month,
-                                    float          monthlyOil,
-                                    float          monthlyGas)
-        {
-            WellProduction = wellProduction;
-            Month          = month;
-            MonthlyOil     = monthlyOil;
-            MonthlyGas     = monthlyGas;
-        }
-
-#if NETCOREAPP
-        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
-#else
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-#endif
-        public object[] ToArray()
-        {
-            object[] array = new object[]
-            {
-                Id, Month, MonthlyOil, MonthlyGas
-            };
-
-            return array;
-        }
-
-#if NETCOREAPP
-        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
-#else
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-#endif
-        public IEnumerable<object> ToEnumerable()
-        {
-            yield return Id;
-            yield return Month;
-            yield return MonthlyOil;
-            yield return MonthlyGas;
-        }
-    }
-
-    [Serializable]
-    [DataContract]
     [Table("WellProduction")]
-    public sealed class WellProduction : IDataTable<long>
+    public sealed class WellProduction : IDataTable<int>, IEquatable<WellProduction>
     {
         [DataMember]
-        //[Required]
-        //[Key]
-        public long Id { get; set; }
+        [Key]
+        public int Id { get; set; }
 
         [DataMember]
         public string Api { get; set; }
@@ -503,6 +358,68 @@ namespace OilGas.Data.RRC.Texas
                                     500);
 
             return chart;
+        }
+
+        public bool Equals(WellProduction other)
+        {
+            if(ReferenceEquals(null,
+                               other))
+            {
+                return false;
+            }
+
+            if(ReferenceEquals(this,
+                               other))
+            {
+                return true;
+            }
+
+            return Id             == other.Id             &&
+                   Api            == other.Api            &&
+                   StartDate      == other.StartDate      &&
+                   EndDate        == other.EndDate        &&
+                   OperatorName   == other.OperatorName   &&
+                   OperatorNumber == other.OperatorNumber &&
+                   FieldName      == other.FieldName      &&
+                   FieldNumber    == other.FieldNumber    &&
+                   Equals(Records,
+                          other.Records);
+        }
+
+        public override bool Equals(object obj)
+        {
+            return ReferenceEquals(this,
+                                   obj) ||
+                   obj is WellProduction other && Equals(other);
+        }
+
+        public override int GetHashCode()
+        {
+            HashCode hashCode = new HashCode();
+            hashCode.Add(Api);
+            hashCode.Add(StartDate);
+            hashCode.Add(EndDate);
+            hashCode.Add(OperatorName);
+            hashCode.Add(OperatorNumber);
+            hashCode.Add(FieldName);
+            hashCode.Add(FieldNumber);
+            hashCode.Add(Records);
+
+            return hashCode.ToHashCode();
+        }
+
+        public static bool operator ==(WellProduction left,
+                                       WellProduction right)
+        {
+            return Equals(left,
+                          right);
+        }
+
+        public static bool operator !=(WellProduction left,
+                                       WellProduction right)
+        {
+            return !Equals(left,
+                           right);
         }
 
         public override string ToString()

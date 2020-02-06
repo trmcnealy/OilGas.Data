@@ -1,7 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>netstandard2.1</TargetFramework>
+    <TargetFrameworks>netstandard2.1;netcoreapp3.1</TargetFrameworks>
     <!-- <UseWPF>true</UseWPF> -->
     <NuspecFile>D:\TFS_Sources\Github\Compilation\trmcnealy\OilGas.Data\OilGas.Data\Data\Packaging\OilGas.Data.nuspec</NuspecFile>
     <GeneratePackageOnBuild Condition="'$(Configuration)'!='Release'">false</GeneratePackageOnBuild>
@@ -12,6 +12,7 @@
 
   <ItemGroup>
     <Compile Remove="Data\Persistence\Database.cs" />
+    <Compile Remove="Data\Persistence\DatabaseSettings.cs" />
     <Compile Remove="Data\Persistence\DataTableAttribute.cs" />
     <Compile Remove="Data\Persistence\FrameAdapter.cs" />
     <Compile Remove="Data\Persistence\OldDataBase.cs" />
@@ -21,6 +22,7 @@
 
   <ItemGroup>
     <None Include="Data\Persistence\Database.cs" />
+    <None Include="Data\Persistence\DatabaseSettings.cs" />
     <None Include="Data\Persistence\OldDataBase.cs" />
     <None Include="Data\Persistence\DataTableAttribute.cs" />
     <None Include="Data\Persistence\FrameAdapter.cs" />
@@ -34,12 +36,8 @@
   
   <ItemGroup>
     <PackageReference Include="Microsoft.Data.Analysis" Version="0.2.0" />
-    <PackageReference Include="Microsoft.Extensions.Caching.Memory" Version="3.1.1" />
-    <PackageReference Include="Microsoft.EntityFrameworkCore" Version="3.1.1" />
-    <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite.Core" Version="3.1.1" />
-    <PackageReference Include="SQLitePCLRaw.bundle_winsqlite3" Version="2.0.2" />
     <PackageReference Include="System.Memory" Version="4.5.3" />
-    <PackageReference Include="System.Text.Encoding.CodePages" Version="4.3.0" />
+    <PackageReference Include="System.Text.Encoding.CodePages" Version="4.7.0" />
     <PackageReference Include="VegaLite.NET" Version="1.0.10" />
   </ItemGroup>
 

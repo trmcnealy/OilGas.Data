@@ -3,7 +3,7 @@
 <package>
   <metadata>
     <id>OilGas.Data</id>
-    <version>1.0.12</version>
+    <version>1.1.0</version>
     <authors>Timothy R. McNealy</authors>
     <owners>Timothy R. McNealy</owners>
     <license type="expression">MIT</license>
@@ -12,15 +12,18 @@
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
     <description>Oil &amp; Gas Production query tool</description>
     <releaseNotes></releaseNotes>
-    <copyright>Copyright 2020</copyright>
+    <copyright>© Timothy R. McNealy</copyright>
     <tags></tags>
     <dependencies>
       <group targetFramework=".NETStandard2.1">
         <dependency id="Microsoft.Data.Analysis" version="0.2.0" exclude="Build,Analyzers" />
-        <dependency id="Microsoft.EntityFrameworkCore" version="3.1.1" exclude="Build,Analyzers" />
-        <dependency id="Microsoft.EntityFrameworkCore.Sqlite.Core" version="3.1.1" exclude="Build,Analyzers" />
-        <dependency id="Microsoft.Extensions.Caching.Memory" version="3.1.1" exclude="Build,Analyzers" />
-        <dependency id="SQLitePCLRaw.bundle_winsqlite3" version="2.0.2" exclude="Build,Analyzers" />
+        <dependency id="System.Memory" version="4.5.3" exclude="Build,Analyzers" />
+        <dependency id="System.Text.Encoding.CodePages" version="4.3.0" exclude="Build,Analyzers" />
+        <dependency id="VegaLite.NET" version="1.0.10" exclude="Build,Analyzers" />
+      </group>
+      <group targetFramework=".NETCoreApp3.1">
+        <dependency id="Microsoft.Data.Analysis" version="0.2.0" exclude="Build,Analyzers" />
+        <dependency id="System.Memory" version="4.5.3" exclude="Build,Analyzers" />
         <dependency id="System.Text.Encoding.CodePages" version="4.3.0" exclude="Build,Analyzers" />
         <dependency id="VegaLite.NET" version="1.0.10" exclude="Build,Analyzers" />
       </group>
@@ -36,5 +39,12 @@
           target="lib\netstandard2.1" />
     <file src="D:\TFS_Sources\Github\Compilation\trmcnealy\OilGas.Data\OilGas.Data.RRC.Texas\bin\Release\netstandard2.1\OilGas.Data.RRC.Texas.dll"
           target="lib\netstandard2.1" />
+
+    <file src="D:\TFS_Sources\Github\Compilation\trmcnealy\OilGas.Data\OilGas.Data\bin\Release\netcoreapp3.1\OilGas.Data.dll"
+          target="lib\netcoreapp3.1" />
+    <file src="D:\TFS_Sources\Github\Compilation\trmcnealy\OilGas.Data\OilGas.Data.FracFocus\bin\Release\netcoreapp3.1\OilGas.Data.FracFocus.dll"
+          target="lib\netcoreapp3.1" />
+    <file src="D:\TFS_Sources\Github\Compilation\trmcnealy\OilGas.Data\OilGas.Data.RRC.Texas\bin\Release\netcoreapp3.1\OilGas.Data.RRC.Texas.dll"
+          target="lib\netcoreapp3.1" />
   </files>
 </package>

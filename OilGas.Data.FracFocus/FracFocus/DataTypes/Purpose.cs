@@ -7,48 +7,58 @@ namespace OilGas.Data.FracFocus
 {
     [Serializable]
     [DataContract]
+    //[Table("Purpose")]
     public class RegistryPurpose : IDataTable<Guid>
     {
         /// <summary>
         /// Key index for the table
         /// </summary>
         [DataMember]
+        
         public Guid Id { get; set; }
 
         /// <summary>
         /// Foreign key linking to the Registry table.
         /// </summary>
         [DataMember]
+        
         public Guid KeyRegistry { get; set; }
 
         /// <summary>
         /// The name of the product as defined by the supplier.
         /// </summary>
         [DataMember]
+        
         public string TradeName { get; set; }
 
         /// <summary>
         ///  The name of the company that supplied the product for the hydraulic fracturing job (Usually the service company).
         /// </summary>
         [DataMember]
+        
         public string Supplier { get; set; }
 
         /// <summary>
         /// The reason the product was used (e.g. Surfactant, Biocide, Proppant).
         /// </summary>
         [DataMember]
+        
         public string Purpose { get; set; }
 
         [DataMember]
+        
         public bool? SystemApproach { get; set; }
 
         [DataMember]
+        
         public bool? IsWater { get; set; }
 
         [DataMember]
+        
         public double? PurposePercentHfJob { get; set; }
 
         [DataMember]
+        
         public double? IngredientMsds { get; set; }
 
         public RegistryPurpose()
@@ -110,10 +120,10 @@ namespace OilGas.Data.FracFocus
             KeyRegistry = dbReader.GetGuid(index++);
 
             TradeName = CheckAndGetValue<string>(dbReader,
-                                                  index++);
+                                                 index++);
 
             Supplier = CheckAndGetValue<string>(dbReader,
-                                                 index++);
+                                                index++);
 
             Purpose = CheckAndGetValue<string>(dbReader,
                                                index++);

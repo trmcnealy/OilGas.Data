@@ -178,6 +178,10 @@ namespace OilGas.Data
 #endif
         public bool Equals(ApiNumber other)
         {
+            if(_directionalSidetrackCode == 0 && _eventSequenceCode == 0)
+            {
+                return _stateCode == other._stateCode && _countyCode == other._countyCode && _uniqueWellIdentifier == other._uniqueWellIdentifier;
+            }
             return _stateCode                == other._stateCode                &&
                    _countyCode               == other._countyCode               &&
                    _uniqueWellIdentifier     == other._uniqueWellIdentifier     &&
@@ -193,6 +197,11 @@ namespace OilGas.Data
         public bool Equals(string otherString)
         {
             ApiNumber other = otherString;
+            
+            if(_directionalSidetrackCode == 0 && _eventSequenceCode == 0)
+            {
+                return _stateCode == other._stateCode && _countyCode == other._countyCode && _uniqueWellIdentifier == other._uniqueWellIdentifier;
+            }
 
             return _stateCode                == other._stateCode                &&
                    _countyCode               == other._countyCode               &&

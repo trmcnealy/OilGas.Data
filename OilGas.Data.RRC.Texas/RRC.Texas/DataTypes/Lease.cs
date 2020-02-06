@@ -8,12 +8,15 @@ namespace OilGas.Data.RRC.Texas
     public class Lease
     {
         [DataMember]
+
         public string Number { get; set; }
 
         [DataMember]
+
         public DistrictCode DistrictCode { get; set; }
 
         [DataMember]
+
         public LeaseType LeaseType { get; set; }
 
         public Lease()

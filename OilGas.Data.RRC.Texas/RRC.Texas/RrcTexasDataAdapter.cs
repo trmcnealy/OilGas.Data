@@ -7,52 +7,8 @@ using System.Threading.Tasks;
 
 using AngleSharp.Html.Dom;
 
-using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.ChangeTracking;
-using Microsoft.EntityFrameworkCore.Sqlite;
-using Microsoft.Extensions.Caching.Memory;
-
 namespace OilGas.Data.RRC.Texas
 {
-    internal sealed class RrcTexasContext : DbContext
-    {
-        //public DbSet<Lease> Leases { get; set; }
-
-        public DbSet<WellProduction> WellProductions { get; set; }
-
-        public DbSet<WellProductionRecord> WellProductionRecords { get; set; }
-
-        public DataStorage DataStorage { get; }
-
-        public RrcTexasContext()
-        {
-            DataStorage = new DataStorage("Rrc.Texas.db");
-        }
-
-        public RrcTexasContext(DataStorage dataStorage)
-        {
-            DataStorage = dataStorage;
-        }
-
-        public RrcTexasContext(DbContextOptions<RrcTexasContext> options)
-            : base(options)
-        {
-        }
-
-        protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-        {
-            optionsBuilder.UseMemoryCache(new MemoryCache(new MemoryDistributedCacheOptions()));
-            optionsBuilder.UseSqlite($"Data Source={DataStorage.FullPath}");
-        }
-
-        protected override void OnModelCreating(ModelBuilder modelBuilder)
-        {
-            modelBuilder.Entity<WellProduction>().HasIndex(b => b.Api).IsUnique();
-
-            modelBuilder.Entity<WellProductionRecord>().HasIndex(b => b.Id).IsUnique();
-        }
-    }
-
     public sealed class RrcTexasDataAdapter : IDisposable
     {
         private static readonly RrcTexasDataAdapter instance = new RrcTexasDataAdapter();
@@ -131,7 +87,7 @@ namespace OilGas.Data.RRC.Texas
 #endif
         public void Dispose()
         {
-            DbContext.SaveChanges();
+            //DbContext.SaveChanges();
             DbContext.Dispose();
         }
 
@@ -140,25 +96,41 @@ namespace OilGas.Data.RRC.Texas
 #else
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
 #endif
-        public static void Initialize(DataStorage dbPath = null)
+        public static void Initialize(DataStorage dbPath)
         {
-            Instance.DbContext.Database.EnsureCreated();
+            //Instance.DbContext.Database.EnsureCreated();
 
             if(dbPath == null)
             {
                 return;
             }
 
+            // IDbCommand dbExist = Instance.DbContext.CreateCommand();
+            //
+            // dbExist.CommandText=$"IF OBJECT_ID(\"{nameof(WellProduction)}\") IS NOT NULL";
+            //
+            // var result = dbExist.ExecuteScalar();
+
             if(Instance.DbContext == null)
             {
                 Instance.DbContext = new RrcTexasContext(dbPath);
             }
-            else if(Instance.DbContext.Database.GetDbConnection().Database != dbPath.FullPath)
+            else if(Instance.DbContext.DataStorage.FullPath != dbPath.FullPath)
             {
                 Instance.DbContext.Dispose();
 
                 Instance.DbContext = new RrcTexasContext(dbPath);
             }
+
+            //if(Instance.DbContext.WellProductionRecords == null)
+            //{
+            //    Instance.DbContext.CreateTable<WellProductionRecord>();
+            //}
+
+            //if(Instance.DbContext.WellProductions == null)
+            //{
+            //    Instance.DbContext.CreateTable<WellProduction>();
+            //}
         }
 
 #if NETCOREAPP
@@ -170,23 +142,11 @@ namespace OilGas.Data.RRC.Texas
         {
             try
             {
-                WellProduction record = await Instance.DbContext.WellProductions.Include(x => x.Records).FirstOrDefaultAsync(x => x.Id == wellProduction.Id);
-
-                EntityEntry<WellProduction> entry;
-
-                if(record == null)
+                if(Instance.DbContext.WellProductions.TryGetValue(wellProduction, out WellProduction record))
                 {
-                    entry = await Instance.DbContext.WellProductions.AddAsync(wellProduction);
+                    return await Instance.DbContext.UpdateAsync(record, wellProduction);
                 }
-                else
-                {
-                    entry = Instance.DbContext.WellProductions.Update(wellProduction);
-                }
-
-                if(entry != null)
-                {
-                    return true;
-                }
+                return await Instance.DbContext.InsertAsync(wellProduction);
             }
             catch(Exception ex)
             {
@@ -196,67 +156,68 @@ namespace OilGas.Data.RRC.Texas
             return false;
         }
 
+//#if NETCOREAPP
+//        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+//#else
+//        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+//#endif
+//        public static async Task<bool> Add(WellProductionRecord wellProductionRecord)
+//        {
+//            try
+//            {
+//                WellProductionRecord record =
+//                    await Task.Run(() => Instance.DbContext.WellProductions.FirstOrDefault(x => x.WellProduction == wellProductionRecord.WellProduction &&
+//                                                                                                      x.Month          == wellProductionRecord.Month));
+
+//                int entry;
+
+//                if(record == null)
+//                {
+//                    entry = await Instance.DbContext.InsertAsync(wellProductionRecord);
+//                }
+//                else
+//                {
+//                    entry = await Instance.DbContext.UpdateAsync(wellProductionRecord);
+//                }
+
+//                if(entry == 1)
+//                {
+//                    return true;
+//                }
+//            }
+//            catch(Exception ex)
+//            {
+//                Debug.WriteLine(ex.Message);
+//            }
+
+//            return false;
+//        }
+
+//#if NETCOREAPP
+//        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+//#else
+//        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+//#endif
+//        public static async Task<bool> AddRange(IEnumerable<WellProductionRecord> wellProductionRecords)
+//        {
+//            bool result = true;
+
+//            foreach(WellProductionRecord record in wellProductionRecords)
+//            {
+//                result &= await Add(record);
+//            }
+
+//            return result;
+//        }
+
 #if NETCOREAPP
         [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
 #else
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
 #endif
-        public static async Task<bool> Add(WellProductionRecord wellProductionRecord)
+        public static async Task Commit()
         {
-            try
-            {
-                WellProductionRecord record =
-                    await Instance.DbContext.WellProductionRecords.FirstOrDefaultAsync(x => x.WellProduction == wellProductionRecord.WellProduction && x.Month == wellProductionRecord.Month);
-
-                EntityEntry<WellProductionRecord> entry;
-
-                if(record == null)
-                {
-                    entry = await Instance.DbContext.WellProductionRecords.AddAsync(wellProductionRecord);
-                }
-                else
-                {
-                    entry = Instance.DbContext.WellProductionRecords.Update(wellProductionRecord);
-                }
-
-                if(entry != null)
-                {
-                    return true;
-                }
-            }
-            catch(Exception ex)
-            {
-                Debug.WriteLine(ex.Message);
-            }
-
-            return false;
-        }
-
-#if NETCOREAPP
-        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
-#else
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-#endif
-        public static async Task<bool> AddRange(IEnumerable<WellProductionRecord> wellProductionRecords)
-        {
-            bool result = true;
-
-            foreach(WellProductionRecord record in wellProductionRecords)
-            {
-                result &= await Add(record);
-            }
-
-            return result;
-        }
-
-#if NETCOREAPP
-        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
-#else
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-#endif
-        public static async Task<int> Commit()
-        {
-            return await Instance.DbContext.SaveChangesAsync();
+            await Task.Run(() => Instance.DbContext.Save());
         }
 
 #if NETCOREAPP
@@ -295,7 +256,7 @@ namespace OilGas.Data.RRC.Texas
             {
                 try
                 {
-                    WellProduction records = await Instance.DbContext.WellProductions.Include(x => x.Records).FirstOrDefaultAsync(x => x.Api == api.ToString());
+                    WellProduction records = await Task.Run(() => Instance.DbContext.WellProductions.AsParallel().FirstOrDefault(x => x.Api == api));
 
                     if(records != null)
                     {
@@ -328,7 +289,7 @@ namespace OilGas.Data.RRC.Texas
             {
                 await Add(wellProduction);
 
-                await AddRange(wellProduction.Records);
+                //await AddRange(wellProduction.Records);
             }
 
             return wellProduction;

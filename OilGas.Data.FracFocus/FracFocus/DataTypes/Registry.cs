@@ -1,21 +1,17 @@
 ﻿using System;
+using System.ComponentModel.DataAnnotations;
 using System.Data.Common;
 using System.Runtime.Serialization;
-using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
-
 namespace OilGas.Data.FracFocus
 {
     [Serializable]
     [DataContract]
-    [Table("Registry")]
     public class Registry : IDataTable<Guid>
     {
         /// <summary>
         /// Key index for the table
         /// </summary>
         [DataMember]
-        [Required]
         [Key]
         public Guid Id { get; set; }
 
@@ -244,10 +240,10 @@ namespace OilGas.Data.FracFocus
             ApiNumber = csvData[index++];
 
             StateNumber = CheckAndGetValue<string>(csvData,
-                                                    index++);
+                                                   index++);
 
             CountyNumber = CheckAndGetValue<string>(csvData,
-                                                     index++);
+                                                    index++);
 
             OperatorName = csvData[index++];
             WellName     = csvData[index++];
@@ -265,10 +261,10 @@ namespace OilGas.Data.FracFocus
                                                                 index++);
 
             StateName = CheckAndGetValue<string>(csvData,
-                                                  index++);
+                                                 index++);
 
             CountyName = CheckAndGetValue<string>(csvData,
-                                                   index++);
+                                                  index++);
 
             FfVersion = CheckAndGetValue<float?>(csvData,
                                                  index++);
@@ -279,7 +275,7 @@ namespace OilGas.Data.FracFocus
             IndianWell = csvData[index++] != "False";
 
             Source = CheckAndGetValue<string>(csvData,
-                                               index++);
+                                              index++);
 
             DtMod = CheckAndGetValue<DateTime>(csvData,
                                                index);
@@ -299,10 +295,10 @@ namespace OilGas.Data.FracFocus
             ApiNumber = dbReader.GetString(index++);
 
             StateNumber = CheckAndGetValue<string>(dbReader,
-                                                    index++);
+                                                   index++);
 
             CountyNumber = CheckAndGetValue<string>(dbReader,
-                                                     index++);
+                                                    index++);
 
             OperatorName = dbReader.GetString(index++);
             WellName     = dbReader.GetString(index++);
@@ -320,10 +316,10 @@ namespace OilGas.Data.FracFocus
                                                                 index++);
 
             StateName = CheckAndGetValue<string>(dbReader,
-                                                  index++);
+                                                 index++);
 
             CountyName = CheckAndGetValue<string>(dbReader,
-                                                   index++);
+                                                  index++);
 
             FfVersion = CheckAndGetValue<float?>(dbReader,
                                                  index++);
@@ -334,7 +330,7 @@ namespace OilGas.Data.FracFocus
             IndianWell = dbReader.GetBoolean(index++);
 
             Source = CheckAndGetValue<string>(dbReader,
-                                               index++);
+                                              index++);
 
             DtMod = CheckAndGetValue<DateTime>(dbReader,
                                                index);

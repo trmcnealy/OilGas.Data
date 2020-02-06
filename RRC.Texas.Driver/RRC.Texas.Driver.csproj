@@ -6,8 +6,8 @@
   </PropertyGroup>
   
   <ItemGroup>
-    <PackageReference Include="OilGas.Data" Version="1.0.12" />
-    <PackageReference Include="System.Data.SqlClient" Version="4.8.0" />
+    <ProjectReference Include="..\OilGas.Data.FracFocus\OilGas.Data.FracFocus.csproj" />
+    <ProjectReference Include="..\OilGas.Data.RRC.Texas\OilGas.Data.RRC.Texas.csproj" />
   </ItemGroup>
 
 </Project>

@@ -14,19 +14,76 @@ using System.Runtime.CompilerServices;
 namespace OilGas.Data.RRC.Texas
 {
 <#
-List<string> enumTypeIDValueNames = new List<string>(){"None_Selected", "ABANDONED", "BRINE_MINING", "DOMESTIC_USE_WELL", "GAS_STRG_INJECTION", "GAS_STRG_SALT_FORMATION", "GEOTHERMAL_WELL",
-                                                       "GAS_STRG_WITHDRAWAL", "HISTORY", "INJECTION", "LPG_STORAGE", "LEASE_USE_WELL", "NO_PRODUCTION", "OBSERVATION", "OTHER_TYPE_SERVICE",
-                                                       "PROD_FACTOR_WELL", "PARTIAL_PLUG", "PRODUCING", "SWR_10_WELL", "SEALED", "SHUT_IN", "SHUT_IN_MULTI_COMPL", "TEMP_ABANDONED", "TRAINING",
-                                                       "WATER_SUPPLY", "NOT_ELIGIBLE_FOR_ALLOWABLE"};
-List<string> enumTypeIDValueValues = new List<string>(){"None Selected","AB","BM", "DW", "GJ","GL","GT","GW","HI", "IN","LP","LU","NP","OB","OS","PF","PP","PR","RT","SD","SH", "SM", "TA","TR", "WS","ZZ"};
+    List<string> enumTypeIDValueNames = new List<string>()
+    {
+        "None_Selected",
+        "ABANDONED",
+        "BRINE_MINING",
+        "DOMESTIC_USE_WELL",
+        "GAS_STRG_INJECTION",
+        "GAS_STRG_SALT_FORMATION",
+        "GEOTHERMAL_WELL",
+        "GAS_STRG_WITHDRAWAL",
+        "HISTORY",
+        "INJECTION",
+        "LPG_STORAGE",
+        "LEASE_USE_WELL",
+        "NO_PRODUCTION",
+        "OBSERVATION",
+        "OTHER_TYPE_SERVICE",
+        "PROD_FACTOR_WELL",
+        "PARTIAL_PLUG",
+        "PRODUCING",
+        "SWR_10_WELL",
+        "SEALED",
+        "SHUT_IN",
+        "SHUT_IN_MULTI_COMPL",
+        "TEMP_ABANDONED",
+        "TRAINING",
+        "WATER_SUPPLY",
+        "NOT_ELIGIBLE_FOR_ALLOWABLE"
+    };
+    List<string> enumTypeIDValueValues = new List<string>()
+    {
+        "None Selected",
+        "AB",
+        "BM",
+        "DW",
+        "GJ",
+        "GL",
+        "GT",
+        "GW",
+        "HI",
+        "IN",
+        "LP",
+        "LU",
+        "NP",
+        "OB",
+        "OS",
+        "PF",
+        "PP",
+        "PR",
+        "RT",
+        "SD",
+        "SH",
+        "SM",
+        "TA",
+        "TR",
+        "WS",
+        "ZZ"
+    };
 
-string enumTypeIDName = "WellType";
-string valueTypeIDType = "string";
-int indentLevel = 1;
+    string enumTypeIDName = "WellType";
+    string valueTypeIDType = "string";
+    int indentLevel = 1;
 
-string typeEnum = ENUM_BUILDER(enumTypeIDName, enumTypeIDValueNames, enumTypeIDValueValues, valueTypeIDType, indentLevel);
+    string typeEnum = ENUM_BUILDER(enumTypeIDName,
+                                   enumTypeIDValueNames,
+                                   enumTypeIDValueValues,
+                                   valueTypeIDType,
+                                   indentLevel);
 #>
-<#=typeEnum#>
+<#=typeEnum #>
 }
 
 <#@ include file="..\..\..\OilGas.Data\Data\Tools\EnumStringBuilder.ttinclude" #>
