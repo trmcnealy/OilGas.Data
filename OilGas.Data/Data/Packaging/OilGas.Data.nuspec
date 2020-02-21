@@ -3,7 +3,7 @@
 <package>
   <metadata>
     <id>OilGas.Data</id>
-    <version>1.1.0</version>
+    <version>1.2.0</version>
     <authors>Timothy R. McNealy</authors>
     <owners>Timothy R. McNealy</owners>
     <license type="expression">MIT</license>

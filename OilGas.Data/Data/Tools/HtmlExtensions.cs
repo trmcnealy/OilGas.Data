@@ -148,6 +148,17 @@ namespace OilGas.Data
             }
         }
 
+        public HtmlTag select
+        {
+            get
+            {
+                return new HtmlTag(Parent,
+                                   Tag,
+                                   HtmlTags.select.ToString(),
+                                   Index).Child;
+            }
+        }
+
         #endregion
 
         public HtmlTag(string tag)
@@ -329,6 +340,7 @@ namespace OilGas.Data
         public static readonly HtmlTag tr     = new HtmlTag("tr");
         public static readonly HtmlTag td     = new HtmlTag("td");
         public static readonly HtmlTag strong = new HtmlTag("strong");
+        public static readonly HtmlTag select = new HtmlTag("select");
     }
 
     public static class HtmlExtensions
@@ -411,6 +423,63 @@ namespace OilGas.Data
         public static string GetAttribute(this INode node)
         {
             return ((IElement)node)?.GetAttribute(HtmlTags.href.ToString());
+        }
+
+        public static IElement GetElementWithAttribute(this IElement node,
+                                                       string        attributeName,
+                                                       string        attributeValue)
+        {
+            if(node != null)
+            {
+                string resultValue;
+
+                if(node.Attributes.Length > 0)
+                {
+                    resultValue = node.GetAttribute(attributeName);
+
+                    if(!string.IsNullOrEmpty(resultValue) && resultValue == attributeValue)
+                    {
+                        return node;
+                    }
+                }
+
+                if(node.HasChildNodes)
+                {
+                    IHtmlCollection<IElement> descendantNodes     = node.Children; //.Where(child => child.Name != HtmlTags.text);
+                    IElement                  foundDescendantNode = null;
+
+                    Parallel.ForEach(descendantNodes,
+                                     (descendantNode,
+                                      loopState) =>
+                                     {
+                                         IElement descendantFoundNode = descendantNode.GetElementWithAttribute(attributeName,
+                                                                                                               attributeValue);
+
+                                         if(descendantFoundNode != null)
+                                         {
+                                             foundDescendantNode = descendantFoundNode;
+                                             loopState.Stop();
+                                         }
+                                     });
+
+                    if(foundDescendantNode != null)
+                    {
+                        return foundDescendantNode;
+                    }
+
+                    //foreach(IElement descendantNode in descendantNodes)
+                    //{
+                    //    IElement descendantFoundNode = GetElementWithClass(descendantNode, className);
+
+                    //    if(descendantFoundNode != null)
+                    //    {
+                    //        return descendantFoundNode;
+                    //    }
+                    //}
+                }
+            }
+
+            return null;
         }
 
         public static IElement GetElementWithClass(this IElement node,

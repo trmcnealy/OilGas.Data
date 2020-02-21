@@ -6,6 +6,7 @@ using System.Globalization;
 using System.Linq;
 using System.Reflection;
 using System.Runtime.Serialization;
+using System.Xml.Serialization;
 
 using Microsoft.Data.Analysis;
 
@@ -15,35 +16,43 @@ namespace OilGas.Data.RRC.Texas
 {
     [Serializable]
     [DataContract]
-    [Table("WellProduction")]
+    [XmlRoot("WellProduction")]
     public sealed class WellProduction : IDataTable<int>, IEquatable<WellProduction>
     {
-        [DataMember]
-        [Key]
+        [IgnoreDataMember, XmlIgnore]
+        //[Key]
         public int Id { get; set; }
 
         [DataMember]
+        [XmlElement]
         public string Api { get; set; }
 
         [DataMember]
+        [XmlElement]
         public string StartDate { get; set; }
 
         [DataMember]
+        [XmlElement]
         public string EndDate { get; set; }
 
         [DataMember]
+        [XmlElement]
         public string OperatorName { get; set; }
 
         [DataMember]
+        [XmlElement]
         public string OperatorNumber { get; set; }
 
         [DataMember]
+        [XmlElement]
         public string FieldName { get; set; }
 
         [DataMember]
+        [XmlElement]
         public string FieldNumber { get; set; }
 
         [DataMember]
+        [XmlElement]
         public List<WellProductionRecord> Records { get; set; }
 
         public WellProduction()

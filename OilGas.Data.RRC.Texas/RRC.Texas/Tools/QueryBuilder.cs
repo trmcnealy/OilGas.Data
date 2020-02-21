@@ -28,12 +28,15 @@ namespace OilGas.Data.RRC.Texas
         public const string WellboreQuery      = "wellboreQueryAction.do";
         public const string ProductionQuery    = "productionQueryAction.do";
         public const string SpecificLeaseQuery = "specificLeaseQueryAction.do";
+        public const string OrganizationQuery  = "organizationQueryAction.do";
 
-        public static readonly Uri WellboreQueryAction = new Uri(RrcStateTx + "wellboreQueryAction.do");
+        public static readonly Uri WellboreQueryAction = new Uri(RrcStateTx + WellboreQuery);
 
-        public static readonly Uri ProductionQueryAction = new Uri(RrcStateTx + "productionQueryAction.do");
+        public static readonly Uri ProductionQueryAction = new Uri(RrcStateTx + ProductionQuery);
 
-        public static readonly Uri SpecificLeaseQueryAction = new Uri(RrcStateTx + "specificLeaseQueryAction.do");
+        public static readonly Uri SpecificLeaseQueryAction = new Uri(RrcStateTx + SpecificLeaseQuery);
+
+        public static readonly Uri OrganizationQueryAction = new Uri(RrcStateTx + OrganizationQuery);
 
         // Completion http://webapps.rrc.texas.gov/CMPL/ewaSearchAction.do
         // Tracking No.: 54106
@@ -275,6 +278,26 @@ namespace OilGas.Data.RRC.Texas
                                       requestParams);
         }
 
+        public static async Task<IHtmlDocument> OrganizationNameQuery(string operatorNumber)
+        {
+            Dictionary<string, string> requestParams = new Dictionary<string, string>
+            {
+                {
+                    "number", operatorNumber
+                },
+                {
+                    "methodToCall", "searchByNumber"
+                }
+            };
+
+            //TODO
+            //IHtmlDocument organizationNameQueryResult = PerformQuery(OrganizationQueryAction,
+            //                                                         requestParams).Result;
+
+            return await PerformQuery(OrganizationQueryAction,
+                                      requestParams);
+        }
+
         public static async Task<LeaseDetailQueryData> LeaseDetailQuery(WellboreQueryData wellboreQueryData)
         {
             IHtmlDocument leaseDetailResult = await OpenUri(RrcStateTx + wellboreQueryData.LeaseDetailAction);
@@ -406,6 +429,20 @@ namespace OilGas.Data.RRC.Texas
             return await PerformCsvQuery(SpecificLeaseQueryAction,
                                          requestParams);
         }
+
+
+
+
+        public static IEnumerable<string> OrganizationNameQueryByNumber(string operatorNumber)
+        {
+            return QueryParser.ParseOrganizationNameQuery(OrganizationNameQuery(operatorNumber).Result);
+        }
+
+
+
+
+
+
 
         //Dictionary<string, string> requestParams = new Dictionary<string, string>
         //{

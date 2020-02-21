@@ -1,6 +1,9 @@
-﻿using System;
+﻿
+using System;
 using System.IO;
 using System.Runtime.CompilerServices;
+using System.Runtime.Serialization;
+using System.Xml.Serialization;
 
 namespace OilGas.Data
 {
@@ -83,16 +86,27 @@ namespace OilGas.Data
                                 fileName);
         }
     }
-
+    
+    [XmlRoot("DataStorage")]
+    [Serializable]
+    [DataContract]
     public class DataStorage
     {
-        public string FileName { get { return Path.GetFileName(FullPath); } }
-
-        public string DirectoryPath { get { return Path.GetDirectoryName(FullPath); } }
-
-        public string FullPath { get; }
-
-        public string ConnectionString { get; }
+        [DataMember]
+        [XmlElement]
+        public string FileName { get; set; }
+        
+        [DataMember]
+        [XmlElement]
+        public string DirectoryPath { get; set; }
+        
+        [IgnoreDataMember]
+        public string FullPath { get { return Path.Combine(DirectoryPath,
+                                                           FileName); } }
+        
+        [DataMember]
+        [XmlElement]
+        public string ConnectionString { get; set; }
 
         //public DataStorage()
         //{
@@ -106,9 +120,10 @@ namespace OilGas.Data
 
         public DataStorage()
         {
-            FullPath = ":memory:";
+            FileName = string.Empty;
+            DirectoryPath = string.Empty;
 
-            ConnectionString = $@"Data Source={FullPath}";
+            ConnectionString = $@"Data Source={FileName}";
         }
 
         public DataStorage(string fileName)
@@ -122,8 +137,8 @@ namespace OilGas.Data
         public DataStorage(string directoryPath,
                            string fileName)
         {
-            FullPath = Path.Combine(directoryPath,
-                                    EnsureFileName(fileName));
+            DirectoryPath = directoryPath;
+            FileName = EnsureFileName(fileName);
 
             ConnectionString = $@"Data Source={FullPath}";
         }

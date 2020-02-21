@@ -4,9 +4,11 @@ using System.IO;
 using System.Runtime.Serialization;
 using System.Threading.Tasks;
 using System.Xml;
+using System.Xml.Serialization;
 
 namespace OilGas.Data.FracFocus
 {
+    [XmlRoot("FracFocusDb")]
     [Serializable]
     [DataContract]
     public sealed class FracFocusContext : IDisposable
@@ -14,8 +16,11 @@ namespace OilGas.Data.FracFocus
         internal const string DefaultDbName = "FracFocus";
 
         [DataMember]
-        public HashSet<Registry> Registries { get; private set; } = new HashSet<Registry>();
-
+        [XmlElement]
+        public SerializableConcurrentDictionary<string /*API*/, Registry> Registries { get; private set; } = new SerializableConcurrentDictionary<string /*API*/, Registry>();
+        
+        [DataMember]
+        [XmlElement]
         public DataStorage DataStorage { get; }
 
         public FracFocusContext()
@@ -30,19 +35,33 @@ namespace OilGas.Data.FracFocus
 
         public void Save()
         {
-            FileStream writer = new FileStream(DataStorage.FullPath,
-                                               FileMode.Create);
+            XmlSerializer ser = new XmlSerializer(typeof(FracFocusContext));
 
-            DataContractSerializer ser = new DataContractSerializer(typeof(FracFocusContext));
+            using(FileStream writer = new FileStream(DataStorage.FullPath,
+                                                     FileMode.Create))
+            {
+                using(XmlWriter xmlWriter = XmlWriter.Create(writer,
+                                                             new XmlWriterSettings
+                                                             {
+                                                                 Indent = false
+                                                             }))
+                {
+                    ser.Serialize(xmlWriter,
+                                  this);
+                }
 
-            ser.WriteObject(writer,
-                            this);
-
-            writer.Close();
+                writer.Flush();
+            }
         }
 
         public void Load()
         {
+            if(!File.Exists(DataStorage.FullPath))
+            {
+                return;
+                //throw new FileNotFoundException(DataStorage.FullPath);
+            }
+
             using FileStream fs = new FileStream(DataStorage.FullPath,
                                                  FileMode.Open);
 
@@ -51,10 +70,11 @@ namespace OilGas.Data.FracFocus
             XmlDictionaryReader reader = XmlDictionaryReader.CreateTextReader(fs,
                                                                               xmlQuotas);
 
-            DataContractSerializer ser = new DataContractSerializer(typeof(FracFocusContext));
+            XmlSerializer ser = new XmlSerializer(typeof(FracFocusContext));
 
-            Registries = ((FracFocusContext)ser.ReadObject(reader,
-                                                           true)).Registries;
+            FracFocusContext db = (FracFocusContext)ser.Deserialize(reader);
+
+            Registries = db.Registries;
 
             reader.Close();
 
@@ -67,7 +87,6 @@ namespace OilGas.Data.FracFocus
             Registries.Clear();
         }
 
-        
         public async Task<bool> InsertAsync(Registry registry)
         {
             if(registry.Id == Guid.Empty)
@@ -75,16 +94,30 @@ namespace OilGas.Data.FracFocus
                 registry.Id = Guid.NewGuid();
             }
 
-            return await Task.Run(() => Registries.Add(registry));
+            return await Task.Run(() => Registries.TryAdd(registry.ApiNumber,
+                                                          registry));
         }
 
-        public async Task<bool> UpdateAsync(Registry oldValue, Registry newValue)
+        public async Task<bool> UpdateAsync(Registry newValue)
         {
-            newValue.Id = oldValue.Id;
+            if(Registries.TryGetValue(newValue.ApiNumber,
+                                      out Registry oldValue))
+            {
+                newValue.Id = oldValue.Id;
 
-            Registries.Remove(oldValue);
+                return await Task.Run(() => Registries.TryUpdate(newValue.ApiNumber,
+                                                                 newValue,
+                                                                 oldValue));
+            }
 
-            return await Task.Run(() => Registries.Add(newValue));
+            return await Task.Run(() => Registries.TryAdd(newValue.ApiNumber,
+                                                          newValue));
+        }
+
+        public async Task<bool> RemoveAsync(Registry registry)
+        {
+            return await Task.Run(() => Registries.TryRemove(registry.ApiNumber,
+                                                             out _));
         }
 
         //public FracFocusContext(string configurationString)
@@ -142,6 +175,5 @@ namespace OilGas.Data.FracFocus
         //    optionsBuilder.UseMemoryCache(new MemoryCache(new MemoryDistributedCacheOptions()));
         //    optionsBuilder.UseSqlite($@"Data Source={DataStorage.FullPath}");
         //}
-
     }
 }

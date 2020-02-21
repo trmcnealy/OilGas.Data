@@ -11,7 +11,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Compile Remove="Data\Persistence\Database.cs" />
     <Compile Remove="Data\Persistence\DatabaseSettings.cs" />
     <Compile Remove="Data\Persistence\DataTableAttribute.cs" />
     <Compile Remove="Data\Persistence\FrameAdapter.cs" />
@@ -21,7 +20,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <None Include="Data\Persistence\Database.cs" />
     <None Include="Data\Persistence\DatabaseSettings.cs" />
     <None Include="Data\Persistence\OldDataBase.cs" />
     <None Include="Data\Persistence\DataTableAttribute.cs" />

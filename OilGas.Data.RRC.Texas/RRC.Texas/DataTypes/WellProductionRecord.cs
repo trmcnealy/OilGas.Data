@@ -4,28 +4,32 @@ using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Runtime.CompilerServices;
 using System.Runtime.Serialization;
+using System.Xml.Serialization;
 
 namespace OilGas.Data.RRC.Texas
 {
     [Serializable]
     [DataContract]
-    [Table("WellProductionRecords")]
+    [XmlRoot("WellProductionRecords")]
     public sealed class WellProductionRecord : IDataTable<int>, IEquatable<WellProductionRecord>
     {
-        [DataMember]
-        [Key]
+        [IgnoreDataMember, XmlIgnore]
+        //[Key]
         public int Id { get; set; }
 
-        [IgnoreDataMember, ForeignKey("Records")]
+        [IgnoreDataMember, XmlIgnore, ForeignKey("Records")]
         public WellProduction WellProduction { get; set; }
 
         [DataMember]
+        [XmlElement]
         public int Month { get; set; }
 
         [DataMember]
+        [XmlElement]
         public float MonthlyOil { get; set; }
 
         [DataMember]
+        [XmlElement]
         public float MonthlyGas { get; set; }
 
         public WellProductionRecord()

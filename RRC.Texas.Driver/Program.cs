@@ -21,6 +21,8 @@ using System.Numerics;
 using System.Runtime.Serialization.Formatters.Binary;
 using System.Threading.Tasks;
 
+using AngleSharp.Html.Dom;
+
 using Microsoft.DotNet.Interactive.Formatting;
 
 using OilGas.Data.RRC.Texas;
@@ -33,7 +35,19 @@ namespace RRC.Texas.Driver
 
         private static void Main(string[] args)
         {
-            Test5();
+            //IEnumerable<string> organizationNames = QueryBuilder.OrganizationNameQueryByNumber("947128");
+
+            //foreach (string organizationName in organizationNames)
+            //{
+            //    Console.WriteLine(organizationName);
+            //}
+
+
+
+
+            //TestDb0();
+
+            //Test5();
 
             //TestDb1();
             //TestDb2();
@@ -47,7 +61,7 @@ namespace RRC.Texas.Driver
         //private static void TestDb1()
         //{
         //    FracFocusDataAdapter.Initialize(new DataStorage("Rrc.Texas.db"));
-
+        //
         //    string queryString = "SELECT [pKey],"                                                                                             +
         //                         "[JobStartDate],[JobEndDate],[APINumber],[StateNumber],[CountyNumber],[OperatorName],[WellName],[Latitude]," +
         //                         "[Longitude],[Projection],[TVD],[TotalBaseWaterVolume],[TotalBaseNonWaterVolume],[StateName],[CountyName],"  +
@@ -89,11 +103,32 @@ namespace RRC.Texas.Driver
         //    FracFocusDataAdapter.Commit();
         //}
 
+
+        private static void TestDb0()
+        {
+            DataStorage ds = new DataStorage("ConcurrentDictionary.Test");
+
+            Database<int, double[]> db = new Database<int, double[]>(ds);
+
+            db.KeyValues.TryAdd(0,
+                                new double[] { 0.2003 });
+            db.KeyValues.TryAdd(1,
+                                new double[] { 1.2003 });
+            db.KeyValues.TryAdd(2,
+                                new double[] { 2.2003 });
+
+            db.Save();
+
+            Database<int, double[]> loaded_db = Database<int, double[]>.Load(ds);
+
+            Console.WriteLine(loaded_db.KeyValues[0][0]);
+        }
+
         private static void TestDb2()
         {
             FracFocusDataAdapter.Initialize(new DataStorage("Rrc.Texas.db"));
 
-            Registry entry = FracFocusDataAdapter.GetWellByApi("42-317-39174").Result;
+            Registry entry = FracFocusDataAdapter.GetWellByApi("42-317-39174");
 
             //foreach(KeyValuePair<Guid, Registry> entry in entries)
             //{

@@ -121,6 +121,8 @@ namespace OilGas.Data.RRC.Texas
 
                 Instance.DbContext = new RrcTexasContext(dbPath);
             }
+            
+            Instance.DbContext.Load();
 
             //if(Instance.DbContext.WellProductionRecords == null)
             //{
@@ -142,9 +144,9 @@ namespace OilGas.Data.RRC.Texas
         {
             try
             {
-                if(Instance.DbContext.WellProductions.TryGetValue(wellProduction, out WellProduction record))
+                if(Instance.DbContext.WellProductions.ContainsKey(wellProduction.Api))
                 {
-                    return await Instance.DbContext.UpdateAsync(record, wellProduction);
+                    return await Instance.DbContext.UpdateAsync(wellProduction);
                 }
                 return await Instance.DbContext.InsertAsync(wellProduction);
             }
@@ -256,11 +258,9 @@ namespace OilGas.Data.RRC.Texas
             {
                 try
                 {
-                    WellProduction records = await Task.Run(() => Instance.DbContext.WellProductions.AsParallel().FirstOrDefault(x => x.Api == api));
-
-                    if(records != null)
+                    if(Instance.DbContext.WellProductions.TryGetValue(api.ToString(), out WellProduction record))
                     {
-                        return records;
+                        return record;
                     }
                 }
                 catch(Exception ex)

@@ -38,6 +38,8 @@ namespace OilGas.Data.FracFocus
 #endif
         static FracFocusDataAdapter()
         {
+            throw new Exception("OilGas.Data.FracFocus.FracFocusDataAdapter is not working until the FracFocus.db is rebuilt.");
+
             AppDomain.CurrentDomain.ProcessExit += RrcTexasDataAdapter_Dtor;
         }
 
@@ -121,7 +123,7 @@ namespace OilGas.Data.FracFocus
 
         public static List<Registry> All()
         {
-            return Instance.DbContext.Registries.ToList();
+            return Instance.DbContext.Registries.Values.ToList();
         }
 
 #if NETCOREAPP
@@ -129,13 +131,12 @@ namespace OilGas.Data.FracFocus
 #else
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
 #endif
-        public static async Task<Registry> GetWellByApi(ApiNumber api)
+        public static Registry GetWellByApi(ApiNumber api)
         {
             try
             {
-                Registry record = await Task.Run(() => Instance.DbContext.Registries.AsParallel().FirstOrDefault(x => x.ApiNumber == api));
-
-                if(record != null)
+                if(Instance.DbContext.Registries.TryGetValue(api.ToString(),
+                                                             out Registry record))
                 {
                     return record;
                 }
@@ -157,7 +158,7 @@ namespace OilGas.Data.FracFocus
         {
             try
             {
-                IEnumerable<Registry> record = await Task.Run(() => Instance.DbContext.Registries.Where(x => x.OperatorName == operatorName));
+                IEnumerable<Registry> record = await Task.Run(() => Instance.DbContext.Registries.Values.AsParallel().Where(x => x.OperatorName == operatorName));
 
                 if(record != null)
                 {
@@ -181,10 +182,11 @@ namespace OilGas.Data.FracFocus
         {
             try
             {
-                if(Instance.DbContext.Registries.TryGetValue(registry, out Registry record))
+                if(Instance.DbContext.Registries.ContainsKey(registry.ApiNumber))
                 {
-                    return await Instance.DbContext.UpdateAsync(record, registry);
+                    return await Instance.DbContext.UpdateAsync(registry);
                 }
+
                 return await Instance.DbContext.InsertAsync(registry);
             }
             catch(Exception ex)

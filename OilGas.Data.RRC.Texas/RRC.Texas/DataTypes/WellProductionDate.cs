@@ -1,20 +1,22 @@
 ﻿using System;
 using System.Runtime.Serialization;
+using System.Xml.Serialization;
 
 namespace OilGas.Data.RRC.Texas
 {
     [Serializable]
     [DataContract]
+    [XmlType]
     public sealed class WellProductionDate
     {
-        [IgnoreDataMember]
+        [IgnoreDataMember, XmlIgnore]
         public int Month { get; set; }
 
-        [IgnoreDataMember]
+        [IgnoreDataMember, XmlIgnore]
         public int Year { get; set; }
 
         [DataMember]
-
+        [XmlElement]
         public string Date { get { return ToString(); } }
 
         public WellProductionDate()

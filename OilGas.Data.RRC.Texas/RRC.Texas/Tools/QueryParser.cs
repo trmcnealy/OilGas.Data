@@ -75,6 +75,29 @@ namespace OilGas.Data.RRC.Texas
             return null;
         }
 
+        public static List<string> ParseOrganizationNameQuery(IHtmlDocument htmlDoc)
+        {
+            IElement bodyNode = htmlDoc.Body;
+
+            IElement contentAreaTable = bodyNode.GetElementWithClass("ContentArea");
+
+            IElement operatorQueryActionForm = contentAreaTable.GetElementWithAttribute("name",
+                                                                                        "operatorQueryActionForm");
+
+            IElement tabBox2Table = operatorQueryActionForm.GetElementWithClass("TabBox2");
+
+            List<IElement> elements = tabBox2Table.GetElementsByTags(tbody.tr.td.table[1].tbody.tr[6].td[1].select.GetRootParent());
+
+            List<string> operatorNames = new List<string>(elements.Count);
+
+            foreach(IElement element in elements)
+            {
+                operatorNames.Add(element.OuterHtml);
+            }
+
+            return operatorNames;
+        }
+
         //public static object extract_well_type(object lease_query_result)
         //{
         //    if(!extract_well_type.__dict__.Contains("detail_link_rgx"))

@@ -4,9 +4,11 @@ using System.IO;
 using System.Runtime.Serialization;
 using System.Threading.Tasks;
 using System.Xml;
+using System.Xml.Serialization;
 
 namespace OilGas.Data.RRC.Texas
 {
+    [XmlRoot("RrcTexasDb")]
     [Serializable]
     [DataContract]
     public sealed class RrcTexasContext : IDisposable
@@ -14,10 +16,13 @@ namespace OilGas.Data.RRC.Texas
         internal const string DefaultDbName = "Rrc.Texas";
 
         [DataMember]
-        public HashSet<WellProduction> WellProductions { get; private set; } = new HashSet<WellProduction>();
-
-        [IgnoreDataMember]
-        public DataStorage DataStorage { get; }
+        [XmlElement]
+        public SerializableConcurrentDictionary<string /*API*/, WellProduction> WellProductions { get; set; } =
+            new SerializableConcurrentDictionary<string /*API*/, WellProduction>();
+            
+        [DataMember]
+        [XmlElement]
+        public DataStorage DataStorage { get; set; }
 
         public RrcTexasContext()
             : this(new DataStorage(DefaultDbName))
@@ -29,21 +34,55 @@ namespace OilGas.Data.RRC.Texas
             DataStorage = dataStorage;
         }
 
+
+        internal RrcTexasContext(RrcTexasContext db)
+        {
+            DataStorage = db.DataStorage;
+            WellProductions = db.WellProductions;
+        }
+
+        //public void Save()
+        //{
+        //    FileStream writer = new FileStream(DataStorage.FullPath,
+        //                                       FileMode.Create);
+        //
+        //    DataContractSerializer ser = new DataContractSerializer(typeof(RrcTexasContext));
+        //
+        //    ser.WriteObject(writer,
+        //                    this);
+        //
+        //    writer.Close();
+        //}
+        
         public void Save()
         {
-            FileStream writer = new FileStream(DataStorage.FullPath,
-                                               FileMode.Create);
+            XmlSerializer ser = new XmlSerializer(typeof(RrcTexasContext));
 
-            DataContractSerializer ser = new DataContractSerializer(typeof(RrcTexasContext));
+            using(FileStream writer = new FileStream(DataStorage.FullPath,
+                                                     FileMode.Create))
+            {
+                using(XmlWriter xmlWriter = XmlWriter.Create(writer,
+                                                             new XmlWriterSettings
+                                                             {
+                                                                 Indent = false
+                                                             }))
+                {
+                    ser.Serialize(xmlWriter,
+                                  this);
+                }
 
-            ser.WriteObject(writer,
-                            this);
-
-            writer.Close();
+                writer.Flush();
+            }
         }
 
         public void Load()
         {
+            if(!File.Exists(DataStorage.FullPath))
+            {
+                return;
+                //throw new FileNotFoundException(DataStorage.FullPath);
+            }
+
             using FileStream fs = new FileStream(DataStorage.FullPath,
                                                  FileMode.Open);
 
@@ -52,10 +91,11 @@ namespace OilGas.Data.RRC.Texas
             XmlDictionaryReader reader = XmlDictionaryReader.CreateTextReader(fs,
                                                                               xmlQuotas);
 
-            DataContractSerializer ser = new DataContractSerializer(typeof(RrcTexasContext));
+            XmlSerializer ser = new XmlSerializer(typeof(RrcTexasContext));
 
-            WellProductions = ((RrcTexasContext)ser.ReadObject(reader,
-                                                               true)).WellProductions;
+            RrcTexasContext db = (RrcTexasContext)ser.Deserialize(reader);
+
+            WellProductions = db.WellProductions;
 
             reader.Close();
 
@@ -68,7 +108,6 @@ namespace OilGas.Data.RRC.Texas
             WellProductions.Clear();
         }
 
-        
         public async Task<bool> InsertAsync(WellProduction wellProduction)
         {
             if(wellProduction.Id == 0)
@@ -76,19 +115,31 @@ namespace OilGas.Data.RRC.Texas
                 wellProduction.Id = WellProductions.Count;
             }
 
-            return await Task.Run(() => WellProductions.Add(wellProduction));
+            return await Task.Run(() => WellProductions.TryAdd(wellProduction.Api,
+                                                               wellProduction));
         }
 
-        public async Task<bool> UpdateAsync(WellProduction oldValue, WellProduction newValue)
+        public async Task<bool> UpdateAsync(WellProduction newValue)
         {
-            newValue.Id = oldValue.Id;
+            if(WellProductions.TryGetValue(newValue.Api,
+                                           out WellProduction oldValue))
+            {
+                newValue.Id = oldValue.Id;
 
-            WellProductions.Remove(oldValue);
+                return await Task.Run(() => WellProductions.TryUpdate(newValue.Api,
+                                                                      newValue,
+                                                                      oldValue));
+            }
 
-            return await Task.Run(() => WellProductions.Add(newValue));
+            return await Task.Run(() => WellProductions.TryAdd(newValue.Api,
+                                                               newValue));
         }
 
-
+        public async Task<bool> RemoveAsync(WellProduction wellProduction)
+        {
+            return await Task.Run(() => WellProductions.TryRemove(wellProduction.Api,
+                                                                  out _));
+        }
 
         //public RrcTexasContext(string configurationString)
         //{
