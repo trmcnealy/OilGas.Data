@@ -3,7 +3,7 @@
 <package>
   <metadata>
     <id>OilGas.Data</id>
-    <version>1.2.0</version>
+    <version>1.2.1</version>
     <authors>Timothy R. McNealy</authors>
     <owners>Timothy R. McNealy</owners>
     <license type="expression">MIT</license>
@@ -19,13 +19,13 @@
         <dependency id="Microsoft.Data.Analysis" version="0.2.0" exclude="Build,Analyzers" />
         <dependency id="System.Memory" version="4.5.3" exclude="Build,Analyzers" />
         <dependency id="System.Text.Encoding.CodePages" version="4.3.0" exclude="Build,Analyzers" />
-        <dependency id="VegaLite.NET" version="1.0.10" exclude="Build,Analyzers" />
+        <dependency id="VegaLite.NET" version="1.0.14" exclude="Build,Analyzers" />
       </group>
       <group targetFramework=".NETCoreApp3.1">
         <dependency id="Microsoft.Data.Analysis" version="0.2.0" exclude="Build,Analyzers" />
         <dependency id="System.Memory" version="4.5.3" exclude="Build,Analyzers" />
         <dependency id="System.Text.Encoding.CodePages" version="4.3.0" exclude="Build,Analyzers" />
-        <dependency id="VegaLite.NET" version="1.0.10" exclude="Build,Analyzers" />
+        <dependency id="VegaLite.NET" version="1.0.14" exclude="Build,Analyzers" />
       </group>
     </dependencies>
   </metadata>

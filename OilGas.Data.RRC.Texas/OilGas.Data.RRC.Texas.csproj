@@ -15,7 +15,7 @@
   
   <ItemGroup>
     <PackageReference Include="Microsoft.Data.Analysis" Version="0.2.0" />
-    <PackageReference Include="VegaLite.NET" Version="1.0.10" />
+    <PackageReference Include="VegaLite.NET" Version="1.0.14" />
   </ItemGroup>
   
   <ItemGroup>
