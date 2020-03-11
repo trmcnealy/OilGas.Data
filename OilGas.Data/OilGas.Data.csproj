@@ -6,8 +6,9 @@
     <NuspecFile>D:\TFS_Sources\Github\Compilation\trmcnealy\OilGas.Data\OilGas.Data\Data\Packaging\OilGas.Data.nuspec</NuspecFile>
     <GeneratePackageOnBuild Condition="'$(Configuration)'!='Release'">false</GeneratePackageOnBuild>
     <RootNamespace>OilGas</RootNamespace>
-    <Version>1.0.4</Version>
+    <Version>1.3.0</Version>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
   </PropertyGroup>
 
   <ItemGroup>
@@ -36,7 +37,7 @@
     <PackageReference Include="Microsoft.Data.Analysis" Version="0.2.0" />
     <PackageReference Include="System.Memory" Version="4.5.3" />
     <PackageReference Include="System.Text.Encoding.CodePages" Version="4.7.0" />
-    <PackageReference Include="VegaLite.NET" Version="1.0.14" />
+    <PackageReference Include="VegaLite.NET" Version="1.1.0" />
   </ItemGroup>
 
   <ItemGroup>
