@@ -12,6 +12,12 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="AngleSharp\**" />
+    <EmbeddedResource Remove="AngleSharp\**" />
+    <None Remove="AngleSharp\**" />
+  </ItemGroup>
+
+  <ItemGroup>
     <Compile Remove="Data\Persistence\DatabaseSettings.cs" />
     <Compile Remove="Data\Persistence\DataTableAttribute.cs" />
     <Compile Remove="Data\Persistence\FrameAdapter.cs" />
@@ -34,6 +40,7 @@
   </ItemGroup>
   
   <ItemGroup>
+    <PackageReference Include="AngleSharp" Version="0.14.0-alpha-796" />
     <PackageReference Include="Microsoft.Data.Analysis" Version="0.2.0" />
     <PackageReference Include="System.Memory" Version="4.5.3" />
     <PackageReference Include="System.Text.Encoding.CodePages" Version="4.7.0" />
