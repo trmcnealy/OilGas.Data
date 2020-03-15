@@ -10,6 +10,9 @@ using System.Xml.Serialization;
 
 using Microsoft.Data.Analysis;
 
+using Newtonsoft.Json;
+using Newtonsoft.Json.Serialization;
+
 using VegaLite;
 
 namespace OilGas.Data.RRC.Texas
@@ -19,40 +22,58 @@ namespace OilGas.Data.RRC.Texas
     [XmlRoot("WellProduction")]
     public sealed class WellProduction : IDataTable<int>, IEquatable<WellProduction>
     {
-        [IgnoreDataMember, XmlIgnore]
+        [IgnoreDataMember]
+        [XmlIgnore]
+        [JsonIgnore]
         //[Key]
         public int Id { get; set; }
 
         [DataMember]
         [XmlElement]
+        [JsonProperty(nameof(Api),
+                      NamingStrategyType = typeof(DefaultNamingStrategy))]
         public string Api { get; set; }
 
         [DataMember]
         [XmlElement]
+        [JsonProperty(nameof(StartDate),
+                      NamingStrategyType = typeof(DefaultNamingStrategy))]
         public string StartDate { get; set; }
 
         [DataMember]
         [XmlElement]
+        [JsonProperty(nameof(EndDate),
+                      NamingStrategyType = typeof(DefaultNamingStrategy))]
         public string EndDate { get; set; }
 
         [DataMember]
         [XmlElement]
+        [JsonProperty(nameof(OperatorName),
+                      NamingStrategyType = typeof(DefaultNamingStrategy))]
         public string OperatorName { get; set; }
 
         [DataMember]
         [XmlElement]
+        [JsonProperty(nameof(OperatorNumber),
+                      NamingStrategyType = typeof(DefaultNamingStrategy))]
         public string OperatorNumber { get; set; }
 
         [DataMember]
         [XmlElement]
+        [JsonProperty(nameof(FieldName),
+                      NamingStrategyType = typeof(DefaultNamingStrategy))]
         public string FieldName { get; set; }
 
         [DataMember]
         [XmlElement]
+        [JsonProperty(nameof(FieldNumber),
+                      NamingStrategyType = typeof(DefaultNamingStrategy))]
         public string FieldNumber { get; set; }
 
         [DataMember]
         [XmlElement]
+        [JsonProperty(nameof(Records),
+                      NamingStrategyType = typeof(DefaultNamingStrategy))]
         public List<WellProductionRecord> Records { get; set; }
 
         public WellProduction()
@@ -254,7 +275,7 @@ namespace OilGas.Data.RRC.Texas
             return dataFrame;
         }
 
-        public Chart BuildChart()
+        public Chart BuildChart(bool embedData = false)
         {
             List<InlineDatasetElement> dataset = new List<InlineDatasetElement>();
 
@@ -293,6 +314,23 @@ namespace OilGas.Data.RRC.Texas
                     X = new XClass()
                     {
                         Type = StandardType.Quantitative, Field = "Month"
+                    },
+                    Color = new DefWithConditionMarkPropFieldDefGradientStringNull()
+                    {
+                        Type  = StandardType.Nominal,
+                        Field = "API",
+                        Scale = new Scale()
+                        {
+                            Scheme = "category20b"
+                        }
+                    },
+                    Opacity = new DefWithConditionMarkPropFieldDefNumber()
+                    {
+                        Value = 0.2,
+                        Condition = new ConditionalDef()
+                        {
+                            Selection = "API", Value = 1.0
+                        }
                     }
                 },
                 Layer = new List<LayerSpec>()
@@ -301,11 +339,25 @@ namespace OilGas.Data.RRC.Texas
                     {
                         Mark = new BoxPlotDefClass()
                         {
-                            Type = BoxPlot.Line, Stroke = "#00FF00",
+                            Type = BoxPlot.Line, Stroke = "#00FF00"
                             //Point = new OverlayMarkDef()
                             //{
                             //    Filled = false, Fill = "white"
                             //}
+                        },
+                        Selection = new Dictionary<string, SelectionDef>()
+                        {
+                            {
+                                "API", new SelectionDef()
+                                {
+                                    Type = SelectionDefType.Multi,
+                                    Bind = SelectionLegendBinding.Legend,
+                                    Fields = new List<string>()
+                                    {
+                                        "MonthlyOil"
+                                    }
+                                }
+                            }
                         },
                         Encoding = new LayerEncoding()
                         {
@@ -328,11 +380,25 @@ namespace OilGas.Data.RRC.Texas
                     {
                         Mark = new BoxPlotDefClass()
                         {
-                            Type = BoxPlot.Line, Stroke = "#FF0000",
+                            Type = BoxPlot.Line, Stroke = "#FF0000"
                             //Point = new OverlayMarkDef()
                             //{
                             //    Filled = false, Fill = "white"
                             //}
+                        },
+                        Selection = new Dictionary<string, SelectionDef>()
+                        {
+                            {
+                                "API", new SelectionDef()
+                                {
+                                    Type = SelectionDefType.Multi,
+                                    Bind = SelectionLegendBinding.Legend,
+                                    Fields = new List<string>()
+                                    {
+                                        "MonthlyGas"
+                                    }
+                                }
+                            }
                         },
                         Encoding = new LayerEncoding()
                         {

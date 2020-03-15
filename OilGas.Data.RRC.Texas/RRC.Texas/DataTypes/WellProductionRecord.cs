@@ -6,6 +6,9 @@ using System.Runtime.CompilerServices;
 using System.Runtime.Serialization;
 using System.Xml.Serialization;
 
+using Newtonsoft.Json;
+using Newtonsoft.Json.Serialization;
+
 namespace OilGas.Data.RRC.Texas
 {
     [Serializable]
@@ -13,23 +16,26 @@ namespace OilGas.Data.RRC.Texas
     [XmlRoot("WellProductionRecords")]
     public sealed class WellProductionRecord : IDataTable<int>, IEquatable<WellProductionRecord>
     {
-        [IgnoreDataMember, XmlIgnore]
+        [IgnoreDataMember, XmlIgnore, JsonIgnore]
         //[Key]
         public int Id { get; set; }
 
-        [IgnoreDataMember, XmlIgnore, ForeignKey("Records")]
+        [IgnoreDataMember, XmlIgnore, JsonIgnore, ForeignKey("Records")]
         public WellProduction WellProduction { get; set; }
 
         [DataMember]
         [XmlElement]
+        [JsonProperty(nameof(Month), NamingStrategyType = typeof(DefaultNamingStrategy))]
         public int Month { get; set; }
 
         [DataMember]
         [XmlElement]
+        [JsonProperty(nameof(MonthlyOil), NamingStrategyType = typeof(DefaultNamingStrategy))]
         public float MonthlyOil { get; set; }
 
         [DataMember]
         [XmlElement]
+        [JsonProperty(nameof(MonthlyGas), NamingStrategyType = typeof(DefaultNamingStrategy))]
         public float MonthlyGas { get; set; }
 
         public WellProductionRecord()
