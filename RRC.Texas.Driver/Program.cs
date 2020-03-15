@@ -394,7 +394,14 @@ namespace RRC.Texas.Driver
 
             RrcTexasDataAdapter.Commit();
 
-            Chart chart = wellProduction.BuildChart();
+            WellProductionRecord[] production4228533615 = wellProduction.Records.ToArray();
+
+            Specification specification = WellProduction.DefaultSpecification(nameof(production4228533615));
+
+            Chart chart = new Chart($"Monthly Production",
+                                    specification,
+                                    750,
+                                    500);
 
             chart.ShowInBrowser();
 

@@ -1,4 +1,5 @@
-﻿using System;
+﻿// ReSharper disable InconsistentNaming
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
@@ -16,27 +17,47 @@ namespace OilGas.Data.RRC.Texas
     [XmlRoot("WellProductionRecords")]
     public sealed class WellProductionRecord : IDataTable<int>, IEquatable<WellProductionRecord>
     {
-        [IgnoreDataMember, XmlIgnore, JsonIgnore]
+        [IgnoreDataMember]
+        [XmlIgnore]
+        [JsonIgnore]
         //[Key]
         public int Id { get; set; }
 
-        [IgnoreDataMember, XmlIgnore, JsonIgnore, ForeignKey("Records")]
+        [IgnoreDataMember]
+        [XmlIgnore]
+        [JsonIgnore]
+        [ForeignKey("Records")]
         public WellProduction WellProduction { get; set; }
+
+        [IgnoreDataMember]
+        [XmlIgnore]
+        [JsonProperty(nameof(Api),
+                      NamingStrategyType = typeof(DefaultNamingStrategy))]
+        public string Api { get { return WellProduction.Api; } }
 
         [DataMember]
         [XmlElement]
-        [JsonProperty(nameof(Month), NamingStrategyType = typeof(DefaultNamingStrategy))]
+        [JsonProperty(nameof(Month),
+                      NamingStrategyType = typeof(DefaultNamingStrategy))]
         public int Month { get; set; }
 
         [DataMember]
         [XmlElement]
-        [JsonProperty(nameof(MonthlyOil), NamingStrategyType = typeof(DefaultNamingStrategy))]
+        [JsonProperty(nameof(MonthlyOil),
+                      NamingStrategyType = typeof(DefaultNamingStrategy))]
         public float MonthlyOil { get; set; }
 
         [DataMember]
         [XmlElement]
-        [JsonProperty(nameof(MonthlyGas), NamingStrategyType = typeof(DefaultNamingStrategy))]
+        [JsonProperty(nameof(MonthlyGas),
+                      NamingStrategyType = typeof(DefaultNamingStrategy))]
         public float MonthlyGas { get; set; }
+
+        [IgnoreDataMember]
+        [XmlIgnore]
+        [JsonProperty(nameof(MonthlyBOE),
+                      NamingStrategyType = typeof(DefaultNamingStrategy))]
+        public float MonthlyBOE { get { return (MonthlyOil + (MonthlyGas / 5.8f)); } }
 
         public WellProductionRecord()
         {
@@ -47,7 +68,7 @@ namespace OilGas.Data.RRC.Texas
                                     float          monthlyOil,
                                     float          monthlyGas)
         {
-            Id = wellProduction.Records.Count;
+            Id             = wellProduction.Records.Count;
             WellProduction = wellProduction;
             Month          = month;
             MonthlyOil     = monthlyOil;

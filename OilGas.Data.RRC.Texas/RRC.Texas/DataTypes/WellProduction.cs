@@ -275,62 +275,32 @@ namespace OilGas.Data.RRC.Texas
             return dataFrame;
         }
 
-        public Chart BuildChart(bool embedData = false)
+        public WellProductionRecord[] GetProductionForVegaChart()
         {
-            List<InlineDatasetElement> dataset = new List<InlineDatasetElement>();
+            WellProductionRecord[] records = Records.ToArray();
 
-            WellProductionRecord record;
-
-            for(int i = 0; i < Records.Count; ++i)
+            for(int i = 0; i < records.Length; ++i)
             {
-                record = Records[i];
-
-                dataset.Add(new Dictionary<string, object>(4)
-                {
-                    {
-                        "API", Api.ToString()
-                    },
-                    {
-                        "Month", record.Month
-                    },
-                    {
-                        "MonthlyOil", record.MonthlyOil
-                    },
-                    {
-                        "MonthlyGas", record.MonthlyGas
-                    }
-                });
+                records[i].WellProduction = this;
             }
 
+            return records;
+        }
+
+        public static Specification DefaultSpecification(string datasetName)
+        {
             Specification specification = new Specification
             {
                 //Description = "Stock prices of 5 Tech Companies over Time.",
                 Data = new DataSource()
                 {
-                    Values = dataset
+                    Name = datasetName
                 },
                 Encoding = new Encoding()
                 {
                     X = new XClass()
                     {
                         Type = StandardType.Quantitative, Field = "Month"
-                    },
-                    Color = new DefWithConditionMarkPropFieldDefGradientStringNull()
-                    {
-                        Type  = StandardType.Nominal,
-                        Field = "API",
-                        Scale = new Scale()
-                        {
-                            Scheme = "category20b"
-                        }
-                    },
-                    Opacity = new DefWithConditionMarkPropFieldDefNumber()
-                    {
-                        Value = 0.2,
-                        Condition = new ConditionalDef()
-                        {
-                            Selection = "API", Value = 1.0
-                        }
                     }
                 },
                 Layer = new List<LayerSpec>()
@@ -344,20 +314,6 @@ namespace OilGas.Data.RRC.Texas
                             //{
                             //    Filled = false, Fill = "white"
                             //}
-                        },
-                        Selection = new Dictionary<string, SelectionDef>()
-                        {
-                            {
-                                "API", new SelectionDef()
-                                {
-                                    Type = SelectionDefType.Multi,
-                                    Bind = SelectionLegendBinding.Legend,
-                                    Fields = new List<string>()
-                                    {
-                                        "MonthlyOil"
-                                    }
-                                }
-                            }
                         },
                         Encoding = new LayerEncoding()
                         {
@@ -386,20 +342,6 @@ namespace OilGas.Data.RRC.Texas
                             //    Filled = false, Fill = "white"
                             //}
                         },
-                        Selection = new Dictionary<string, SelectionDef>()
-                        {
-                            {
-                                "API", new SelectionDef()
-                                {
-                                    Type = SelectionDefType.Multi,
-                                    Bind = SelectionLegendBinding.Legend,
-                                    Fields = new List<string>()
-                                    {
-                                        "MonthlyGas"
-                                    }
-                                }
-                            }
-                        },
                         Encoding = new LayerEncoding()
                         {
                             Color = new DefWithConditionMarkPropFieldDefGradientStringNull()
@@ -427,12 +369,7 @@ namespace OilGas.Data.RRC.Texas
                 }
             };
 
-            Chart chart = new Chart($"Monthly Production",
-                                    specification,
-                                    500,
-                                    500);
-
-            return chart;
+            return specification;
         }
 
         public bool Equals(WellProduction other)
@@ -495,11 +432,6 @@ namespace OilGas.Data.RRC.Texas
         {
             return !Equals(left,
                            right);
-        }
-
-        public override string ToString()
-        {
-            return BuildChart().ToString();
         }
     }
 }
