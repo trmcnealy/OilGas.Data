@@ -30,7 +30,7 @@ namespace OilGas.Data.RRC.Texas
 
         [DataMember]
         [XmlElement]
-        [JsonProperty(nameof(Api),
+        [JsonProperty("API",
                       NamingStrategyType = typeof(DefaultNamingStrategy))]
         public string Api { get; set; }
 
