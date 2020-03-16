@@ -329,6 +329,14 @@ namespace OilGas.Data.RRC.Texas
                                 {
                                     Title = "MonthlyOil (BOPD)", TitleColor = "#00FF00"
                                 }
+                            },
+                            Tooltip = new List<StringFieldDef>()
+                            {
+                                new StringFieldDef()
+                                {
+                                    Type  = StandardType.Quantitative,
+                                    Field = "MonthlyOil"
+                                }
                             }
                         }
                     },
@@ -355,6 +363,14 @@ namespace OilGas.Data.RRC.Texas
                                 Axis = new Axis()
                                 {
                                     Title = "MonthlyGas (MSCFPD)", TitleColor = "#FF0000"
+                                }
+                            },
+                            Tooltip = new List<StringFieldDef>()
+                            {
+                                new StringFieldDef()
+                                {
+                                    Type  = StandardType.Quantitative,
+                                    Field = "MonthlyGas"
                                 }
                             }
                         }
