@@ -1,14 +1,17 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFrameworks>netstandard2.1;netcoreapp3.1</TargetFrameworks>
-    <!-- <UseWPF>true</UseWPF> -->
+    <TargetFrameworks>netcoreapp3.1</TargetFrameworks>
+   <!-- <TargetFrameworks>netstandard2.1;netcoreapp3.1</TargetFrameworks>
+     <UseWPF>true</UseWPF> -->
     <NuspecFile>D:\TFS_Sources\Github\Compilation\trmcnealy\OilGas.Data\OilGas.Data\Data\Packaging\OilGas.Data.nuspec</NuspecFile>
     <GeneratePackageOnBuild Condition="'$(Configuration)'!='Release'">false</GeneratePackageOnBuild>
     <RootNamespace>OilGas</RootNamespace>
     <Version>1.3.0</Version>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
-    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+    <GeneratePackageOnBuild>false</GeneratePackageOnBuild>
+    <PackageOutputPath Condition="'$(PACKAGE_CACHE)'!=''">$(PACKAGE_CACHE)</PackageOutputPath>
+    <PackageOutputPath Condition="'$(PACKAGE_CACHE)'==''">$(OutputPath)</PackageOutputPath>
   </PropertyGroup>
 
   <ItemGroup>
@@ -44,12 +47,17 @@
     <PackageReference Include="Microsoft.Data.Analysis" Version="0.2.0" />
     <PackageReference Include="System.Memory" Version="4.5.3" />
     <PackageReference Include="System.Text.Encoding.CodePages" Version="4.7.0" />
-    <PackageReference Include="VegaLite.NET" Version="1.3.6" />
+    <PackageReference Include="VegaLite.NET" Version="1.3.10" />
+    <PackageReference Include="ParallelExtensionsExtras" Version="1.0.0" />
   </ItemGroup>
 
   <ItemGroup>
     <Service Include="{508349b6-6b84-4df5-91f0-309beebad82d}" />
   </ItemGroup>
+
+  <Target Name="PostBuild" AfterTargets="PostBuildEvent">
+    <Exec Command="&#xA;rd /s /q C:\Users\tehgo\.nuget\packages\oilgas.data" />
+  </Target>
 
 
 </Project>

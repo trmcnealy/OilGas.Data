@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Globalization;
+using System.IO;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
@@ -10,6 +11,11 @@ using System.Threading.Tasks;
 using AngleSharp;
 using AngleSharp.Html.Dom;
 using AngleSharp.Html.Parser;
+
+using Newtonsoft.Json;
+
+using OpenScraping;
+using OpenScraping.Config;
 
 namespace OilGas.Data.RRC.Texas
 {
@@ -439,7 +445,24 @@ namespace OilGas.Data.RRC.Texas
         }
 
 
+        public static string CompletionReport()
+        {
 
+            var configPath = Path.Combine("TestData", "support.office.com.json");
+
+            var config     = StructuredDataConfig.ParseJsonFile(configPath);
+
+            var extractor  = new StructuredDataExtractor(config);
+
+            var result     = extractor.Extract(File.ReadAllText(Path.Combine("TestData", "support.office.com.html")));
+
+            var json       = JsonConvert.SerializeObject(result, Formatting.Indented);
+
+
+
+
+            return string.Empty;
+        }
 
 
 
