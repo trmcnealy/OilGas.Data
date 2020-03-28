@@ -420,12 +420,11 @@ namespace OilGas.Data.Charting
                 {
                     X = new XClass
                     {
-                        Type = StandardType.Quantitative,
+                        Type  = StandardType.Quantitative,
                         Field = "Day",
-                        Axis = new Axis()
+                        Axis = new Axis
                         {
-                            Title     = "Time (Day)",
-                            MinExtent = 0.0
+                            Title = "Time (Day)", MinExtent = 0.0
                         }
                     }
                 },
@@ -441,13 +440,12 @@ namespace OilGas.Data.Charting
                         {
                             Y = new YClass
                             {
-                                Type = StandardType.Quantitative, Field = "Rate",
-                                Axis = new Axis()
+                                Type  = StandardType.Quantitative,
+                                Field = "Rate",
+                                Axis = new Axis
                                 {
-                                    Title = "Rate (BOE)",
-                                    MinExtent = 0.0
+                                    Title = "Rate (BOE)", MinExtent = 0.0
                                 }
-                                
                             },
                             Color = new DefWithConditionMarkPropFieldDefGradientStringNull
                             {
@@ -469,19 +467,66 @@ namespace OilGas.Data.Charting
                                 Field = "Cumulative",
                                 Axis = new Axis
                                 {
-                                    Title = "Cumulative  (BOE)",
-                                    MinExtent = 0.0
+                                    Title = "Cumulative  (BOE)", MinExtent = 0.0
                                 }
                             },
                             Color = new DefWithConditionMarkPropFieldDefGradientStringNull
                             {
                                 Type = StandardType.Nominal, Field = "Label"
+                            }
+                        }
+                    },
+                    new LayerSpec
+                    {
+                        Transform = new List<Transform>
+                        {
+                            new Transform
+                            {
+                                Pivot = "Label",
+                                Value = "Rate",
+                                Groupby = new List<string>
+                                {
+                                    "Day"
+                                }
+                            }
+                        },
+                        Mark = new BoxPlotDefClass
+                        {
+                            Type = BoxPlot.Rule
+                        },
+                        Encoding = new LayerEncoding
+                        {
+                            Opacity = new DefWithConditionMarkPropFieldDefNumber
+                            {
+                                Condition = new ConditionalDef
+                                {
+                                    Value = 0.3, Selection = "hover"
+                                },
+                                Value = 0.0
                             },
                             Tooltip = new List<StringFieldDef>
                             {
                                 new StringFieldDef
                                 {
-                                    Type = StandardType.Quantitative, Field = "Cumulative"
+                                    Type = StandardType.Quantitative,
+                                    Field = "Rate"
+                                }
+                            }
+                        },
+                        Selection = new Dictionary<string, SelectionDef>
+                        {
+                            {
+                                "hover", new SelectionDef
+                                {
+                                    Type = SelectionDefType.Single,
+                                    Fields = new List<string>
+                                    {
+                                        "Day"
+                                    },
+                                    Nearest = true,
+                                    On      = "mouseover",
+                                    Empty   = Empty.None,
+                                    Clear   = "mouseout"
                                 }
                             }
                         }

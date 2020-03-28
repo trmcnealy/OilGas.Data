@@ -4,11 +4,9 @@
     <OutputType>Exe</OutputType>
     <TargetFramework>netcoreapp3.1</TargetFramework>
   </PropertyGroup>
-  
+
   <ItemGroup>
-    <ProjectReference Include="..\OilGas.Data.FracFocus\OilGas.Data.FracFocus.csproj" />
-    <ProjectReference Include="..\OilGas.Data.RRC.Texas\OilGas.Data.RRC.Texas.csproj" />
-    <ProjectReference Include="..\OilGas.Data\OilGas.Data.csproj" />
+    <PackageReference Include="OilGas.Data" Version="1.6.5" />
   </ItemGroup>
 
 </Project>
