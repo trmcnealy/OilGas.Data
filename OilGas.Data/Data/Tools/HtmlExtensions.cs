@@ -341,6 +341,7 @@ namespace OilGas.Data
         public static readonly HtmlTag td     = new HtmlTag("td");
         public static readonly HtmlTag strong = new HtmlTag("strong");
         public static readonly HtmlTag select = new HtmlTag("select");
+        public static readonly HtmlTag input = new HtmlTag("input");
     }
 
     public static class HtmlExtensions

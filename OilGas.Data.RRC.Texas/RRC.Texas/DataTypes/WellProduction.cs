@@ -13,7 +13,7 @@ using Microsoft.Data.Analysis;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
 
-using VegaLite;
+using VegaLite.Schema;
 
 namespace OilGas.Data.RRC.Texas
 {
@@ -25,55 +25,57 @@ namespace OilGas.Data.RRC.Texas
         [IgnoreDataMember]
         [XmlIgnore]
         [JsonIgnore]
-        //[Key]
+        [Key]
         public int Id { get; set; }
 
         [DataMember]
         [XmlElement]
-        [JsonProperty("API",
-                      NamingStrategyType = typeof(DefaultNamingStrategy))]
+        [JsonProperty("API", NamingStrategyType = typeof(DefaultNamingStrategy))]
         public string Api { get; set; }
 
         [DataMember]
         [XmlElement]
-        [JsonProperty(nameof(StartDate),
-                      NamingStrategyType = typeof(DefaultNamingStrategy))]
+        [JsonProperty(nameof(Name), NamingStrategyType = typeof(DefaultNamingStrategy))]
+        public string Name { get; set; }
+
+        [DataMember]
+        [XmlElement]
+        [JsonProperty(nameof(Number), NamingStrategyType = typeof(DefaultNamingStrategy))]
+        public string Number { get; set; }
+
+        [DataMember]
+        [XmlElement]
+        [JsonProperty(nameof(StartDate), NamingStrategyType = typeof(DefaultNamingStrategy))]
         public string StartDate { get; set; }
 
         [DataMember]
         [XmlElement]
-        [JsonProperty(nameof(EndDate),
-                      NamingStrategyType = typeof(DefaultNamingStrategy))]
+        [JsonProperty(nameof(EndDate), NamingStrategyType = typeof(DefaultNamingStrategy))]
         public string EndDate { get; set; }
 
         [DataMember]
         [XmlElement]
-        [JsonProperty(nameof(OperatorName),
-                      NamingStrategyType = typeof(DefaultNamingStrategy))]
+        [JsonProperty(nameof(OperatorName), NamingStrategyType = typeof(DefaultNamingStrategy))]
         public string OperatorName { get; set; }
 
         [DataMember]
         [XmlElement]
-        [JsonProperty(nameof(OperatorNumber),
-                      NamingStrategyType = typeof(DefaultNamingStrategy))]
+        [JsonProperty(nameof(OperatorNumber), NamingStrategyType = typeof(DefaultNamingStrategy))]
         public string OperatorNumber { get; set; }
 
         [DataMember]
         [XmlElement]
-        [JsonProperty(nameof(FieldName),
-                      NamingStrategyType = typeof(DefaultNamingStrategy))]
+        [JsonProperty(nameof(FieldName), NamingStrategyType = typeof(DefaultNamingStrategy))]
         public string FieldName { get; set; }
 
         [DataMember]
         [XmlElement]
-        [JsonProperty(nameof(FieldNumber),
-                      NamingStrategyType = typeof(DefaultNamingStrategy))]
+        [JsonProperty(nameof(FieldNumber), NamingStrategyType = typeof(DefaultNamingStrategy))]
         public string FieldNumber { get; set; }
 
         [DataMember]
         [XmlElement]
-        [JsonProperty(nameof(Records),
-                      NamingStrategyType = typeof(DefaultNamingStrategy))]
+        [JsonProperty(nameof(Records), NamingStrategyType = typeof(DefaultNamingStrategy))]
         public List<WellProductionRecord> Records { get; set; }
 
         public WellProduction()
@@ -82,6 +84,8 @@ namespace OilGas.Data.RRC.Texas
         }
 
         public WellProduction(ApiNumber                  api,
+                              string                     name,
+                              string                     number,
                               WellProductionDate         startDate,
                               WellProductionDate         endDate,
                               string                     operatorName,
@@ -91,6 +95,8 @@ namespace OilGas.Data.RRC.Texas
                               List<WellProductionRecord> records = null)
         {
             Api            = api.ToString();
+            Name           = name;
+            Number         = number;
             StartDate      = startDate.Date;
             EndDate        = endDate.Date;
             OperatorName   = operatorName;
@@ -104,7 +110,8 @@ namespace OilGas.Data.RRC.Texas
         internal static readonly DateTimeStyles Styles     = DateTimeStyles.None;
         internal const           string         DateFormat = "MMM YYYY";
 
-        internal static WellProduction ConvertFrom(IEnumerable<SpecificLeaseProductionQueryData> queryData)
+        internal static WellProduction ConvertFrom(Lease                                         lease,
+                                                   IEnumerable<SpecificLeaseProductionQueryData> queryData)
         {
             List<SpecificLeaseProductionQueryData> dataRows = queryData.ToList();
 
@@ -128,6 +135,8 @@ namespace OilGas.Data.RRC.Texas
             }
 
             WellProduction wellProduction = new WellProduction(firstRow.Api,
+                                                               lease.Name,
+                                                               lease.Number,
                                                                new WellProductionDate(firstRow.Date),
                                                                new WellProductionDate(lastRow.Date),
                                                                firstRow.Operator_Name,
@@ -139,22 +148,17 @@ namespace OilGas.Data.RRC.Texas
 
             foreach(SpecificLeaseProductionQueryData dataRow in dataRows)
             {
-                if(!float.TryParse(dataRow.OIL_BBL_Production,
-                                   out float monthlyOil))
+                if(!float.TryParse(dataRow.OIL_BBL_Production, out float monthlyOil))
                 {
                     monthlyOil = 0.0f;
                 }
 
-                if(!float.TryParse(dataRow.Casinghead_MCF_Production,
-                                   out float monthlyGas))
+                if(!float.TryParse(dataRow.Casinghead_MCF_Production, out float monthlyGas))
                 {
                     monthlyGas = 0.0f;
                 }
 
-                wellProduction.Records.Add(new WellProductionRecord(wellProduction,
-                                                                    ++month,
-                                                                    monthlyOil,
-                                                                    monthlyGas));
+                wellProduction.Records.Add(new WellProductionRecord(wellProduction, ++month, monthlyOil, monthlyGas));
             }
 
             return wellProduction;
@@ -166,8 +170,7 @@ namespace OilGas.Data.RRC.Texas
 
             List<DataFrameColumn> columns = new List<DataFrameColumn>(properties.Length);
 
-            PrimitiveDataFrameColumn<int> keys = new PrimitiveDataFrameColumn<int>("Id",
-                                                                                   Records.Count);
+            PrimitiveDataFrameColumn<int> keys = new PrimitiveDataFrameColumn<int>("Id", Records.Count);
 
             columns.Add(keys);
 
@@ -181,68 +184,55 @@ namespace OilGas.Data.RRC.Texas
 
                 if(property.PropertyType == typeof(bool))
                 {
-                    columns.Add(new PrimitiveDataFrameColumn<bool>(property.Name,
-                                                                   Records.Count));
+                    columns.Add(new PrimitiveDataFrameColumn<bool>(property.Name, Records.Count));
                 }
                 else if(property.PropertyType == typeof(int))
                 {
-                    columns.Add(new PrimitiveDataFrameColumn<int>(property.Name,
-                                                                  Records.Count));
+                    columns.Add(new PrimitiveDataFrameColumn<int>(property.Name, Records.Count));
                 }
                 else if(property.PropertyType == typeof(float))
                 {
-                    columns.Add(new PrimitiveDataFrameColumn<float>(property.Name,
-                                                                    Records.Count));
+                    columns.Add(new PrimitiveDataFrameColumn<float>(property.Name, Records.Count));
                 }
                 else if(property.PropertyType == typeof(string))
                 {
-                    columns.Add(new StringDataFrameColumn(property.Name,
-                                                          Records.Count));
+                    columns.Add(new StringDataFrameColumn(property.Name, Records.Count));
                 }
                 else if(property.PropertyType == typeof(long))
                 {
-                    columns.Add(new PrimitiveDataFrameColumn<long>(property.Name,
-                                                                   Records.Count));
+                    columns.Add(new PrimitiveDataFrameColumn<long>(property.Name, Records.Count));
                 }
                 else if(property.PropertyType == typeof(decimal))
                 {
-                    columns.Add(new PrimitiveDataFrameColumn<decimal>(property.Name,
-                                                                      Records.Count));
+                    columns.Add(new PrimitiveDataFrameColumn<decimal>(property.Name, Records.Count));
                 }
                 else if(property.PropertyType == typeof(byte))
                 {
-                    columns.Add(new PrimitiveDataFrameColumn<byte>(property.Name,
-                                                                   Records.Count));
+                    columns.Add(new PrimitiveDataFrameColumn<byte>(property.Name, Records.Count));
                 }
                 else if(property.PropertyType == typeof(char))
                 {
-                    columns.Add(new PrimitiveDataFrameColumn<char>(property.Name,
-                                                                   Records.Count));
+                    columns.Add(new PrimitiveDataFrameColumn<char>(property.Name, Records.Count));
                 }
                 else if(property.PropertyType == typeof(double))
                 {
-                    columns.Add(new PrimitiveDataFrameColumn<double>(property.Name,
-                                                                     Records.Count));
+                    columns.Add(new PrimitiveDataFrameColumn<double>(property.Name, Records.Count));
                 }
                 else if(property.PropertyType == typeof(sbyte))
                 {
-                    columns.Add(new PrimitiveDataFrameColumn<sbyte>(property.Name,
-                                                                    Records.Count));
+                    columns.Add(new PrimitiveDataFrameColumn<sbyte>(property.Name, Records.Count));
                 }
                 else if(property.PropertyType == typeof(short))
                 {
-                    columns.Add(new PrimitiveDataFrameColumn<short>(property.Name,
-                                                                    Records.Count));
+                    columns.Add(new PrimitiveDataFrameColumn<short>(property.Name, Records.Count));
                 }
                 else if(property.PropertyType == typeof(uint))
                 {
-                    columns.Add(new PrimitiveDataFrameColumn<uint>(property.Name,
-                                                                   Records.Count));
+                    columns.Add(new PrimitiveDataFrameColumn<uint>(property.Name, Records.Count));
                 }
                 else if(property.PropertyType == typeof(ulong))
                 {
-                    columns.Add(new PrimitiveDataFrameColumn<ulong>(property.Name,
-                                                                    Records.Count));
+                    columns.Add(new PrimitiveDataFrameColumn<ulong>(property.Name, Records.Count));
                 }
                 else
                 {
@@ -251,8 +241,7 @@ namespace OilGas.Data.RRC.Texas
                         throw new NotSupportedException("kind");
                     }
 
-                    columns.Add(new PrimitiveDataFrameColumn<ushort>(property.Name,
-                                                                     Records.Count));
+                    columns.Add(new PrimitiveDataFrameColumn<ushort>(property.Name, Records.Count));
                 }
             }
 
@@ -266,9 +255,7 @@ namespace OilGas.Data.RRC.Texas
 
                 for(int j = 0; j < values.Length; ++j)
                 {
-                    dataFrame[i,
-                              j] = Convert.ChangeType(values[j],
-                                                      columns[j].DataType);
+                    dataFrame[i, j] = Convert.ChangeType(values[j], columns[j].DataType);
                 }
             }
 
@@ -334,8 +321,7 @@ namespace OilGas.Data.RRC.Texas
                             {
                                 new StringFieldDef()
                                 {
-                                    Type  = StandardType.Quantitative,
-                                    Field = "MonthlyOil"
+                                    Type = StandardType.Quantitative, Field = "MonthlyOil"
                                 }
                             }
                         }
@@ -369,8 +355,7 @@ namespace OilGas.Data.RRC.Texas
                             {
                                 new StringFieldDef()
                                 {
-                                    Type  = StandardType.Quantitative,
-                                    Field = "MonthlyGas"
+                                    Type = StandardType.Quantitative, Field = "MonthlyGas"
                                 }
                             }
                         }
@@ -390,14 +375,12 @@ namespace OilGas.Data.RRC.Texas
 
         public bool Equals(WellProduction other)
         {
-            if(ReferenceEquals(null,
-                               other))
+            if(ReferenceEquals(null, other))
             {
                 return false;
             }
 
-            if(ReferenceEquals(this,
-                               other))
+            if(ReferenceEquals(this, other))
             {
                 return true;
             }
@@ -410,15 +393,12 @@ namespace OilGas.Data.RRC.Texas
                    OperatorNumber == other.OperatorNumber &&
                    FieldName      == other.FieldName      &&
                    FieldNumber    == other.FieldNumber    &&
-                   Equals(Records,
-                          other.Records);
+                   Equals(Records, other.Records);
         }
 
         public override bool Equals(object obj)
         {
-            return ReferenceEquals(this,
-                                   obj) ||
-                   obj is WellProduction other && Equals(other);
+            return ReferenceEquals(this, obj) || obj is WellProduction other && Equals(other);
         }
 
         public override int GetHashCode()
@@ -439,15 +419,13 @@ namespace OilGas.Data.RRC.Texas
         public static bool operator ==(WellProduction left,
                                        WellProduction right)
         {
-            return Equals(left,
-                          right);
+            return Equals(left, right);
         }
 
         public static bool operator !=(WellProduction left,
                                        WellProduction right)
         {
-            return !Equals(left,
-                           right);
+            return !Equals(left, right);
         }
     }
 }

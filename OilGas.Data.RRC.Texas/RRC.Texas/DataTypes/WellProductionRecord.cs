@@ -20,7 +20,7 @@ namespace OilGas.Data.RRC.Texas
         [IgnoreDataMember]
         [XmlIgnore]
         [JsonIgnore]
-        //[Key]
+        [Key]
         public int Id { get; set; }
 
         [IgnoreDataMember]
@@ -68,7 +68,6 @@ namespace OilGas.Data.RRC.Texas
                                     float          monthlyOil,
                                     float          monthlyGas)
         {
-            Id             = wellProduction.Records.Count;
             WellProduction = wellProduction;
             Month          = month;
             MonthlyOil     = monthlyOil;

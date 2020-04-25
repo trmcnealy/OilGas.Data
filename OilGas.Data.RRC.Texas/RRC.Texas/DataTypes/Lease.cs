@@ -8,34 +8,43 @@ namespace OilGas.Data.RRC.Texas
     public class Lease
     {
         [DataMember]
+        public string Name { get; set; }
 
+        [DataMember]
         public string Number { get; set; }
 
         [DataMember]
+        public string LeaseNumber { get; set; }
 
+        [DataMember]
         public DistrictCode DistrictCode { get; set; }
 
         [DataMember]
-
         public LeaseType LeaseType { get; set; }
 
         public Lease()
         {
         }
 
-        public Lease(string       number,
+        public Lease(string name,
+                     string number,
+                     string leaseNumber,
                      DistrictCode districtCode,
-                     LeaseType    leaseType)
+                     LeaseType leaseType)
         {
-            Number       = number;
+            Name = name;
+            Number = number;
+            LeaseNumber = leaseNumber;
             DistrictCode = districtCode;
-            LeaseType    = leaseType;
+            LeaseType = leaseType;
         }
 
         public static Lease Create(WellboreQueryData    wellboreQueryData,
                                    LeaseDetailQueryData leaseDetailQueryData)
         {
-            return new Lease(wellboreQueryData.Columns.Lease_No,
+            return new Lease(wellboreQueryData.Columns.LeaseName,
+                             wellboreQueryData.Columns.WellNo,
+                             wellboreQueryData.Columns.LeaseNo,
                              new DistrictCode(wellboreQueryData.Columns.District),
                              leaseDetailQueryData.LeaseType);
         }

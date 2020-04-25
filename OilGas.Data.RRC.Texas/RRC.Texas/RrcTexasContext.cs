@@ -1,145 +1,333 @@
 ﻿using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.Data;
+using System.Diagnostics;
 using System.IO;
+using System.Runtime.CompilerServices;
 using System.Runtime.Serialization;
 using System.Threading.Tasks;
 using System.Xml;
 using System.Xml.Serialization;
+
+using AngleSharp.Html.Dom;
+
+using Microsoft.Data.Sqlite;
+using Microsoft.EntityFrameworkCore;
 
 namespace OilGas.Data.RRC.Texas
 {
     [XmlRoot("RrcTexasDb")]
     [Serializable]
     [DataContract]
-    public sealed class RrcTexasContext : IDisposable
+    public sealed class RrcTexasContext : DbContext
     {
-        internal const string DefaultDbName = "Rrc.Texas";
+        public const string DefaultDbName = "Rrc.Texas.db";
+        public const string InMemoryName  = ":memory:";
 
-        [DataMember]
-        [XmlElement]
-        public SerializableConcurrentDictionary<string /*API*/, WellProduction> WellProductions { get; set; } =
-            new SerializableConcurrentDictionary<string /*API*/, WellProduction>();
-            
-        [DataMember]
-        [XmlElement]
-        public DataStorage DataStorage { get; set; }
+        public DbSet<DrillingPermit> DrillingPermits { get; set; }
+
+        public DbSet<WellProduction> WellProductions { get; set; }
+
+        public DbSet<WellProductionRecord> WellProductionRecords { get; set; }
+
+        public SqliteConnection Connection { get; }
+
+        private static SqliteConnection CreateAndOpen()
+        {
+            SqliteConnection connection = new SqliteConnection($"Data Source={InMemoryName};Mode=Memory;Cache=Shared");
+
+            connection.Open();
+
+            return connection;
+        }
 
         public RrcTexasContext()
-            : this(new DataStorage(DefaultDbName))
+            : this(CreateAndOpen())
         {
         }
 
-        public RrcTexasContext(DataStorage dataStorage)
+        public RrcTexasContext(SqliteConnection connection)
+            : base(new DbContextOptionsBuilder<RrcTexasContext>().UseSqlite(connection).Options)
         {
-            DataStorage = dataStorage;
+            Connection = connection;
+
+            Database.EnsureCreated();
         }
 
-
-        internal RrcTexasContext(RrcTexasContext db)
+        public override void Dispose()
         {
-            DataStorage = db.DataStorage;
-            WellProductions = db.WellProductions;
+            base.Dispose();
+
+            if(Connection.State == ConnectionState.Open)
+            {
+                Connection.Close();
+            }
+        }
+
+        public void Backup()
+        {
+            SqliteConnection backup = new SqliteConnection($"Data Source={DefaultDbName}");
+            Connection.BackupDatabase(backup);
+            backup.Close();
+        }
+
+        public void LoadDb(string filePath)
+        {
+            SqliteConnection dbFile = new SqliteConnection($"Data Source={filePath}");
+            dbFile.Open();
+            dbFile.BackupDatabase(Connection);
+            dbFile.Close();
+        }
+
+        public void LoadDrillingPermitsCsv(string filePath)
+        {
+            CsvReader csvReader = new CsvReader(File.ReadAllBytes(filePath));
+
+            (List<string[]> header, List<string[]> rows) = csvReader.ReadFile(1);
+
+            DrillingPermit[] entries = new DrillingPermit[rows.Count];
+
+            Parallel.ForEach(Partitioner.Create(0, rows.Count),
+                             (row,
+                              loopState) =>
+                             {
+                                 int index;
+
+                                 string    statusDate;
+                                 int?      status;
+                                 ApiNumber api;
+                                 string    operatorNameNumber;
+                                 string    leaseName;
+                                 string    well;
+                                 string    dist;
+                                 string    county;
+                                 string    wellboreProfile;
+                                 string    filingPurpose;
+                                 string    amend;
+                                 string    totalDepth;
+                                 string    stackedLateralParentWellDp;
+                                 string    currentQueue;
+
+                                 //for(int i = 0; i < rows.Count; i++)
+                                 for(int i = row.Item1; i < row.Item2; i++)
+                                 {
+                                     index = 0;
+
+                                     statusDate                 = rows[i][index++];
+                                     status                     = int.Parse(rows[i][index++]);
+                                     api                        = new ApiNumber("42" + rows[i][index++]);
+                                     operatorNameNumber         = rows[i][index++];
+                                     leaseName                  = rows[i][index++];
+                                     well                       = rows[i][index++];
+                                     dist                       = rows[i][index++];
+                                     county                     = rows[i][index++];
+                                     wellboreProfile            = rows[i][index++];
+                                     filingPurpose              = rows[i][index++];
+                                     amend                      = rows[i][index++];
+                                     totalDepth                 = rows[i][index++];
+                                     stackedLateralParentWellDp = rows[i][index++];
+                                     currentQueue               = rows[i][index];
+
+                                     entries[i] = new DrillingPermit(statusDate,
+                                                                     status,
+                                                                     api,
+                                                                     operatorNameNumber,
+                                                                     leaseName,
+                                                                     well,
+                                                                     dist,
+                                                                     county,
+                                                                     wellboreProfile,
+                                                                     filingPurpose,
+                                                                     amend,
+                                                                     totalDepth,
+                                                                     stackedLateralParentWellDp,
+                                                                     currentQueue);
+                                 }
+                             });
+
+            using(SqliteTransaction transaction = Connection.BeginTransaction(IsolationLevel.ReadCommitted))
+            {
+                DrillingPermits.AddRange(entries);
+
+                transaction.Commit();
+
+                SaveChanges();
+            }
+        }
+
+#if NETCOREAPP
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+#else
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+#endif
+        public async Task<IEnumerable<Lease>> GetLeaseByApi(ApiNumber api)
+        {
+            IHtmlDocument htmlDoc = await QueryBuilder.WellboreQueryByApi(api);
+
+            List<WellboreQueryData> wellboreQueriesData = QueryParser.ParseWellboreQuery(htmlDoc);
+
+            List<Lease> leases = new List<Lease>(10);
+
+            foreach(WellboreQueryData wellboreQueryData in wellboreQueriesData)
+            {
+                LeaseDetailQueryData leaseDetailQueryData = await QueryBuilder.LeaseDetailQuery(wellboreQueryData);
+
+                leases.Add(Lease.Create(wellboreQueryData, leaseDetailQueryData));
+            }
+
+            return leases;
+        }
+
+#if NETCOREAPP
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+#else
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+#endif
+        public async Task<WellProduction> GetProductionByApi(ApiNumber api,
+                                                             bool      persistentData = true,
+                                                             bool      updateData     = true)
+        {
+            if(persistentData && !updateData)
+            {
+                try
+                {
+                    WellProduction record = await WellProductions.Include(wp => wp.Records).FirstOrDefaultAsync(w => w.Api == api);
+
+                    if(record != null)
+                    {
+                        return record;
+                    }
+                }
+                catch(Exception ex)
+                {
+                    Debug.WriteLine(ex.Message);
+                }
+            }
+
+            if(!updateData)
+            {
+                return null;
+            }
+
+            (string csvData, Lease lease) = await QueryBuilder.SpecificLeaseProductionQueryByApi(api);
+
+            CsvReader csvReader = new CsvReader(csvData);
+
+            (List<string[]> header, List<string[]> rows) data = csvReader.ReadFile(10);
+
+            List<SpecificLeaseProductionQueryData> productionData = new List<SpecificLeaseProductionQueryData>(data.rows.Count);
+
+            foreach(string[] entry in data.rows)
+            {
+                productionData.Add(new SpecificLeaseProductionQueryData(api, entry));
+            }
+
+            WellProduction wellProduction = WellProduction.ConvertFrom(lease, productionData);
+
+            if(persistentData)
+            {
+                WellProduction record = await WellProductions.Include(wp => wp.Records).FirstOrDefaultAsync(w => api.Equals(w.Api));
+
+                if(record != null)
+                {
+                    record.Records = wellProduction.Records;
+                    Update(record);
+                }
+                else
+                {
+                    record = wellProduction;
+                    await AddAsync(record);
+                }
+
+                await SaveChangesAsync();
+
+                return record;
+            }
+
+            return wellProduction;
         }
 
         //public void Save()
         //{
-        //    FileStream writer = new FileStream(DataStorage.FullPath,
-        //                                       FileMode.Create);
-        //
-        //    DataContractSerializer ser = new DataContractSerializer(typeof(RrcTexasContext));
-        //
-        //    ser.WriteObject(writer,
-        //                    this);
-        //
-        //    writer.Close();
+        //    XmlSerializer ser = new XmlSerializer(typeof(RrcTexasContext));
+
+        //    using(FileStream writer = new FileStream(DataStorage.FullPath,
+        //                                             FileMode.Create))
+        //    {
+        //        using(XmlWriter xmlWriter = XmlWriter.Create(writer,
+        //                                                     new XmlWriterSettings
+        //                                                     {
+        //                                                         Indent = false
+        //                                                     }))
+        //        {
+        //            ser.Serialize(xmlWriter,
+        //                          this);
+        //        }
+
+        //        writer.Flush();
+        //    }
         //}
-        
-        public void Save()
-        {
-            XmlSerializer ser = new XmlSerializer(typeof(RrcTexasContext));
 
-            using(FileStream writer = new FileStream(DataStorage.FullPath,
-                                                     FileMode.Create))
-            {
-                using(XmlWriter xmlWriter = XmlWriter.Create(writer,
-                                                             new XmlWriterSettings
-                                                             {
-                                                                 Indent = false
-                                                             }))
-                {
-                    ser.Serialize(xmlWriter,
-                                  this);
-                }
+        //public void Load()
+        //{
+        //    if(!File.Exists(DataStorage.FullPath))
+        //    {
+        //        return;
+        //        //throw new FileNotFoundException(DataStorage.FullPath);
+        //    }
 
-                writer.Flush();
-            }
-        }
+        //    using FileStream fs = new FileStream(DataStorage.FullPath,
+        //                                         FileMode.Open);
 
-        public void Load()
-        {
-            if(!File.Exists(DataStorage.FullPath))
-            {
-                return;
-                //throw new FileNotFoundException(DataStorage.FullPath);
-            }
+        //    XmlDictionaryReaderQuotas xmlQuotas = new XmlDictionaryReaderQuotas();
 
-            using FileStream fs = new FileStream(DataStorage.FullPath,
-                                                 FileMode.Open);
+        //    XmlDictionaryReader reader = XmlDictionaryReader.CreateTextReader(fs,
+        //                                                                      xmlQuotas);
 
-            XmlDictionaryReaderQuotas xmlQuotas = new XmlDictionaryReaderQuotas();
+        //    XmlSerializer ser = new XmlSerializer(typeof(RrcTexasContext));
 
-            XmlDictionaryReader reader = XmlDictionaryReader.CreateTextReader(fs,
-                                                                              xmlQuotas);
+        //    RrcTexasContext db = (RrcTexasContext)ser.Deserialize(reader);
 
-            XmlSerializer ser = new XmlSerializer(typeof(RrcTexasContext));
+        //    WellProductions = db.WellProductions;
 
-            RrcTexasContext db = (RrcTexasContext)ser.Deserialize(reader);
+        //    reader.Close();
 
-            WellProductions = db.WellProductions;
+        //    fs.Close();
+        //}
 
-            reader.Close();
+        //public async Task<bool> InsertAsync(WellProduction wellProduction)
+        //{
+        //    if(wellProduction.Id == 0)
+        //    {
+        //        wellProduction.Id = WellProductions.Count;
+        //    }
 
-            fs.Close();
-        }
+        //    return await Task.Run(() => WellProductions.TryAdd(wellProduction.Api,
+        //                                                       wellProduction));
+        //}
 
-        public void Dispose()
-        {
-            Save();
-            WellProductions.Clear();
-        }
+        //public async Task<bool> UpdateAsync(WellProduction newValue)
+        //{
+        //    if(WellProductions.TryGetValue(newValue.Api,
+        //                                   out WellProduction oldValue))
+        //    {
+        //        newValue.Id = oldValue.Id;
 
-        public async Task<bool> InsertAsync(WellProduction wellProduction)
-        {
-            if(wellProduction.Id == 0)
-            {
-                wellProduction.Id = WellProductions.Count;
-            }
+        //        return await Task.Run(() => WellProductions.TryUpdate(newValue.Api,
+        //                                                              newValue,
+        //                                                              oldValue));
+        //    }
 
-            return await Task.Run(() => WellProductions.TryAdd(wellProduction.Api,
-                                                               wellProduction));
-        }
+        //    return await Task.Run(() => WellProductions.TryAdd(newValue.Api,
+        //                                                       newValue));
+        //}
 
-        public async Task<bool> UpdateAsync(WellProduction newValue)
-        {
-            if(WellProductions.TryGetValue(newValue.Api,
-                                           out WellProduction oldValue))
-            {
-                newValue.Id = oldValue.Id;
-
-                return await Task.Run(() => WellProductions.TryUpdate(newValue.Api,
-                                                                      newValue,
-                                                                      oldValue));
-            }
-
-            return await Task.Run(() => WellProductions.TryAdd(newValue.Api,
-                                                               newValue));
-        }
-
-        public async Task<bool> RemoveAsync(WellProduction wellProduction)
-        {
-            return await Task.Run(() => WellProductions.TryRemove(wellProduction.Api,
-                                                                  out _));
-        }
+        //public async Task<bool> RemoveAsync(WellProduction wellProduction)
+        //{
+        //    return await Task.Run(() => WellProductions.TryRemove(wellProduction.Api,
+        //                                                          out _));
+        //}
 
         //public RrcTexasContext(string configurationString)
         //{

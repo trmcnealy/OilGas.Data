@@ -6,7 +6,9 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="OilGas.Data" Version="1.6.5" />
+    <ProjectReference Include="..\OilGas.Data.FracFocus\OilGas.Data.FracFocus.csproj" />
+    <ProjectReference Include="..\OilGas.Data.RRC.Texas\OilGas.Data.RRC.Texas.csproj" />
+    <ProjectReference Include="..\OilGas.Data\OilGas.Data.csproj" />
   </ItemGroup>
 
 </Project>

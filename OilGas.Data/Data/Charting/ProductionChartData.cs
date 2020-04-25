@@ -8,6 +8,7 @@ using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
 
 using VegaLite;
+using VegaLite.Schema;
 
 using DateTime = System.DateTime;
 

@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-using VegaLite;
+using VegaLite.Schema;
 
 namespace RRC.Texas.Driver
 {

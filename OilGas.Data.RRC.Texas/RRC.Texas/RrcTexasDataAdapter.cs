@@ -170,9 +170,9 @@ namespace OilGas.Data.RRC.Texas
 //                WellProductionRecord record =
 //                    await Task.Run(() => Instance.DbContext.WellProductions.FirstOrDefault(x => x.WellProduction == wellProductionRecord.WellProduction &&
 //                                                                                                      x.Month          == wellProductionRecord.Month));
-
+//
 //                int entry;
-
+//
 //                if(record == null)
 //                {
 //                    entry = await Instance.DbContext.InsertAsync(wellProductionRecord);
@@ -181,7 +181,7 @@ namespace OilGas.Data.RRC.Texas
 //                {
 //                    entry = await Instance.DbContext.UpdateAsync(wellProductionRecord);
 //                }
-
+//
 //                if(entry == 1)
 //                {
 //                    return true;
