@@ -42,6 +42,12 @@ namespace OilGas.Data.RRC.Texas
         public const string OrganizationQuery    = "organizationQueryAction.do";
         public const string DrillingPermitsQuery = "drillingPermitsQueryAction.do";
 
+
+        //http://webapps.rrc.texas.gov/CMPL/viewPdfReportFormAction.do?method=cmplW2FormPdf&packetSummaryId=55368
+
+
+        //https://rrcsearch3.neubus.com/esd3-rrc/index.php?profile=17&search=%7B%22item%22%3A%5B%7B%22key%22%3A%22lease_number%22%2C%22value%22%3A%2210181%22%7D%2C%7B%22key%22%3A%22district%22%2C%22value%22%3A%2202%22%7D%5D%7D
+
         public static readonly Uri WellboreQueryAction = new Uri(RrcStateTx + WellboreQuery);
 
         public static readonly Uri ProductionQueryAction = new Uri(RrcStateTx + ProductionQuery);

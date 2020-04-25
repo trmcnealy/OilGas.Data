@@ -7,13 +7,15 @@ using System.IO;
 using System.Runtime.CompilerServices;
 using System.Runtime.Serialization;
 using System.Threading.Tasks;
-using System.Xml;
+using System.Linq;
 using System.Xml.Serialization;
 
 using AngleSharp.Html.Dom;
 
 using Microsoft.Data.Sqlite;
 using Microsoft.EntityFrameworkCore;
+
+using OilGas.Data.FracFocus;
 
 namespace OilGas.Data.RRC.Texas
 {
@@ -30,6 +32,8 @@ namespace OilGas.Data.RRC.Texas
         public DbSet<WellProduction> WellProductions { get; set; }
 
         public DbSet<WellProductionRecord> WellProductionRecords { get; set; }
+
+        public DbSet<Registry> FracFocusRegistry { get; set; }
 
         public SqliteConnection Connection { get; }
 
@@ -53,6 +57,27 @@ namespace OilGas.Data.RRC.Texas
             Connection = connection;
 
             Database.EnsureCreated();
+        }
+
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
+        {
+            modelBuilder.Entity<DrillingPermit>()
+                        .HasIndex(dp => new
+                         {
+                             dp.Id, dp.Api
+                         });
+
+            modelBuilder.Entity<Registry>()
+                        .HasIndex(dp => new
+                         {
+                             dp.Id, dp.ApiNumber
+                         });
+
+            modelBuilder.Entity<WellProduction>().Property(p => p.Api).HasConversion(v => v.ToString(), v => new ApiNumber(v));
+
+            modelBuilder.Entity<DrillingPermit>().Property(p => p.Api).HasConversion(v => v.ToString(), v => new ApiNumber(v));
+
+            modelBuilder.Entity<Registry>().Property(p => p.ApiNumber).HasConversion(v => v.ToString(), v => new ApiNumber(v));
         }
 
         public override void Dispose()
@@ -156,6 +181,34 @@ namespace OilGas.Data.RRC.Texas
             }
         }
 
+        public void LoadFracFocusRegistryCsv(string filePath)
+        {
+            CsvReader csvReader = new CsvReader(File.ReadAllBytes(filePath));
+
+            (List<string[]> header, List<string[]> rows) = csvReader.ReadFile(1);
+
+            Registry[] entries = new Registry[rows.Count];
+
+            Parallel.ForEach(Partitioner.Create(0, rows.Count),
+                             (row,
+                              loopState) =>
+                             {
+                                 for(int i = row.Item1; i < row.Item2; i++)
+                                 {
+                                     entries[i] = new Registry(rows[i]);
+                                 }
+                             });
+
+            using(SqliteTransaction transaction = Connection.BeginTransaction(IsolationLevel.ReadCommitted))
+            {
+                FracFocusRegistry.AddRange(entries);
+
+                transaction.Commit();
+
+                SaveChanges();
+            }
+        }
+
 #if NETCOREAPP
         [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
 #else
@@ -227,7 +280,7 @@ namespace OilGas.Data.RRC.Texas
 
             if(persistentData)
             {
-                WellProduction record = await WellProductions.Include(wp => wp.Records).FirstOrDefaultAsync(w => api.Equals(w.Api));
+                WellProduction record = await WellProductions.Include(wp => wp.Records).FirstOrDefaultAsync(w => w.Api == api);
 
                 if(record != null)
                 {
@@ -246,6 +299,25 @@ namespace OilGas.Data.RRC.Texas
             }
 
             return wellProduction;
+        }
+
+        public async Task<WellLocation> GetLocationByApi(ApiNumber api)
+        {
+            try
+            {
+                Registry record = await FracFocusRegistry.FirstAsync(w => w.ApiNumber == api);
+
+                if(record != null)
+                {
+                    return new WellLocation(record.Latitude, record.Longitude, record.Projection);
+                }
+            }
+            catch(Exception ex)
+            {
+                Debug.WriteLine(ex.Message);
+            }
+
+            return null;
         }
 
         //public void Save()

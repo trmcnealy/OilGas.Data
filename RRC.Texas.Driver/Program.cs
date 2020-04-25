@@ -19,25 +19,15 @@ namespace RRC.Texas.Driver
     {
         internal static readonly string BoolName = typeof(bool).Name;
 
-
         private static void QueryDrillingPermitsByCounty()
         {
             CountyType.Kind[] counties = new[]
             {
-                CountyType.Kind.ATASCOSA,
-                CountyType.Kind.DE_WITT,
-                CountyType.Kind.LA_SALLE,
-                CountyType.Kind.DUVAL,
-                CountyType.Kind.LIVE_OAK,
-                CountyType.Kind.KARNES,
-                CountyType.Kind.FRIO,
-                CountyType.Kind.MCMULLEN,
-                CountyType.Kind.WEBB,
-                CountyType.Kind.ZAVALA,
-                CountyType.Kind.MAVERICK
+                CountyType.Kind.ATASCOSA, CountyType.Kind.DE_WITT, CountyType.Kind.LA_SALLE, CountyType.Kind.DUVAL, CountyType.Kind.LIVE_OAK, CountyType.Kind.KARNES, CountyType.Kind.FRIO,
+                CountyType.Kind.MCMULLEN, CountyType.Kind.WEBB, CountyType.Kind.ZAVALA, CountyType.Kind.MAVERICK
             };
 
-            foreach (var county in counties)
+            foreach(var county in counties)
             {
                 CountyType countyType = new CountyType(county);
 
@@ -47,14 +37,13 @@ namespace RRC.Texas.Driver
             }
         }
 
-        private static void Main(string[] args)
+        private static void QueryProductionByApi()
         {
             {
                 //RrcTexasContext context = new RrcTexasContext();
 
                 //context.Backup();
             }
-
 
             {
                 //RrcTexasContext context = new RrcTexasContext();
@@ -64,15 +53,33 @@ namespace RRC.Texas.Driver
                 //context.Backup();
             }
 
-
             {
                 RrcTexasContext context = new RrcTexasContext();
 
                 context.LoadDb(@"D:\TFS_Sources\Github\Compilation\trmcnealy\OilGas.Data\RRC.Texas.Driver\bin\Debug\netcoreapp3.1\Rrc.Texas.db");
 
-                List<DrillingPermit> drillingPermits = context.DrillingPermits.Where(dp => dp.WellboreProfile.Contains("Horizontal")).ToList();
+                bool FilterWells(DrillingPermit dp)
+                {
+                    if(dp.County != "KARNES")
+                    {
+                        return false;
+                    }
 
-                foreach (DrillingPermit drillingPermit in drillingPermits)
+                    if(!(dp.WellboreProfile.Contains("Horizontal") || dp.WellboreProfile.Contains("Directional")))
+                    {
+                        return false;
+                    }
+
+                    float depth = float.Parse(dp.TotalDepth);
+
+                    return (depth >= 19000.0 && depth < 23000.0);
+                }
+
+                List<DrillingPermit> drillingPermits = context.DrillingPermits.Where(FilterWells).ToList();
+
+                float[] totalDepths = drillingPermits.Select(dp => float.Parse(dp.TotalDepth)).ToArray();
+
+                foreach(DrillingPermit drillingPermit in drillingPermits)
                 {
                     try
                     {
@@ -83,14 +90,36 @@ namespace RRC.Texas.Driver
                     {
                         Console.WriteLine(e);
                     }
-
-                    Thread.Sleep(5000);
                 }
 
                 context.Backup();
             }
+        }
 
+        private static void LoadCsvData()
+        {
+            using(RrcTexasContext context = new RrcTexasContext())
+            {
+                context.LoadDrillingPermitsCsv(@"R:\DrillingPermits_STX_2000_2020.csv");
+                
+                context.LoadFracFocusRegistryCsv(@"R:\registryupload_1.csv");
 
+                context.LoadFracFocusRegistryCsv(@"R:\registryupload_2.csv");
+
+                context.Backup();
+            }
+        }
+
+        private static void Main(string[] args)
+        {
+
+            using(RrcTexasContext context = new RrcTexasContext())
+            {
+                context.LoadDb(@"D:\TFS_Sources\Github\Compilation\trmcnealy\OilGas.Data\RRC.Texas.Driver\bin\Debug\netcoreapp3.1\Rrc.Texas.db");
+
+                WellLocation location = context.GetLocationByApi("4225532461").Result;
+                Console.WriteLine(location);
+            }
 
 
             //IEnumerable<string> organizationNames = QueryBuilder.OrganizationNameQueryByNumber("947128");

@@ -13,7 +13,6 @@ namespace OilGas.Data.FracFocus
         /// <summary>
         /// Key index for the table
         /// </summary>
-        [DataMember]
         [Key]
         public Guid Id { get; set; }
 
@@ -34,7 +33,7 @@ namespace OilGas.Data.FracFocus
         /// represent the state, second three digits represent the county, third 5 digits represent the well.
         /// </summary>
         [DataMember, Column]
-        public string ApiNumber { get; set; }
+        public ApiNumber ApiNumber { get; set; }
 
         /// <summary>
         /// The first two digits of the API number.  Range is from 01-50.
@@ -205,9 +204,34 @@ namespace OilGas.Data.FracFocus
                 return default;
             }
 
+            if(typeof(T) == typeof(string))
+            {
+                return (T)(object)value;
+            }
+
             if(typeof(T) == typeof(bool) || typeof(T) == typeof(bool?))
             {
                 return (T)(object)(value != "False");
+            }
+
+            if(typeof(T) == typeof(short) || typeof(T) == typeof(short?))
+            {
+                return (T)(object)short.Parse(value);
+            }
+
+            if(typeof(T) == typeof(int) || typeof(T) == typeof(int?))
+            {
+                return (T)(object)int.Parse(value);
+            }
+
+            if(typeof(T) == typeof(long) || typeof(T) == typeof(long?))
+            {
+                return (T)(object)long.Parse(value);
+            }
+
+            if(typeof(T) == typeof(float) || typeof(T) == typeof(float?))
+            {
+                return (T)(object)float.Parse(value);
             }
 
             if(typeof(T) == typeof(double) || typeof(T) == typeof(double?))
@@ -231,6 +255,7 @@ namespace OilGas.Data.FracFocus
         public Registry(ReadOnlySpan<string> csvData)
         {
             int index = 0;
+
             Id = new Guid(csvData[index++]);
 
             JobStartDate = CheckAndGetValue<DateTime?>(csvData,
@@ -239,7 +264,7 @@ namespace OilGas.Data.FracFocus
             JobEndDate = CheckAndGetValue<DateTime?>(csvData,
                                                      index++);
 
-            ApiNumber = csvData[index++];
+            ApiNumber = new ApiNumber(csvData[index++]).ToString();
 
             StateNumber = CheckAndGetValue<string>(csvData,
                                                    index++);

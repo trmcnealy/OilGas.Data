@@ -32,8 +32,6 @@
 
     <file src="D:\TFS_Sources\Github\Compilation\trmcnealy\OilGas.Data\OilGas.Data\bin\Release\netcoreapp3.1\OilGas.Data.dll"
           target="lib\netcoreapp3.1" />
-    <file src="D:\TFS_Sources\Github\Compilation\trmcnealy\OilGas.Data\OilGas.Data.FracFocus\bin\Release\netcoreapp3.1\OilGas.Data.FracFocus.dll"
-          target="lib\netcoreapp3.1" />
     <file src="D:\TFS_Sources\Github\Compilation\trmcnealy\OilGas.Data\OilGas.Data.RRC.Texas\bin\Release\netcoreapp3.1\OilGas.Data.RRC.Texas.dll"
           target="lib\netcoreapp3.1" />
   </files>
