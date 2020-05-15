@@ -6,8 +6,17 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="Microsoft.Windows.SDK.Contracts" Version="10.0.18362.2005" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\DataStorage\Engineering.DataSource\Engineering.DataSource.csproj" />
     <ProjectReference Include="..\OilGas.Data.RRC.Texas\OilGas.Data.RRC.Texas.csproj" />
     <ProjectReference Include="..\OilGas.Data\OilGas.Data.csproj" />
   </ItemGroup>
+
+  <Target Name="PreBuild" BeforeTargets="PreBuildEvent">
+    <Exec Command="dotnet restore" />
+  </Target>
 
 </Project>

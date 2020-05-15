@@ -27,137 +27,31 @@ namespace OilGas.Data
 
         #region Tags
 
-        public HtmlTag body
-        {
-            get
-            {
-                return new HtmlTag(Parent,
-                                   Tag,
-                                   HtmlTags.body.ToString(),
-                                   Index).Child;
-            }
-        }
+        public HtmlTag body { get { return new HtmlTag(Parent, Tag, HtmlTags.body.ToString(), Index).Child; } }
 
-        public HtmlTag href
-        {
-            get
-            {
-                return new HtmlTag(Parent,
-                                   Tag,
-                                   HtmlTags.href.ToString(),
-                                   Index).Child;
-            }
-        }
+        public HtmlTag href { get { return new HtmlTag(Parent, Tag, HtmlTags.href.ToString(), Index).Child; } }
 
-        public HtmlTag text
-        {
-            get
-            {
-                return new HtmlTag(Parent,
-                                   Tag,
-                                   HtmlTags.text.ToString(),
-                                   Index).Child;
-            }
-        }
+        public HtmlTag text { get { return new HtmlTag(Parent, Tag, HtmlTags.text.ToString(), Index).Child; } }
 
-        public HtmlTag @class
-        {
-            get
-            {
-                return new HtmlTag(Parent,
-                                   Tag,
-                                   HtmlTags.@class.ToString(),
-                                   Index).Child;
-            }
-        }
+        public HtmlTag @class { get { return new HtmlTag(Parent, Tag, HtmlTags.@class.ToString(), Index).Child; } }
 
-        public HtmlTag dl
-        {
-            get
-            {
-                return new HtmlTag(Parent,
-                                   Tag,
-                                   HtmlTags.dl.ToString(),
-                                   Index).Child;
-            }
-        }
+        public HtmlTag dl { get { return new HtmlTag(Parent, Tag, HtmlTags.dl.ToString(), Index).Child; } }
 
-        public HtmlTag dt
-        {
-            get
-            {
-                return new HtmlTag(Parent,
-                                   Tag,
-                                   HtmlTags.dt.ToString(),
-                                   Index).Child;
-            }
-        }
+        public HtmlTag dt { get { return new HtmlTag(Parent, Tag, HtmlTags.dt.ToString(), Index).Child; } }
 
-        public HtmlTag a
-        {
-            get
-            {
-                return new HtmlTag(Parent,
-                                   Tag,
-                                   HtmlTags.a.ToString(),
-                                   Index).Child;
-            }
-        }
+        public HtmlTag a { get { return new HtmlTag(Parent, Tag, HtmlTags.a.ToString(), Index).Child; } }
 
-        public HtmlTag table
-        {
-            get
-            {
-                return new HtmlTag(Parent,
-                                   Tag,
-                                   HtmlTags.table.ToString(),
-                                   Index).Child;
-            }
-        }
+        public HtmlTag table { get { return new HtmlTag(Parent, Tag, HtmlTags.table.ToString(), Index).Child; } }
 
-        public HtmlTag tbody
-        {
-            get
-            {
-                return new HtmlTag(Parent,
-                                   Tag,
-                                   HtmlTags.tbody.ToString(),
-                                   Index).Child;
-            }
-        }
+        public HtmlTag tbody { get { return new HtmlTag(Parent, Tag, HtmlTags.tbody.ToString(), Index).Child; } }
 
-        public HtmlTag tr
-        {
-            get
-            {
-                return new HtmlTag(Parent,
-                                   Tag,
-                                   HtmlTags.tr.ToString(),
-                                   Index).Child;
-            }
-        }
+        public HtmlTag tr { get { return new HtmlTag(Parent, Tag, HtmlTags.tr.ToString(), Index).Child; } }
 
-        public HtmlTag td
-        {
-            get
-            {
-                return new HtmlTag(Parent,
-                                   Tag,
-                                   HtmlTags.td.ToString(),
-                                   Index).Child;
-            }
-        }
+        public HtmlTag td { get { return new HtmlTag(Parent, Tag, HtmlTags.td.ToString(), Index).Child; } }
 
-        public HtmlTag select
-        {
-            get
-            {
-                return new HtmlTag(Parent,
-                                   Tag,
-                                   HtmlTags.select.ToString(),
-                                   Index).Child;
-            }
-        }
+        public HtmlTag select { get { return new HtmlTag(Parent, Tag, HtmlTags.select.ToString(), Index).Child; } }
+
+        public HtmlTag option { get { return new HtmlTag(Parent, Tag, HtmlTags.option.ToString(), Index).Child; } }
 
         #endregion
 
@@ -187,15 +81,9 @@ namespace OilGas.Data
         {
             Tag = tag;
 
-            Parent = parent == null
-                         ? null
-                         : new HtmlTag(parent.Parent,
-                                       parent.Tag,
-                                       this,
-                                       parent.Index);
+            Parent = parent == null ? null : new HtmlTag(parent.Parent, parent.Tag, this, parent.Index);
 
-            Child = new HtmlTag(this,
-                                child);
+            Child = new HtmlTag(this, child);
 
             Index = index;
         }
@@ -207,12 +95,7 @@ namespace OilGas.Data
         {
             Tag = tag;
 
-            Parent = parent == null
-                         ? null
-                         : new HtmlTag(parent.Parent,
-                                       parent.Tag,
-                                       this,
-                                       parent.Index);
+            Parent = parent == null ? null : new HtmlTag(parent.Parent, parent.Tag, this, parent.Index);
 
             Child = child;
 
@@ -237,16 +120,7 @@ namespace OilGas.Data
             return Parent.GetRootParent();
         }
 
-        public HtmlTag this[int index]
-        {
-            get
-            {
-                return new HtmlTag(Parent,
-                                   Tag,
-                                   Child,
-                                   index);
-            }
-        }
+        public HtmlTag this[int index] { get { return new HtmlTag(Parent, Tag, Child, index); } }
 
         //public static implicit operator string(HtmlTag tag)
         //{
@@ -260,36 +134,27 @@ namespace OilGas.Data
 
         public bool Equals(HtmlTag other)
         {
-            if(ReferenceEquals(null,
-                               other))
+            if(ReferenceEquals(null, other))
             {
                 return false;
             }
 
-            if(ReferenceEquals(this,
-                               other))
+            if(ReferenceEquals(this, other))
             {
                 return true;
             }
 
-            return Tag == other.Tag &&
-                   Equals(Parent,
-                          other.Parent) &&
-                   Equals(Child,
-                          other.Child) &&
-                   Index == other.Index;
+            return Tag == other.Tag && Equals(Parent, other.Parent) && Equals(Child, other.Child) && Index == other.Index;
         }
 
         public override bool Equals(object obj)
         {
-            if(ReferenceEquals(null,
-                               obj))
+            if(ReferenceEquals(null, obj))
             {
                 return false;
             }
 
-            if(ReferenceEquals(this,
-                               obj))
+            if(ReferenceEquals(this, obj))
             {
                 return true;
             }
@@ -304,24 +169,19 @@ namespace OilGas.Data
 
         public override int GetHashCode()
         {
-            return HashCode.Combine(Tag,
-                                    Parent,
-                                    Child,
-                                    Index);
+            return HashCode.Combine(Tag, Parent, Child, Index);
         }
 
         public static bool operator ==(HtmlTag left,
                                        HtmlTag right)
         {
-            return Equals(left,
-                          right);
+            return Equals(left, right);
         }
 
         public static bool operator !=(HtmlTag left,
                                        HtmlTag right)
         {
-            return !Equals(left,
-                           right);
+            return !Equals(left, right);
         }
     }
 
@@ -341,7 +201,8 @@ namespace OilGas.Data
         public static readonly HtmlTag td     = new HtmlTag("td");
         public static readonly HtmlTag strong = new HtmlTag("strong");
         public static readonly HtmlTag select = new HtmlTag("select");
-        public static readonly HtmlTag input = new HtmlTag("input");
+        public static readonly HtmlTag input  = new HtmlTag("input");
+        public static readonly HtmlTag option = new HtmlTag("option");
     }
 
     public static class HtmlExtensions
@@ -349,8 +210,7 @@ namespace OilGas.Data
         public static Stream GetStream(HttpClient httpClient,
                                        string     url)
         {
-            Task<Stream> stream = GetStreamTask(httpClient,
-                                                url);
+            Task<Stream> stream = GetStreamTask(httpClient, url);
 
             if(stream.Exception != null && stream.Exception.HResult != 0)
             {
@@ -367,9 +227,7 @@ namespace OilGas.Data
 
             //HttpResponseMessage response = await HttpClient.GetAsync(url);
 
-            if(MakeRequest(httpClient,
-                           new Uri(url),
-                           out HttpResponseMessage response))
+            if(MakeRequest(httpClient, new Uri(url), out HttpResponseMessage response))
             {
                 stream = await response.Content.ReadAsStreamAsync();
             }
@@ -403,9 +261,7 @@ namespace OilGas.Data
                         redirectUri = new Uri(url.GetLeftPart(UriPartial.Authority) + redirectUri);
                     }
 
-                    return MakeRequest(httpClient,
-                                       redirectUri,
-                                       out responseMessage);
+                    return MakeRequest(httpClient, redirectUri, out responseMessage);
                 }
             }
 
@@ -453,8 +309,7 @@ namespace OilGas.Data
                                      (descendantNode,
                                       loopState) =>
                                      {
-                                         IElement descendantFoundNode = descendantNode.GetElementWithAttribute(attributeName,
-                                                                                                               attributeValue);
+                                         IElement descendantFoundNode = descendantNode.GetElementWithAttribute(attributeName, attributeValue);
 
                                          if(descendantFoundNode != null)
                                          {
@@ -585,13 +440,13 @@ namespace OilGas.Data
         public static List<IElement> GetElementsByTags(this IElement node,
                                                        HtmlTag       tag)
         {
-            if(node.LocalName != tag.ToString())
-            {
-                throw new Exception();
-            }
-
             if(node != null)
             {
+                if(node.LocalName != tag.ToString())
+                {
+                    throw new Exception();
+                }
+
                 if(!tag.HasChild)
                 {
                     return node.Children.Where(child => child.LocalName == tag.Child.ToString()).ToList();

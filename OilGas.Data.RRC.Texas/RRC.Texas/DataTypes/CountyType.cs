@@ -2,8 +2,24 @@
 
 using System;
 
+using Engineering.DataSource;
+
 namespace OilGas.Data.RRC.Texas
 {
+    public static class ApiNumberExtensions
+    {
+        public static bool IsInCounty(this ApiNumber api,
+                                      CountyType     county)
+        {
+            if(api.GetCountyCode() == county)
+            {
+                return true;
+            }
+
+            return false;
+        }
+    }
+
     public sealed class CountyType
     {
         public enum Kind
@@ -305,6 +321,11 @@ namespace OilGas.Data.RRC.Texas
             Value = FromName(value);
         }
 
+        public static implicit operator CountyType(Kind code)
+        {
+            return new CountyType(code);
+        }
+
         public static implicit operator int(CountyType districtCode)
         {
             return (int)districtCode.Value;
@@ -602,10 +623,7 @@ namespace OilGas.Data.RRC.Texas
                 case Kind.N_PADRE_IS_E:  return "N PADRE IS-E";
                 case Kind.S_PADRE_IS_E:  return "S PADRE IS-E";
                 case Kind.SABINE_PASS:   return "SABINE PASS";
-                default:
-                    throw new ArgumentOutOfRangeException(nameof(kind),
-                                                          kind,
-                                                          null);
+                default:                 throw new ArgumentOutOfRangeException(nameof(kind), kind, null);
             }
         }
 
@@ -892,23 +910,18 @@ namespace OilGas.Data.RRC.Texas
                 case "S PADRE IS-E":  return Kind.S_PADRE_IS_E;
                 case "SABINE PASS":   return Kind.SABINE_PASS;
 
-                default:
-                    throw new ArgumentOutOfRangeException(nameof(kind),
-                                                          kind,
-                                                          null);
+                default: throw new ArgumentOutOfRangeException(nameof(kind), kind, null);
             }
         }
 
         public bool Equals(CountyType other)
         {
-            if(ReferenceEquals(null,
-                               other))
+            if(ReferenceEquals(null, other))
             {
                 return false;
             }
 
-            if(ReferenceEquals(this,
-                               other))
+            if(ReferenceEquals(this, other))
             {
                 return true;
             }
@@ -923,9 +936,7 @@ namespace OilGas.Data.RRC.Texas
 
         public override bool Equals(object obj)
         {
-            return ReferenceEquals(this,
-                                   obj) ||
-                   obj is CountyType other && Equals(other);
+            return ReferenceEquals(this, obj) || obj is CountyType other && Equals(other);
         }
 
         public override int GetHashCode()
@@ -936,15 +947,13 @@ namespace OilGas.Data.RRC.Texas
         public static bool operator ==(CountyType left,
                                        CountyType right)
         {
-            return Equals(left,
-                          right);
+            return Equals(left, right);
         }
 
         public static bool operator !=(CountyType left,
                                        CountyType right)
         {
-            return !Equals(left,
-                           right);
+            return !Equals(left, right);
         }
 
         public static bool operator ==(Kind       left,

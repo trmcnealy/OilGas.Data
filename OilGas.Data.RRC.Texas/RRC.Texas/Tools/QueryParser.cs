@@ -39,6 +39,11 @@ namespace OilGas.Data.RRC.Texas
 
             List<WellboreQueryData> wellboreQueryData = new List<WellboreQueryData>(1);
 
+            if(dataGridTable == null)
+            {
+                return wellboreQueryData;
+            }
+
             IElement dataRowNode;
             int      rowNumber = 3;
 
@@ -58,9 +63,8 @@ namespace OilGas.Data.RRC.Texas
 
         public static LeaseDetailQueryData ParseLeaseDetailQuery(IHtmlDocument htmlDoc)
         {
-            string wellType = htmlDoc.
-                              All.First(m => m.LocalName == strong.ToString() && m.HasAttribute("id") && m.GetAttribute("id").StartsWith("leaseDetailRcrd.oilOrGasCodeHndlr.inputValue")).
-                              InnerHtml.Trim();
+            string wellType = htmlDoc.All.First(m => m.LocalName == strong.ToString() && m.HasAttribute("id") && m.GetAttribute("id").StartsWith("leaseDetailRcrd.oilOrGasCodeHndlr.inputValue"))
+                                     .InnerHtml.Trim();
 
             LeaseDetailQueryData leaseDetailQueryData = new LeaseDetailQueryData()
             {
@@ -81,8 +85,7 @@ namespace OilGas.Data.RRC.Texas
 
             IElement contentAreaTable = bodyNode.GetElementWithClass("ContentArea");
 
-            IElement operatorQueryActionForm = contentAreaTable.GetElementWithAttribute("name",
-                                                                                        "operatorQueryActionForm");
+            IElement operatorQueryActionForm = contentAreaTable.GetElementWithAttribute("name", "operatorQueryActionForm");
 
             IElement tabBox2Table = operatorQueryActionForm.GetElementWithClass("TabBox2");
 
@@ -96,6 +99,90 @@ namespace OilGas.Data.RRC.Texas
             }
 
             return operatorNames;
+        }
+
+        private static CompletionsQueryData ParseCompletionsQueryTable(IElement rowNode)
+        {
+            HtmlTag xpath = tr.td[1].table.tbody.tr.td[1].a.GetRootParent();
+
+            CompletionsQueryData completionsQueryData = new CompletionsQueryData()
+            {
+                Columns = new CompletionsQueryColumns(rowNode)
+            };
+
+            return completionsQueryData;
+        }
+
+        public static List<CompletionsQueryData> ParseCompletionsQuery(IHtmlDocument htmlDoc)
+        {
+            //IElement htmlNode = htmlDoc.DocumentElement;
+            IElement bodyNode = htmlDoc.Body;
+
+            IElement ewaPageTable = bodyNode.GetElementWithClass("cmplPage");
+
+            IElement tabBox2Table = ewaPageTable.GetElementWithClass("TabBox2");
+
+            IElement dataGridTable = tabBox2Table.GetElementWithClass("DataGrid");
+
+            List<CompletionsQueryData> completionsQueryData = new List<CompletionsQueryData>(1);
+
+            IElement dataRowNode;
+            int      rowNumber = 3;
+
+            List<IElement> elements = dataGridTable.GetElementsByTags(table.tbody.tr.GetRootParent());
+
+            do
+            {
+                dataRowNode = elements[rowNumber - 1];
+
+                completionsQueryData.Add(ParseCompletionsQueryTable(dataRowNode));
+
+                ++rowNumber;
+            } while(dataRowNode != null && rowNumber <= elements.Count);
+
+            return completionsQueryData;
+        }
+
+        private static DirectionalSurveyQueryData ParseDirectionalSurveyQueryTable(IElement rowNode)
+        {
+            HtmlTag xpath = tr.td[1].table.tbody.tr.td[1].a.GetRootParent();
+
+            DirectionalSurveyQueryData data = new DirectionalSurveyQueryData()
+            {
+                Columns = new DirectionalSurveysColumns(rowNode)
+            };
+
+            return data;
+        }
+
+        public static List<DirectionalSurveyQueryData> ParseDirectionalSurveyQuery(IHtmlDocument htmlDoc)
+        {
+            //IElement htmlNode = htmlDoc.DocumentElement;
+            IElement bodyNode = htmlDoc.Body;
+
+            IElement ewaPageTable = bodyNode.GetElementWithClass("cmplPage");
+
+            IElement tabBox2Table = ewaPageTable.GetElementWithClass("TabBox2");
+
+            IElement dataGridTable = tabBox2Table.GetElementWithClass("DataGrid");
+
+            List<DirectionalSurveyQueryData> data = new List<DirectionalSurveyQueryData>(1);
+
+            IElement dataRowNode;
+            int      rowNumber = 3;
+
+            List<IElement> elements = dataGridTable.GetElementsByTags(table.tbody.tr.GetRootParent());
+
+            do
+            {
+                dataRowNode = elements[rowNumber - 1];
+
+                data.Add(ParseDirectionalSurveyQueryTable(dataRowNode));
+
+                ++rowNumber;
+            } while(dataRowNode != null && rowNumber <= elements.Count);
+
+            return data;
         }
 
         //public static object extract_well_type(object lease_query_result)

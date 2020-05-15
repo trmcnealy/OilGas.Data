@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "RRC.Texas.Driver": {
+      "commandName": "Project",
+      "nativeDebugging": true
+    }
+  }
+}

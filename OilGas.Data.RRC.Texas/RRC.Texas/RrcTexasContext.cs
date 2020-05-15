@@ -12,6 +12,9 @@ using System.Xml.Serialization;
 
 using AngleSharp.Html.Dom;
 
+using Engineering.DataSource;
+using Engineering.DataSource.OilGas;
+
 using Microsoft.Data.Sqlite;
 using Microsoft.EntityFrameworkCore;
 
@@ -57,6 +60,26 @@ namespace OilGas.Data.RRC.Texas
             Connection = connection;
 
             Database.EnsureCreated();
+        }
+
+        public void Compact()
+        {
+            SqliteCommand command = Connection.CreateCommand();
+
+            command.CommandText = "PRAGMA auto_vacuum = FULL;";
+
+            //VACUUM main INTO filename;
+
+            command.ExecuteNonQuery();
+        }
+
+        public void Optimize()
+        {
+            SqliteCommand command = Connection.CreateCommand();
+
+            command.CommandText = "PRAGMA optimize;";
+
+            command.ExecuteNonQuery();
         }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -245,6 +268,7 @@ namespace OilGas.Data.RRC.Texas
             {
                 try
                 {
+                    //                                           .Include(c => c.Orders.Where(o => o.Name != "Foo")).ThenInclude(o => o.OrderDetails)
                     WellProduction record = await WellProductions.Include(wp => wp.Records).FirstOrDefaultAsync(w => w.Api == api);
 
                     if(record != null)

@@ -1,4 +1,5 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
+  <Import Project="..\Versioning.props" />
 
   <PropertyGroup>
     <TargetFrameworks>netcoreapp3.1</TargetFrameworks>
@@ -7,10 +8,20 @@
     <PublishReadyToRunEmitSymbols>true</PublishReadyToRunEmitSymbols>
     <PublishTrimmed>true</PublishTrimmed>
     <RootNamespace>OilGas.Data</RootNamespace> 
+    <NuspecFile>OilGas.Data.nuspec</NuspecFile>
+    <Version>$(OILGAS_VERSION)</Version>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <GeneratePackageOnBuild>false</GeneratePackageOnBuild>
+    <PackageOutputPath Condition="'$(PACKAGE_CACHE)'!=''">$(PACKAGE_CACHE)</PackageOutputPath>
+    <PackageOutputPath Condition="'$(PACKAGE_CACHE)'==''">$(OutputPath)</PackageOutputPath>
   </PropertyGroup>
 
   <ItemGroup>
-    <Compile Remove="RRC.Texas\RrcTexasDataAdapter.cs" />
+    <Compile Remove="RRC.Texas\DataTypes\WellLocation.cs" />
+    <Compile Remove="RRC.Texas\DataTypes\WellProduction.cs" />
+    <Compile Remove="RRC.Texas\DataTypes\WellProductionDate.cs" />
+    <Compile Remove="RRC.Texas\DataTypes\WellProductionRecord.cs" />
+    <Compile Remove="RRC.Texas\RrcTexasContext.cs" />
   </ItemGroup>
  
   <ItemGroup>
@@ -18,17 +29,20 @@
   </ItemGroup>
  
   <ItemGroup>
-    <None Include="RRC.Texas\RrcTexasDataAdapter.cs" />
+    <None Include="RRC.Texas\DataTypes\WellLocation.cs" />
+    <None Include="RRC.Texas\DataTypes\WellProduction.cs" />
+    <None Include="RRC.Texas\DataTypes\WellProductionDate.cs" />
+    <None Include="RRC.Texas\DataTypes\WellProductionRecord.cs" />
+    <None Include="RRC.Texas\RrcTexasContext.cs" />
   </ItemGroup>
   
   <ItemGroup>
     <PackageReference Include="Microsoft.Data.Analysis" Version="0.3.0" />
-    <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite.Core" Version="3.1.3" />
-    <PackageReference Include="OpenScraping" Version="1.4.2" />
+    <PackageReference Include="Npgsql" Version="4.1.3.1" />
+    <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="5.0.0-preview3" />
     <PackageReference Include="VegaLite.NET" Version="1.3.22" />
     <PackageReference Include="Newtonsoft.Json" Version="12.0.3" />
-    <PackageReference Include="Microsoft.Data.Sqlite.Core" Version="3.1.3" />
-    <PackageReference Include="SQLitePCLRaw.bundle_winsqlite3" Version="2.0.2" />
+    <PackageReference Include="Microsoft.Windows.SDK.Contracts" Version="10.0.18362.2005" />
   </ItemGroup>
   
   <ItemGroup>
@@ -62,5 +76,9 @@
       <LastGenOutput>WellType.cs</LastGenOutput>
     </None>
   </ItemGroup>
+
+  <Target Name="PostBuild" AfterTargets="PostBuildEvent" Condition="'$(Configuration)'=='Release'">
+    <Exec Command="NuGet.exe pack &quot;$(ProjectDir)OilGas.Data.nuspec&quot; -Properties Configuration=$(Configuration);Platform=$(Platform);Version=$(OILGAS_VERSION);RuntimeVersion=$(RUNTIME_OILGAS_VERSION) -OutputDirectory C:\AssemblyCache\_packages&#xD;&#xA;&#xA;rd /s /q C:\Users\tehgo\.nuget\packages\oilgas.net" />
+  </Target>
 
 </Project>

@@ -1,13 +1,15 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations.Schema;
+
+using OilGas.Data.CoordinateSystems;
 
 namespace OilGas.Data.RRC.Texas
 {
+    [NotMapped]
     public class WellLocation : IEquatable<WellLocation>, IComparable<WellLocation>, IComparable
     {
-        public double Latitude { get; }
-
-        public double Longitude { get; }
+        public LatitudeLongitude LatitudeLongitude { get; }
 
         public string Projection { get; }
 
@@ -15,14 +17,13 @@ namespace OilGas.Data.RRC.Texas
                             double longitude,
                             string projection)
         {
-            Latitude   = latitude;
-            Longitude  = longitude;
+            LatitudeLongitude = new LatitudeLongitude(latitude,longitude);
             Projection = projection;
         }
 
         public override string ToString()
         {
-            return $"({Latitude}, {Longitude})";
+            return $"{LatitudeLongitude}[{Projection}]";
         }
 
         public bool Equals(WellLocation other)
@@ -37,7 +38,7 @@ namespace OilGas.Data.RRC.Texas
                 return true;
             }
 
-            return Latitude.Equals(other.Latitude) && Longitude.Equals(other.Longitude);
+            return LatitudeLongitude.Equals(other.LatitudeLongitude) && Projection == other.Projection;
         }
 
         public override bool Equals(object obj)
@@ -62,7 +63,7 @@ namespace OilGas.Data.RRC.Texas
 
         public override int GetHashCode()
         {
-            return HashCode.Combine(Latitude, Longitude);
+            return HashCode.Combine(LatitudeLongitude, Projection);
         }
 
         public static bool operator ==(WellLocation left,
@@ -89,14 +90,7 @@ namespace OilGas.Data.RRC.Texas
                 return 1;
             }
 
-            int latitudeComparison = Latitude.CompareTo(other.Latitude);
-
-            if(latitudeComparison != 0)
-            {
-                return latitudeComparison;
-            }
-
-            return Longitude.CompareTo(other.Longitude);
+            return LatitudeLongitude.CompareTo(other.LatitudeLongitude);
         }
 
         public int CompareTo(object obj)

@@ -2,6 +2,8 @@
 using System.Runtime.Serialization;
 using System.Xml.Serialization;
 
+using Engineering.DataSource;
+
 namespace OilGas.Data.RRC.Texas
 {
     [Serializable]

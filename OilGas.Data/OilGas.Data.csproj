@@ -1,13 +1,13 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
+  <Import Project="..\Versioning.props" />
 
   <PropertyGroup>
     <TargetFrameworks>netcoreapp3.1</TargetFrameworks>
    <!-- <TargetFrameworks>netstandard2.1;netcoreapp3.1</TargetFrameworks>
      <UseWPF>true</UseWPF> -->
-    <NuspecFile>D:\TFS_Sources\Github\Compilation\trmcnealy\OilGas.Data\OilGas.Data\Data\Packaging\OilGas.Data.nuspec</NuspecFile>
     <GeneratePackageOnBuild Condition="'$(Configuration)'!='Release'">false</GeneratePackageOnBuild>
     <RootNamespace>OilGas</RootNamespace>
-    <Version>1.3.0</Version>
+    <Version>$(OILGAS_VERSION)</Version>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     <GeneratePackageOnBuild>false</GeneratePackageOnBuild>
     <PackageOutputPath Condition="'$(PACKAGE_CACHE)'!=''">$(PACKAGE_CACHE)</PackageOutputPath>
@@ -18,18 +18,28 @@
     <Compile Remove="Data\Persistence\DatabaseSettings.cs" />
     <Compile Remove="Data\Persistence\DataTableAttribute.cs" />
     <Compile Remove="Data\Persistence\FrameAdapter.cs" />
+    <Compile Remove="Data\Persistence\MappedCsvReader.cs" />
     <Compile Remove="Data\Persistence\OldDataBase.cs" />
     <Compile Remove="Data\Persistence\PersistentData.cs" />
     <Compile Remove="Data\Persistence\SerializableConcurrentDictionary.cs" />
+    <Compile Remove="Data\Tools\FracFocus\Ingredients.cs" />
+    <Compile Remove="Data\Tools\FracFocus\Purpose.cs" />
+    <Compile Remove="Data\Tools\FracFocus\Registry.cs" />
+    <Compile Remove="Data\Tools\FracFocus\StateType.cs" />
   </ItemGroup>
 
   <ItemGroup>
     <None Include="Data\Persistence\DatabaseSettings.cs" />
+    <None Include="Data\Persistence\MappedCsvReader.cs" />
     <None Include="Data\Persistence\OldDataBase.cs" />
     <None Include="Data\Persistence\DataTableAttribute.cs" />
     <None Include="Data\Persistence\FrameAdapter.cs" />
     <None Include="Data\Persistence\PersistentData.cs" />
     <None Include="Data\Persistence\SerializableConcurrentDictionary.cs" />
+    <None Include="Data\Tools\FracFocus\Ingredients.cs" />
+    <None Include="Data\Tools\FracFocus\Purpose.cs" />
+    <None Include="Data\Tools\FracFocus\Registry.cs" />
+    <None Include="Data\Tools\FracFocus\StateType.cs" />
   </ItemGroup>
   
   <ItemGroup>
@@ -37,13 +47,22 @@
   </ItemGroup>
   
   <ItemGroup>
-    <PackageReference Include="Kokkos.NET" Version="0.5.12" />
+    <PackageReference Include="Kokkos.NET" Version="0.6.3" />
+    <PackageReference Include="Npgsql" Version="4.1.3.1" />
+    <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="5.0.0-preview3" />
+    <PackageReference Include="Microsoft.Extensions.Caching.Memory" Version="3.1.3" />
     <PackageReference Include="ParallelExtensionsCore" Version="1.3.0" />
     <PackageReference Include="AngleSharp" Version="0.14.0" />
     <PackageReference Include="Microsoft.Data.Analysis" Version="0.3.0" />
     <PackageReference Include="System.Memory" Version="4.5.4" />
     <PackageReference Include="System.Text.Encoding.CodePages" Version="4.7.0" />
     <PackageReference Include="VegaLite.NET" Version="1.3.22" />
+    <PackageReference Include="Newtonsoft.Json" Version="12.0.3" />
+    <PackageReference Include="Microsoft.Windows.SDK.Contracts" Version="10.0.18362.2005" />
+  </ItemGroup>
+  
+  <ItemGroup>
+    <ProjectReference Include="..\..\DataStorage\Engineering.DataSource\Engineering.DataSource.csproj" />
   </ItemGroup>
 
   <ItemGroup>

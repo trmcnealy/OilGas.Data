@@ -4,8 +4,6 @@ using System.ComponentModel.DataAnnotations.Schema;
 using System.Data.Common;
 using System.Runtime.Serialization;
 
-using Engineering.DataSource;
-
 namespace OilGas.Data.FracFocus
 {
     [Serializable]
