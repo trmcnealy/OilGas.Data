@@ -931,14 +931,14 @@ namespace RRC.Texas.Driver
         {
 
         
-            RrcTexasDataAdapter adapter = new RrcTexasDataAdapter();
+            //RrcTexasDataAdapter adapter = new RrcTexasDataAdapter();
 
-            Well well = adapter.GetMonthlyProductionFromWebsiteByApi("42-255-35980-00-00").Result;
+            //Well well = adapter.GetMonthlyProductionFromWebsiteByApi("42-255-35980-00-00").Result;
 
-            foreach (MonthlyProduction monthlyProduction in well.MonthlyProduction)
-            {
-                Console.WriteLine($"{monthlyProduction.Date}");
-            }
+            //foreach (MonthlyProduction monthlyProduction in well.MonthlyProduction)
+            //{
+            //    Console.WriteLine($"{monthlyProduction.Date}");
+            //}
 
 
 
@@ -946,7 +946,7 @@ namespace RRC.Texas.Driver
 
             //UpdateWells();
 
-            //InterpWells();
+            InterpWells();
 
             //InterpTest();
 
