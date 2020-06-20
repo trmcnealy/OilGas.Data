@@ -1,17 +1,24 @@
-﻿using System;
+﻿#nullable enable
+using AngleSharp.Html.Dom;
+
+using Engineering.DataSource;
+using Engineering.DataSource.CoordinateSystems;
+using Engineering.DataSource.OilGas;
+
+using Microsoft.EntityFrameworkCore;
+
+using Npgsql;
+
+using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.Collections.Immutable;
+using System.Data;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
-
-using AngleSharp.Html.Dom;
-
-using Engineering.DataSource;
-using Engineering.DataSource.OilGas;
-
-using Microsoft.EntityFrameworkCore;
 
 namespace OilGas.Data.RRC.Texas
 {
@@ -19,15 +26,117 @@ namespace OilGas.Data.RRC.Texas
     {
         private readonly OilGasDbContext _context;
 
+        public OilGasDbContext Context { get { return _context; } }
+
         [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public RrcTexasDataAdapter()
         {
             _context = new OilGasDbContext();
         }
 
+        public void CloseConnection()
+        {
+            _context.Connection.Close();
+        }
+
         public void Dispose()
         {
             _context.SaveChanges();
+        }
+
+        public void ReIndexAllTables()
+        {
+            NpgsqlCommand command = Context.Connection.CreateCommand();
+
+            ReIndex(command, "ShapeFileLocation");
+
+            ReIndex(command, "Company");
+
+            ReIndex(command, "DrillingPermit");
+
+            ReIndex(command, "DirectionalSurvey");
+
+            ReIndex(command, "Field");
+
+            ReIndex(command, "Lease");
+
+            ReIndex(command, "Location");
+
+            ReIndex(command, "WellboreDetails");
+
+            ReIndex(command, "CompletionDetails");
+
+            ReIndex(command, "ReservoirData");
+
+            ReIndex(command, "PerforationInterval");
+
+            ReIndex(command, "OilProperties");
+
+            ReIndex(command, "GasProperties");
+
+            ReIndex(command, "WaterProperties");
+
+            ReIndex(command, "ReservoirProperties");
+
+            ReIndex(command, "DailyProduction");
+
+            ReIndex(command, "MonthlyProduction");
+
+            ReIndex(command, "CumulativeProduction");
+
+            ReIndex(command, "Well");
+        }
+
+        public void VacuumDb()
+        {
+            NpgsqlCommand command = Context.Connection.CreateCommand();
+
+            command.CommandText = $"VACUUM (FULL) \"OilGas\";";
+
+            command.ExecuteNonQuery();
+        }
+
+        public void ReIndexDb()
+        {
+            NpgsqlCommand command = Context.Connection.CreateCommand();
+
+            command.CommandText = $"REINDEX DATABASE CONCURRENTLY \"OilGas\";";
+
+            command.ExecuteNonQuery();
+        }
+
+        public void ReIndex(NpgsqlCommand command,
+                            string        tableName)
+        {
+            command.CommandText = $"REINDEX TABLE CONCURRENTLY \"{tableName}\";";
+
+            command.ExecuteNonQuery();
+        }
+
+        public void ReIndex(string tableName)
+        {
+            NpgsqlCommand command = Context.Connection.CreateCommand();
+
+            command.CommandText = $"REINDEX TABLE CONCURRENTLY \"{tableName}\";";
+
+            command.ExecuteNonQuery();
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+        public void Add(ShapeFileLocation location)
+        {
+            _context.Add(location);
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+        public void AddRange(List<ShapeFileLocation> locations)
+        {
+            _context.AddRange(locations);
+        }
+
+        public void ConvertLocations()
+        {
+            _context.ConvertLocations();
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
@@ -50,34 +159,8 @@ namespace OilGas.Data.RRC.Texas
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
-        public async Task<Well> GetMonthlyProductionByApi(ApiNumber api,
-                                                          bool      persistentData = true,
-                                                          bool      updateData     = true)
+        public async Task<Well?> GetMonthlyProductionFromWebsiteByApi(ApiNumber api)
         {
-            Well well;
-
-            if(persistentData && !updateData)
-            {
-                try
-                {
-                    well = await _context.GetWellByApiAsync(api);
-
-                    if(well?.MonthlyProduction != null)
-                    {
-                        return well;
-                    }
-                }
-                catch(Exception ex)
-                {
-                    Debug.WriteLine(ex.Message);
-                }
-            }
-
-            if(!updateData)
-            {
-                return null;
-            }
-
             (string csvData, LeaseReport lease) = await QueryBuilder.SpecificLeaseProductionQueryByApi(api);
 
             CsvReader csvReader = new CsvReader(csvData);
@@ -86,39 +169,112 @@ namespace OilGas.Data.RRC.Texas
 
             List<SpecificLeaseProductionQueryData> productionData = new List<SpecificLeaseProductionQueryData>(data.rows.Count);
 
-            foreach(string[] entry in data.rows)
+            foreach (string[] entry in data.rows)
             {
                 productionData.Add(new SpecificLeaseProductionQueryData(api, entry));
             }
 
-            well = ConvertFrom(lease, productionData);
-
-            if(persistentData)
-            {
-                Well record = await _context.GetWellByApiAsync(api);
-
-                if(record != null)
-                {
-                    record.MonthlyProduction = well.MonthlyProduction;
-                    _context.Update(record);
-                }
-                else
-                {
-                    record = well;
-                    await _context.AddAsync(record);
-                }
-
-                await _context.SaveChangesAsync();
-
-                return record;
-            }
+            Well well = ConvertFrom(lease, productionData, lease.DistrictCode);
 
             return well;
         }
 
+        //[MethodImpl(MethodImplOptions.AggressiveInlining |
+        //MethodImplOptions.AggressiveOptimization)] public async Task<Well?>
+        // GetMonthlyProductionByApi(ApiNumber api,
+        //                                                   bool      persistentData =
+        //                                                   true, bool      updateData
+        //                                                   = true)
+        //{
+        //    Well well;
+
+        //    if(persistentData && !updateData)
+        //    {
+        //        try
+        //        {
+        //            List<MonthlyProduction> monthlyProduction =
+        //            _context.MonthlyProduction.Where(w => w.Api == api).ToList();
+
+        //            well = await _context.GetWellByApiAsync(api);
+
+        //            if(well?.MonthlyProduction.Count == 0 && monthlyProduction.Count >
+        //            0)
+        //            {
+        //                well.MonthlyProduction = monthlyProduction;
+
+        //                List<CumulativeProduction> cumulativeProduction =
+        //                _context.CumulativeProduction.Where(w => w.Api ==
+        //                api).ToList();
+
+        //                well.CumulativeProduction = cumulativeProduction;
+
+        //                _context.Update(well);
+        //            }
+
+        //            if(well?.MonthlyProduction.Count > 0)
+        //            {
+        //                return well;
+        //            }
+        //        }
+        //        catch(Exception ex)
+        //        {
+        //            Debug.WriteLine(ex.Message);
+        //        }
+        //    }
+
+        //    if(!updateData)
+        //    {
+        //        return null;
+        //    }
+
+        //    (string csvData, LeaseReport lease) = await
+        //    QueryBuilder.SpecificLeaseProductionQueryByApi(api);
+
+        //    CsvReader csvReader = new CsvReader(csvData);
+
+        //    (List<string[]> header, List<string[]> rows) data =
+        //    csvReader.ReadFile(10);
+
+        //    List<SpecificLeaseProductionQueryData> productionData = new
+        //    List<SpecificLeaseProductionQueryData>(data.rows.Count);
+
+        //    foreach(string[] entry in data.rows)
+        //    {
+        //        productionData.Add(new SpecificLeaseProductionQueryData(api, entry));
+        //    }
+
+        //    well = ConvertFrom(lease, productionData);
+
+        //    if(persistentData)
+        //    {
+        //        Well record = await _context.GetWellByApiAsync(api);
+
+        //        if(record != null)
+        //        {
+        //            record.Company              = well.Company;
+        //            record.Field                = well.Field;
+        //            record.MonthlyProduction    = well.MonthlyProduction;
+        //            record.CumulativeProduction = well.CumulativeProduction;
+        //            _context.Update(record);
+        //        }
+        //        else
+        //        {
+        //            record = well;
+        //            await _context.AddAsync(record);
+        //        }
+
+        //        await _context.SaveChangesAsync();
+
+        //        return record;
+        //    }
+
+        //    return well;
+        //}
+
         [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         internal Well ConvertFrom(LeaseReport                                   leaseReport,
-                                  IEnumerable<SpecificLeaseProductionQueryData> queryData)
+                                  IEnumerable<SpecificLeaseProductionQueryData> queryData,
+                                  int                                           district)
         {
             List<SpecificLeaseProductionQueryData> dataRows = queryData.ToList();
 
@@ -127,28 +283,21 @@ namespace OilGas.Data.RRC.Texas
                 throw new Exception();
             }
 
-            SpecificLeaseProductionQueryData firstRow = dataRows.FirstOrDefault();
-
-            if(firstRow == null)
-            {
-                throw new Exception();
-            }
-
-            SpecificLeaseProductionQueryData lastRow = dataRows.LastOrDefault();
-
-            if(lastRow == null)
-            {
-                throw new Exception();
-            }
-
-            CumulativeProduction lastMonth = null;
-            int                  month     = 0;
+            CumulativeProduction? lastMonth = null;
+            int                   month     = 0;
 
             List<MonthlyProduction>    monthlyProduction    = new List<MonthlyProduction>();
             List<CumulativeProduction> cumulativeProduction = new List<CumulativeProduction>();
 
+            SpecificLeaseProductionQueryData operatorDataRow = null;
+
             foreach(SpecificLeaseProductionQueryData dataRow in dataRows)
             {
+                if(!string.IsNullOrEmpty(dataRow.Operator_Name))
+                {
+                    operatorDataRow = dataRow;
+                }
+
                 if(!float.TryParse(dataRow.OIL_BBL_Production, out float monthlyOil))
                 {
                     monthlyOil = 0.0f;
@@ -159,38 +308,34 @@ namespace OilGas.Data.RRC.Texas
                     monthlyGas = 0.0f;
                 }
 
-                monthlyProduction.Add(new MonthlyProduction(dataRow.Api, new ProductionDate(dataRow.Date), monthlyGas, monthlyOil, 0.0));
+                monthlyProduction.Add(new MonthlyProduction(new ProductionDate(dataRow.Date), monthlyGas, 0.0, monthlyOil, 0.0));
 
-                if(lastMonth == null)
+                if(lastMonth is null)
                 {
-                    lastMonth = new CumulativeProduction(dataRow.Api, new ProductionDate(dataRow.Date), monthlyGas, monthlyOil, 0.0);
+                    lastMonth = new CumulativeProduction(new ProductionDate(dataRow.Date), monthlyGas, monthlyOil, 0.0);
                     cumulativeProduction.Add(lastMonth);
                 }
                 else
                 {
-                    lastMonth = new CumulativeProduction(dataRow.Api, new ProductionDate(dataRow.Date), monthlyGas + lastMonth.GasVolume, monthlyOil + lastMonth.OilVolume, 0.0);
+                    lastMonth = new CumulativeProduction(new ProductionDate(dataRow.Date), monthlyGas + lastMonth.GasVolume, monthlyOil + lastMonth.OilVolume, 0.0);
                     cumulativeProduction.Add(lastMonth);
                 }
 
                 ++month;
             }
 
-            Company company = GetOperator(int.Parse(firstRow.Operator_No)) ?? new Company(firstRow.Operator_Name, firstRow.Operator_No);
+            Company company = GetOperator(int.Parse(operatorDataRow.Operator_No)) ?? new Company(operatorDataRow.Operator_Name, operatorDataRow.Operator_No);
 
-            _context.AddorUpdate(company);
+            //_context.AddorUpdate(company);
 
-            Field field = GetField(int.Parse(firstRow.Field_No)) ?? new Field(firstRow.Field_Name, firstRow.Field_No);
+            Field field = GetField(long.Parse(operatorDataRow.Field_No), district) ?? new Field(operatorDataRow.Field_Name, long.Parse(operatorDataRow.Field_No), district);
 
-            _context.AddorUpdate(field);
+            //_context.AddorUpdate(field);
 
-            _context.AddRange(monthlyProduction);
-
-            _context.AddRange(cumulativeProduction);
-
-            Well well = new Well(firstRow.Api)
+            Well well = new Well(operatorDataRow.Api)
             {
                 Number               = leaseReport.Number,
-                LeaseNumber          = leaseReport.LeaseNumber,
+                Lease                = new Lease(leaseReport.Name, leaseReport.LeaseNumber),
                 Company              = company,
                 Field                = field,
                 Name                 = leaseReport.Name,
@@ -201,18 +346,20 @@ namespace OilGas.Data.RRC.Texas
             return well;
         }
 
-        // [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
-        // public async Task<Well> GetDirectionalSurvey(Well well)
-        // {
-        //     List<DirectionalSurveyReport> directionalSurveyReport = await QueryBuilder.CompletionReportQueryByApi(well.Api);
-        //
-        //     double min = directionalSurveyReport.Min(ds => ds.From);
-        //     double max = directionalSurveyReport.Max(ds => ds.To);
-        //
-        //     well.DirectionalSurvey = new DirectionalSurvey(min, max);
-        //
-        //     return well;
-        // }
+// [MethodImpl(MethodImplOptions.AggressiveInlining |
+// MethodImplOptions.AggressiveOptimization)] public async Task<Well>
+// GetDirectionalSurvey(Well well)
+// {
+//     List<DirectionalSurveyReport> directionalSurveyReport = await
+//     QueryBuilder.CompletionReportQueryByApi(well.Api);
+//
+//     double min = directionalSurveyReport.Min(ds => ds.From);
+//     double max = directionalSurveyReport.Max(ds => ds.To);
+//
+//     well.DirectionalSurvey = new DirectionalSurvey(min, max);
+//
+//     return well;
+// }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public async Task UpdateLocationAsync(Dictionary<ApiNumber, WellS> wellS)
@@ -221,16 +368,16 @@ namespace OilGas.Data.RRC.Texas
 
             foreach(Well well in wells)
             {
-                if(wellS.TryGetValue(well.Api, out WellS match))
+                if(wellS.TryGetValue(well.Api, out WellS? match))
                 {
-                    if(well.Location == null)
+                    if(well.Location is null)
                     {
-                        well.Location = new Location(well.Api, match.LAT83, match.LONG83);
+                        well.Location = new Location(match.LAT83, match.LONG83);
                     }
                     else
                     {
-                        well.Location.Latitude  = match.LAT83;
-                        well.Location.Longitude = match.LONG83;
+                        well.Location.Latitude83  = match.LAT83;
+                        well.Location.Longitude83 = match.LONG83;
                     }
 
                     Update(well);
@@ -249,25 +396,26 @@ namespace OilGas.Data.RRC.Texas
         [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public async Task<Well> GetLocationAsync(ApiNumber api)
         {
-            GisQuery gisQuery = await QueryBuilder.GisQueryByApi(api);
+            GisQuery? gisQuery = await QueryBuilder.GisQueryByApi(api);
 
-            GisQuery.GisFeature feature = gisQuery?.Features.FirstOrDefault();
+            GisQuery.GisFeature? feature = gisQuery?.Features.FirstOrDefault();
 
             Well well = await _context.Wells.Include(wp => wp.Location).FirstOrDefaultAsync(p => p.Api == api);
 
-            //Location location = await _context.Locations.FirstOrDefaultAsync(p => p.Api == api);
+            // Location location = await _context.Locations.FirstOrDefaultAsync(p => p.Api
+            // == api);
 
             if(feature != null)
             {
-                if(well.Location == null)
+                if(well.Location is null)
                 {
-                    well.Location = new Location(well.Api, feature.Attributes.GisLat83, feature.Attributes.GisLong83);
-                    //await _context.AddAsync(well.Location);
+                    well.Location = new Location(feature.Attributes.GisLat83, feature.Attributes.GisLong83);
+                    // await _context.AddAsync(well.Location);
                 }
                 else
                 {
-                    well.Location.Latitude  = feature.Attributes.GisLat83;
-                    well.Location.Longitude = feature.Attributes.GisLong83;
+                    well.Location.Latitude83  = feature.Attributes.GisLat83;
+                    well.Location.Longitude83 = feature.Attributes.GisLong83;
                     //_context.Update(well.Location);
                 }
 
@@ -297,48 +445,50 @@ namespace OilGas.Data.RRC.Texas
             return well;
         }
 
-        //public async Task<Location> GetLocationByApi(ApiNumber api)
-        //{
-        //    //try
-        //    //{
-        //    //    Registry record = await FracFocusRegistry.FirstAsync(w => w.ApiNumber == api);
+// public async Task<Location> GetLocationByApi(ApiNumber api)
+//{
+//    //try
+//    //{
+//    //    Registry record = await FracFocusRegistry.FirstAsync(w =>
+//    w.ApiNumber == api);
 
-        //    //    if(record != null)
-        //    //    {
-        //    //        return new WellLocation(record.Latitude, record.Longitude, record.Projection);
-        //    //    }
-        //    //}
-        //    //catch(Exception ex)
-        //    //{
-        //    //    Debug.WriteLine(ex.Message);
-        //    //}
+//    //    if(record != null)
+//    //    {
+//    //        return new WellLocation(record.Latitude, record.Longitude,
+//    record.Projection);
+//    //    }
+//    //}
+//    //catch(Exception ex)
+//    //{
+//    //    Debug.WriteLine(ex.Message);
+//    //}
 
-        //    return null;
-        //}
+//    return null;
+//}
 
-        //[MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
-        //public void Optimize()
-        //{
-        //    _context.Optimize();
-        //}
+//[MethodImpl(MethodImplOptions.AggressiveInlining |
+//MethodImplOptions.AggressiveOptimization)] public void Optimize()
+//{
+//    _context.Optimize();
+//}
 
-        //[MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
-        //public void Compact()
-        //{
-        //    _context.Compact();
-        //}
+//[MethodImpl(MethodImplOptions.AggressiveInlining |
+//MethodImplOptions.AggressiveOptimization)] public void Compact()
+//{
+//    _context.Compact();
+//}
 
-        //[MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
-        //public void Backup()
-        //{
-        //    _context.Backup();
-        //}
+//[MethodImpl(MethodImplOptions.AggressiveInlining |
+//MethodImplOptions.AggressiveOptimization)] public void Backup()
+//{
+//    _context.Backup();
+//}
 
-        //[MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
-        //public void LoadDb(string filePath)
-        //{
-        //    _context.LoadDb(filePath);
-        //}
+//[MethodImpl(MethodImplOptions.AggressiveInlining |
+//MethodImplOptions.AggressiveOptimization)] public void LoadDb(string filePath)
+//{
+//    _context.LoadDb(filePath);
+//}
 
         [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public void LoadOperatorsCsv(string filePath)
@@ -359,9 +509,9 @@ namespace OilGas.Data.RRC.Texas
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
-        public List<Well> GetAllWellsIncludingAsync()
+        public List<Well> GetAllWells()
         {
-            return _context.GetAllWellsIncluding();
+            return _context.GetAllWells();
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
@@ -400,6 +550,21 @@ namespace OilGas.Data.RRC.Texas
             _context.Update(well);
         }
 
+        public void Remove(Well well)
+        {
+            _context.Remove(well);
+        }
+
+        public async Task RemoveAsync(Well well)
+        {
+            await _context.RemoveAsync(well);
+        }
+
+        public void RemoveRange(List<Well> wells)
+        {
+            _context.RemoveRange(wells);
+        }
+
         [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public void Commit()
         {
@@ -425,21 +590,55 @@ namespace OilGas.Data.RRC.Texas
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+        public List<Well> GetWellsByCounty(string name)
+        {
+            return _context.GetWellsByCounty(name);
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+        public async Task<List<Well>> GetWellsByCountyAsync(string name)
+        {
+            return await _context.GetWellsByCountyAsync(name);
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public Well GetWellByApi(ApiNumber api)
         {
             return _context.GetWellByApi(api);
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
-        public Field GetField(int number)
+        public Task<Well> GetWellByApiAsync(ApiNumber api)
         {
-            return _context.GetField(number);
+            return _context.GetWellByApiAsync(api);
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
-        public async Task<Field> GetFieldAsync(int number)
+        public Lease GetLease(long number,
+                              int  district)
         {
-            return await _context.GetFieldAsync(number);
+            return _context.GetLease(number, district);
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+        public async Task<Lease> GetLeaseAsync(long number,
+                                               int  district)
+        {
+            return await _context.GetLeaseAsync(number, district);
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+        public Field GetField(long number,
+                              int  district)
+        {
+            return _context.GetField(number, district);
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+        public async Task<Field> GetFieldAsync(long number,
+                                               int  district)
+        {
+            return await _context.GetFieldAsync(number, district);
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
@@ -455,13 +654,13 @@ namespace OilGas.Data.RRC.Texas
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
-        public Company GetOperator(int number)
+        public Company GetOperator(long number)
         {
             return _context.GetOperator(number);
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
-        public async Task<Company> GetOperatorAsync(int number)
+        public async Task<Company> GetOperatorAsync(long number)
         {
             return await _context.GetOperatorAsync(number);
         }
@@ -485,8 +684,11 @@ namespace OilGas.Data.RRC.Texas
         {
             // CountyType.Kind[] counties = new[]
             // {
-            //     CountyType.Kind.ATASCOSA, CountyType.Kind.DE_WITT, CountyType.Kind.LA_SALLE, CountyType.Kind.DUVAL, CountyType.Kind.LIVE_OAK, CountyType.Kind.KARNES, CountyType.Kind.FRIO,
-            //     CountyType.Kind.MCMULLEN, CountyType.Kind.WEBB, CountyType.Kind.ZAVALA, CountyType.Kind.MAVERICK
+            //     CountyType.Kind.ATASCOSA, CountyType.Kind.DE_WITT,
+            //     CountyType.Kind.LA_SALLE, CountyType.Kind.DUVAL,
+            //     CountyType.Kind.LIVE_OAK, CountyType.Kind.KARNES, CountyType.Kind.FRIO,
+            //     CountyType.Kind.MCMULLEN, CountyType.Kind.WEBB, CountyType.Kind.ZAVALA,
+            //     CountyType.Kind.MAVERICK
             // };
 
             string data = QueryBuilder.DrillingPermitsQueryByCounty(countyType, approvedDateFrom, approvedDateTo).Result;
@@ -503,28 +705,28 @@ namespace OilGas.Data.RRC.Texas
             }
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
-        public async Task UpdateAllWellsMonthlyProductionAsync()
-        {
-            List<ApiNumber> wellApis = _context.Wells.Select(p => p.Api).ToList();
+//[MethodImpl(MethodImplOptions.AggressiveInlining |
+//MethodImplOptions.AggressiveOptimization)] public async Task
+// UpdateAllWellsMonthlyProductionAsync()
+//{
+//    List<ApiNumber> wellApis = _context.Wells.Select(p => p.Api).ToList();
 
-            foreach(ApiNumber api in wellApis)
-            {
-                try
-                {
-                    await GetMonthlyProductionByApi(api);
-                }
-                catch(Exception)
-                {
-                    //
-                }
-            }
-        }
+//    foreach(ApiNumber api in wellApis)
+//    {
+//        try
+//        {
+//            await GetMonthlyProductionByApi(api);
+//        }
+//        catch(Exception)
+//        {
+//            //
+//    }
+//}
 
         [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public async Task UpdateAllWellsLocationsAsync()
         {
-            List<ApiNumber> wellApis = _context.Wells.Where(w => w.Location == null || w.Location.Latitude == null || w.Location.Longitude == null).Select(p => p.Api).ToList();
+            List<ApiNumber> wellApis = _context.Wells.Where(w => w.Location == null || w.Location.Latitude27 == null || w.Location.Longitude27 == null).Select(p => p.Api).ToList();
 
             foreach(ApiNumber api in wellApis)
             {
@@ -540,107 +742,1033 @@ namespace OilGas.Data.RRC.Texas
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
-        public async Task UpdateAllWellsHydrocarbonPropertiesAsync()
+        public static void LoadTexasDbs(int districtNumber)
         {
-            List<string> downloadedG1Files = Directory.GetFiles(@"D:\OilGasData", "*.G1.pdf").Select(f => Path.GetFileName(f).Substring(0, 18)).ToList();
+            using TexasAggregateContext tac = new TexasAggregateContext();
+            tac.ChangeTracker.AutoDetectChangesEnabled = false;
 
-            //Parallel.ForEach(Partitioner.Create(0, downloadedG1Files.Count, downloadedG1Files.Count / Environment.ProcessorCount),
-            //                 row =>
-            //                 {
-            ApiNumber api;
-            string    filePath;
+            ImmutableList<ProductionAggr>? productionAggrTable = tac.ProductionAggrTable.Where(w => w.DISTRICT_NO == districtNumber).ToImmutableList();
 
-            double? density               = null;
-            double? visocity              = null;
-            double? formationVolumeFactor = null;
-            double? compressibility       = null;
-            double? referenceTemperature  = null;
-            double? referencePressure     = null;
+            loadTexasDbs(productionAggrTable, districtNumber);
+        }
 
-            double? h2S = null;
-            double? co2 = null;
-            double? n2  = null;
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+        private static void loadTexasDbs(ImmutableList<ProductionAggr> productionAggrTable,
+                                         int                           districtNumber)
+        {
+            Dictionary<long, Company> companies = new Dictionary<long, Company>(20000);
+            Dictionary<long, Lease>   leases    = new Dictionary<long, Lease>(productionAggrTable.Count);
+            Dictionary<long, Field>   fields    = new Dictionary<long, Field>(20000);
 
-            //for(int i = row.Item1; i < row.Item2; i++)
-            for(int i = 0; i < downloadedG1Files.Count; i++)
+            using RrcTexasDataAdapter _context = new RrcTexasDataAdapter();
+
+            using TexasAggregateContext tac = new TexasAggregateContext();
+            tac.ChangeTracker.AutoDetectChangesEnabled = false;
+
+            long    OPERATOR_NO;
+            string? OPERATOR_NAME;
+            long    FIELD_NO;
+            string? FIELD_NAME;
+            long    LEASE_NO;
+            string? LEASE_NAME;
+            string? WELL_NO;
+
+            Company? company;
+            Field?   field;
+            Lease?   lease;
+
+            ProductionAggr productionAggr;
+
+            ImmutableHashSet<ApiNumber> apis = _context.GetAllWells().Select(w => w.Api).ToImmutableHashSet();
+
+            foreach(Company companyDb in _context.Context.Companys.ToImmutableList())
             {
-                try
+                companies.Add(companyDb.Number, companyDb);
+            }
+
+            foreach(Field fieldDb in _context.Context.Fields.ToImmutableList())
+            {
+                fields.Add(fieldDb.Number, fieldDb);
+            }
+
+            foreach(Lease leaseDb in _context.Context.Leases.ToImmutableList().Where(leaseDb => leaseDb.Name != null))
+            {
+                leases.Add(leaseDb.Number, leaseDb);
+            }
+
+            for(int i = 0; i < productionAggrTable.Count; i++)
+            {
+                productionAggr = productionAggrTable[i];
+
+                if(productionAggr != null)
                 {
-                    api = downloadedG1Files[i];
-
-                    filePath = Path.Combine(@"D:\OilGasData", api + ".G1.pdf");
-
-                    if(api == "42-255-31650-00-00")
-                    {
-                        Debugger.Break();
-                    }
-
-                    (DepthScanner depth, OilGasPropertiesScanner oilGasProperties) = CompletionReportReader.ReadReport(filePath);
-
-                    (double tvdDepth, double totalDepth) = (depth.TvdDepth, depth.TotalDepth);
-
-                    if(Math.Abs(oilGasProperties.OilApiGravity) < double.Epsilon && Math.Abs(oilGasProperties.GasSpecificGravity) < double.Epsilon)
+                    if(apis.Contains(productionAggr.Api))
                     {
                         continue;
                     }
 
-                    (double gasSpecificGravity, double oilApiGravity, double gasLiquidHydroRatio, double avgShutinTemperature, double bottomHoleTemperature, double bottomHoleDepth) =
-                        (oilGasProperties.GasSpecificGravity, oilGasProperties.OilApiGravity, oilGasProperties.GasLiquidHydroRatio, oilGasProperties.AvgShutinTemperature,
-                         oilGasProperties.BottomHoleTemperature, oilGasProperties.BottomHoleDepth);
+                    OPERATOR_NO   = productionAggr.OPERATOR_NO;
+                    OPERATOR_NAME = productionAggr.OPERATOR_NAME;
 
-                    //TODO Pressure
-                    double pressure = tvdDepth * 0.65;
+                    if(companies.ContainsKey(OPERATOR_NO))
+                    {
+                        company = _context.GetOperator(OPERATOR_NO) ?? companies[OPERATOR_NO];
+                    }
+                    else
+                    {
+                        company = new Company(OPERATOR_NAME, OPERATOR_NO);
+                        companies.Add(OPERATOR_NO, company);
+                    }
 
-                    double Rs = Pvt.GasSolubility.VasquezBeggs(4815.0, 74.0, oilApiGravity, gasSpecificGravity);
+                    FIELD_NO   = productionAggr.FIELD_NO;
+                    FIELD_NAME = productionAggr.FIELD_NAME;
 
-                    density               = oilApiGravity;
-                    visocity              = Pvt.OilViscosity.Saturated.PetroskyFarshad(Pvt.OilViscosity.Dead.Beal(bottomHoleTemperature, oilApiGravity), gasLiquidHydroRatio);
-                    formationVolumeFactor = Pvt.OilFormationVolumeFactor.VasquezBeggs(gasLiquidHydroRatio, bottomHoleTemperature, oilApiGravity, gasSpecificGravity);
-                    compressibility       = Pvt.OilCompressibility.VasquezBeggs(gasLiquidHydroRatio, pressure, bottomHoleTemperature, oilApiGravity, gasSpecificGravity);
-                    referenceTemperature  = bottomHoleTemperature;
-                    referencePressure     = null;
+                    if(fields.ContainsKey(FIELD_NO))
+                    {
+                        field = _context.GetField(FIELD_NO, districtNumber) ?? fields[FIELD_NO];
+                    }
+                    else
+                    {
+                        field = new Field(FIELD_NAME, FIELD_NO, districtNumber);
+                        fields.Add(FIELD_NO, field);
+                    }
 
-                    OilProperties oilProperties = new OilProperties(api, density, visocity, formationVolumeFactor, compressibility, referenceTemperature, referencePressure);
+                    LEASE_NO   = productionAggr.LEASE_NO;
+                    LEASE_NAME = productionAggr.LEASE_NAME;
 
-                    await _context.AddorUpdateAsync(oilProperties);
+                    if(leases.ContainsKey(LEASE_NO))
+                    {
+                        lease = _context.GetLease(LEASE_NO, districtNumber) ?? leases[LEASE_NO];
+                    }
+                    else
+                    {
+                        lease = new Lease(LEASE_NAME, LEASE_NO, districtNumber);
+                        leases.Add(LEASE_NO, lease);
+                    }
 
-                    density              = gasSpecificGravity;
-                    h2S                  = null;
-                    co2                  = null;
-                    n2                   = null;
-                    visocity             = Pvt.GasViscosity.CarrKobayashiBurrows(pressure, bottomHoleTemperature, gasSpecificGravity);
-                    compressibility      = Pvt.GasCompressibility.ZFactor(pressure, bottomHoleTemperature, gasSpecificGravity);
-                    referenceTemperature = bottomHoleTemperature;
-                    referencePressure    = null;
+                    WELL_NO = productionAggr.WELL_NO;
 
-                    GasProperties gasProperties = new GasProperties(api, gasSpecificGravity, h2S, co2, n2, visocity, compressibility, referenceTemperature, referencePressure);
-
-                    await _context.AddorUpdateAsync(gasProperties);
-
-                    CompletionDetails completionDetails = new CompletionDetails(api, null, null, totalDepth - tvdDepth);
-
-                    await _context.AddorUpdateAsync(completionDetails);
-
-                    Well well = _context.Wells.Include(wp => wp.CompletionDetails)
-                                        .Include(wp => wp.GasProperties)
-                                        .Include(wp => wp.OilProperties)
-                                        .Include(wp => wp.WaterProperties)
-                                        .FirstOrDefault(p => p.Api == api);
-
-                    well.OilProperties     = oilProperties;
-                    well.GasProperties     = gasProperties;
-                    well.CompletionDetails = completionDetails;
-
-                    _context.Update(well);
+                    _context.Add(new Well(productionAggr.Api, WELL_NO, lease, field, company));
                 }
-                catch(Exception)
+
+                if(i % 100 == 0)
                 {
-                    //
+                    Console.WriteLine($"{i}");
+                    _context.Commit();
                 }
             }
-            //});
 
-            await Task.FromResult(Task.CompletedTask);
+            tac.Connection.Close();
+
+            _context.Commit();
+            _context.CloseConnection();
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+        public static void LoadTexasDbs2(ImmutableList<ApiNumber> apis,
+                                         int                      districtNumber)
+        {
+            loadTexasDbs2(apis, districtNumber);
+        }
+
+        /// <summary>
+        /// CompletionInformation
+        /// </summary>
+        /// <param name="apis"></param>
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+        private static void loadTexasDbs2(ImmutableList<ApiNumber> apis,
+                                          int                      districtNumber)
+        {
+            Parallel.ForEach(Partitioner.Create(0, apis.Count),
+                             row =>
+                             {
+                                 int threadId = System.Threading.Thread.CurrentThread.ManagedThreadId;
+
+                                 using RrcTexasDataAdapter _context = new RrcTexasDataAdapter();
+
+                                 using TexasWellboreContext twc = new TexasWellboreContext();
+                                 twc.ChangeTracker.AutoDetectChangesEnabled = false;
+
+                                 // ImmutableHashSet<long?>? apis = wells.Select(w =>
+                                 // (long?)w.Api.GetUniqueWellIdentifier()).ToImmutableHashSet();
+
+                                 // ImmutableList<WellBoreTechnicalDataRoot> wellBoreTechnicalDataRoots =
+                                 // twc.ByApis(districtNumber);
+
+                                 WellBoreTechnicalDataRoot? wellBoreTechnicalDataRoot;
+                                 CompletionDetails?         completionDetails;
+                                 WellboreDetails?           wellboreDetails;
+
+                                 double?   WB_TOTAL_DEPTH;
+                                 DateTime? CompletionDate;
+                                 double    maxCasingDepth;
+
+                                 // List<double?> WB_CASING_DEPTH_SET = new List<double?>();
+                                 //List<int?>    wbPerfCount = new List<int?>();
+                                 //List<double?> wbFromPerf  = new List<double?>();
+                                 //List<double?> wbToPerf    = new List<double?>();
+                                 //List<string?> WB_FORMATION_NAME  = new List<string?>();
+                                 //List<double?> WB_FORMATION_DEPTH = new List<double?>();
+                                 // List<double?> WB_WGS84_LATITUDE         = new List<double?>();
+                                 // List<double?> WB_WGS84_LONGITUDE        = new List<double?>();
+                                 // List<short?>  WB_PLANE_ZONE             = new List<short?>();
+                                 // List<double?> WB_PLANE_COORDINATE_EAST  = new List<double?>();
+                                 // List<double?> WB_PLANE_COORDINATE_NORTH = new List<double?>();
+
+                                 Well well;
+
+                                 for(int i = row.Item1; i < row.Item2; i++) // for(int i = 0; i < wells.Count; ++i)
+                                 {
+                                     well = _context.GetWellByApi(apis[i]);
+
+                                     if(well.WellboreDetails != null)
+                                     {
+                                         continue;
+                                     }
+
+                                     maxCasingDepth = double.MinValue;
+
+                                     wellBoreTechnicalDataRoot = twc.ByApi(well.Api);
+
+                                     if(wellBoreTechnicalDataRoot != null)
+                                     {
+                                         WB_TOTAL_DEPTH = wellBoreTechnicalDataRoot.WB_TOTAL_DEPTH;
+
+                                         if(well.WellboreDetails is null)
+                                         {
+                                             wellboreDetails      = new WellboreDetails(null, null, WB_TOTAL_DEPTH);
+                                             well.WellboreDetails = wellboreDetails;
+                                         }
+                                         else
+                                         {
+                                             wellboreDetails = well.WellboreDetails;
+                                         }
+
+                                         if(well.CompletionDetails.Count                 == 0    &&
+                                            wellBoreTechnicalDataRoot.WB_ORIG_COMPL_CENT != null &&
+                                            wellBoreTechnicalDataRoot.WB_ORIG_COMPL_CENT > 0     &&
+                                            wellBoreTechnicalDataRoot.WB_ORIG_COMPL_YY   != null &&
+                                            wellBoreTechnicalDataRoot.WB_ORIG_COMPL_YY   > 0     &&
+                                            wellBoreTechnicalDataRoot.WB_ORIG_COMPL_MM   != null &&
+                                            wellBoreTechnicalDataRoot.WB_ORIG_COMPL_MM   > 0)
+                                         {
+                                             CompletionDate =
+                                                 new DateTime((int)((wellBoreTechnicalDataRoot.WB_ORIG_COMPL_CENT.Value * 100) + wellBoreTechnicalDataRoot.WB_ORIG_COMPL_YY.Value),
+                                                              Math.Min(12, (int)wellBoreTechnicalDataRoot.WB_ORIG_COMPL_MM),
+                                                              ((wellBoreTechnicalDataRoot.WB_ORIG_COMPL_DD is null || wellBoreTechnicalDataRoot.WB_ORIG_COMPL_DD == 0)
+                                                                   ? 1
+                                                                   : Math.Min(31, (int)wellBoreTechnicalDataRoot.WB_ORIG_COMPL_DD.Value)));
+
+                                             completionDetails = new CompletionDetails(CompletionDate);
+                                             well.CompletionDetails?.Add(completionDetails);
+                                         }
+                                         else
+                                         {
+                                             completionDetails = well.CompletionDetails.FirstOrDefault();
+                                         }
+
+                                         if(wellBoreTechnicalDataRoot.WellBoreOldLocation != null && wellBoreTechnicalDataRoot.WellBoreOldLocation.WB_LEASE_NAME != null && well.Name is null)
+                                         {
+                                             well.Name = well.Lease.Name = wellBoreTechnicalDataRoot.WellBoreOldLocation.WB_LEASE_NAME;
+                                         }
+
+                                         if(wellBoreTechnicalDataRoot.WellBoreCompletionInformation != null && wellBoreTechnicalDataRoot.WellBoreCompletionInformation.Count > 0)
+                                         {
+                                             foreach(var wellBoreCompletionInformation in wellBoreTechnicalDataRoot.WellBoreCompletionInformation)
+                                             {
+                                                 if(wellBoreCompletionInformation.WellBoreTechnicalDataFormsFileDate       != null &&
+                                                    wellBoreCompletionInformation.WellBoreTechnicalDataFormsFileDate.Count > 0)
+                                                 {
+                                                     foreach(var wellBoreTechnicalDataFormsFileDate in wellBoreCompletionInformation.WellBoreTechnicalDataFormsFileDate)
+                                                     {
+                                                         // WB_DIR_SURVEY
+                                                         if(wellBoreTechnicalDataFormsFileDate.WB_ELEVATION > 0)
+                                                         {
+                                                             wellboreDetails.Elevation = wellBoreTechnicalDataFormsFileDate.WB_ELEVATION;
+
+                                                             wellboreDetails.ElevationDatum =
+                                                                 WellBoreTechnicalDataFormsFileDate.ElevationCodeToString(wellBoreTechnicalDataFormsFileDate.WB_ELEVATION_CODE);
+                                                         }
+
+                                                         if(wellBoreTechnicalDataFormsFileDate.WellBoreCasing != null && wellBoreTechnicalDataFormsFileDate.WellBoreCasing.Count > 0)
+                                                         {
+                                                             foreach(var wellBoreCasing in wellBoreTechnicalDataFormsFileDate.WellBoreCasing)
+                                                             {
+                                                                 // WB_CASING_DEPTH_SET.Add(wellBoreCasing.WB_CASING_DEPTH_SET);
+
+                                                                 if(wellBoreCasing.WB_CASING_DEPTH_SET != null &&
+                                                                    wellBoreCasing.WB_CASING_DEPTH_SET > 0     &&
+                                                                    maxCasingDepth                     < wellBoreCasing.WB_CASING_DEPTH_SET.Value!)
+                                                                 {
+                                                                     maxCasingDepth = (double)wellBoreCasing.WB_CASING_DEPTH_SET;
+                                                                 }
+                                                             }
+
+                                                             if(wellboreDetails.TotalLength is null)
+                                                             {
+                                                                 wellboreDetails.TotalLength = maxCasingDepth;
+                                                             }
+                                                             else if(wellboreDetails.TotalLength < maxCasingDepth)
+                                                             {
+                                                                 wellboreDetails.TotalLength = maxCasingDepth;
+                                                             }
+                                                         }
+
+                                                         if(completionDetails                                             != null &&
+                                                            wellBoreTechnicalDataFormsFileDate.WellBorePerforations       != null &&
+                                                            wellBoreTechnicalDataFormsFileDate.WellBorePerforations.Count > 0     &&
+                                                            completionDetails.PerforationIntervals.Count                  == 0)
+                                                         {
+                                                             foreach(var wellBorePerforations in wellBoreTechnicalDataFormsFileDate.WellBorePerforations)
+                                                             {
+                                                                 completionDetails.PerforationIntervals.Add(new PerforationInterval(wellBorePerforations.WB_PERF_COUNT,
+                                                                                                                wellBorePerforations.WB_FROM_PERF,
+                                                                                                                wellBorePerforations.WB_TO_PERF));
+                                                             }
+                                                         }
+
+                                                         if(wellBoreTechnicalDataFormsFileDate.WellBoreFormation != null && wellBoreTechnicalDataFormsFileDate.WellBoreFormation.Count > 0)
+                                                         {
+                                                             well.ReservoirData.Clear();
+
+                                                             foreach(var wellBoreFormation in wellBoreTechnicalDataFormsFileDate.WellBoreFormation)
+                                                             {
+                                                                 well.ReservoirData.Add(new ReservoirData(wellBoreFormation.WB_FORMATION_NAME, wellBoreFormation.WB_FORMATION_DEPTH));
+                                                             }
+                                                         }
+                                                     }
+                                                 }
+                                             }
+                                         }
+                                         //Console.WriteLine($"{well.Api}");
+
+                                         _context.Update(well);
+                                     }
+
+                                     if((i - row.Item1) % 100 == 0)
+                                     {
+                                         Console.WriteLine($"{threadId}: {i - row.Item1}");
+                                     }
+                                 }
+
+                                 twc.Connection.Close();
+
+                                 _context.Commit();
+                                 _context.CloseConnection();
+                             });
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+        public static void LoadTexasDbs3(ImmutableList<ApiNumber> apis,
+                                         int                      districtNumber)
+        {
+            loadTexasDbs3(apis, districtNumber);
+        }
+
+        /// <summary>
+        /// Location
+        /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+        private static void loadTexasDbs3(ImmutableList<ApiNumber> apis,
+                                          int                      districtNumber)
+        {
+            Parallel.ForEach(Partitioner.Create(0, apis.Count, apis.Count / Environment.ProcessorCount),
+                             row =>
+                             {
+                                 int threadId = System.Threading.Thread.CurrentThread.ManagedThreadId;
+
+                                 using RrcTexasDataAdapter _context = new RrcTexasDataAdapter();
+
+                                 using TexasDumpDbContext tdc = new TexasDumpDbContext();
+                                 tdc.ChangeTracker.AutoDetectChangesEnabled = false;
+
+                                 using TexasAggregateContext tac = new TexasAggregateContext();
+                                 tac.ChangeTracker.AutoDetectChangesEnabled = false;
+
+                                 WellLocationAggr? wellLocation;
+                                 WellS?            wellSLocation;
+
+                                 double? SURFACE_LONG27;
+                                 double? SURFACE_LAT27;
+                                 double? SURFACE_LONG83;
+                                 double? SURFACE_LAT83;
+                                 double? BOTTOM_LONG27;
+                                 double? BOTTOM_LAT27;
+                                 double? BOTTOM_LONG83;
+                                 double? BOTTOM_LAT83;
+
+                                 Well well;
+
+                                 for(int i = row.Item1; i < row.Item2; i++)
+                                 {
+                                     well = _context.GetWellByApi(apis[i]);
+
+                                     if(well.Location is null)
+                                     {
+                                         wellLocation = tac.WellLocationTable.FirstOrDefault(w => w.Api == well.Api);
+
+                                         // lateralLengthMaybe = null;
+
+                                         if(wellLocation != null)
+                                         {
+                                             SURFACE_LONG27 = wellLocation.SURFACE_LONG27;
+                                             SURFACE_LAT27  = wellLocation.SURFACE_LAT27;
+                                             SURFACE_LONG83 = wellLocation.SURFACE_LONG83;
+                                             SURFACE_LAT83  = wellLocation.SURFACE_LAT83;
+                                             BOTTOM_LONG27  = wellLocation.BOTTOM_LONG27;
+                                             BOTTOM_LAT27   = wellLocation.BOTTOM_LAT27;
+                                             BOTTOM_LONG83  = wellLocation.BOTTOM_LONG83;
+                                             BOTTOM_LAT83   = wellLocation.BOTTOM_LAT83;
+
+                                             _context.Add(new ShapeFileLocation(well.Api,
+                                                                                SURFACE_LAT27,
+                                                                                SURFACE_LONG27,
+                                                                                BOTTOM_LAT27,
+                                                                                BOTTOM_LONG27,
+                                                                                SURFACE_LAT83,
+                                                                                SURFACE_LONG83,
+                                                                                BOTTOM_LAT83,
+                                                                                BOTTOM_LONG83));
+
+                                             well.Location = new Location(SURFACE_LAT27, SURFACE_LONG27, SURFACE_LAT83, SURFACE_LONG83, CountyType.GetName(well.Api.GetCountyCode()), "TEXAS")
+                                             {
+                                                 DistrictNumber = (short)districtNumber
+                                             };
+
+                                             // if(BOTTOM_LAT27 != null && BOTTOM_LONG27 != null)
+                                             // {
+                                             //     lateralLengthMaybe = new WebMercator(BOTTOM_LAT27.Value,
+                                             //     BOTTOM_LONG27.Value) - new WebMercator(SURFACE_LAT27.Value,
+                                             //     SURFACE_LONG27.Value); lateralLengthMaybe =
+                                             //     (lateralLengthMaybe.Value > 1000) ? lateralLengthMaybe :
+                                             //     null;
+                                             // }
+
+                                             //Console.WriteLine($"{well.Api}");
+
+                                             _context.Update(well);
+                                         }
+                                         else
+                                         {
+                                             wellSLocation = tdc.WellSTable.FirstOrDefault(w => w.API == well.Api.ToShortString());
+
+                                             if(wellSLocation != null)
+                                             {
+                                                 SURFACE_LONG27 = wellSLocation.LONG27;
+                                                 SURFACE_LAT27  = wellSLocation.LAT27;
+                                                 SURFACE_LONG83 = wellSLocation.LONG83;
+                                                 SURFACE_LAT83  = wellSLocation.LAT83;
+
+                                                 well.Location = new Location(SURFACE_LAT27,
+                                                                              SURFACE_LONG27,
+                                                                              SURFACE_LAT83,
+                                                                              SURFACE_LONG83,
+                                                                              CountyType.GetName(well.Api.GetCountyCode()),
+                                                                              "TEXAS") {DistrictNumber = (short)districtNumber};
+
+                                                 _context.Update(well);
+                                             }
+                                         }
+                                     }
+
+                                     if((i - row.Item1) % 100 == 0)
+                                     {
+                                         Console.WriteLine($"{threadId}: {i - row.Item1}");
+                                     }
+                                 }
+
+                                 tac.Connection.Close();
+
+                                 _context.Commit();
+                                 _context.CloseConnection();
+                             });
+        }
+
+        #region Pvt Methods
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+        private static void oilFieldPvt(ref ReservoirData? reservoirData,
+                                        in  double?        FL_OIL_DISC_WELL_GRAVITY,
+                                        in  double?        FL_G_1_GAS_GRAVITY,
+                                        in  double?        FL_AVG_RESERVOIR_BHP,
+                                        in  double?        FL_AVG_RESERVOIR_BH_TEMP,
+                                        in  double?        FL_FORMATION_VOLUME_FACTOR,
+                                        in  double?        FL_SOLUTION_GAS_OIL_RATIO)
+        {
+            if(reservoirData is null)
+            {
+                return;
+            }
+
+            if(FL_OIL_DISC_WELL_GRAVITY.IsNullOrZero())
+            {
+                return;
+            }
+
+            reservoirData.OilProperties ??= new OilProperties();
+
+            if(reservoirData.OilProperties.Density.IsNullOrLessThanZero())
+            {
+                if(FL_OIL_DISC_WELL_GRAVITY.IsNotNullOrLessThanZero())
+                {
+                    reservoirData.OilProperties.Density = FL_OIL_DISC_WELL_GRAVITY;
+                }
+            }
+
+            if(FL_G_1_GAS_GRAVITY.IsNullOrZero() || FL_AVG_RESERVOIR_BHP.IsNullOrZero() || FL_AVG_RESERVOIR_BH_TEMP.IsNullOrZero())
+            {
+                return;
+            }
+
+            double Rs = FL_SOLUTION_GAS_OIL_RATIO ??
+                        Pvt.GasSolubility.VasquezBeggs(FL_AVG_RESERVOIR_BHP!.Value, FL_AVG_RESERVOIR_BH_TEMP!.Value, FL_OIL_DISC_WELL_GRAVITY!.Value, FL_G_1_GAS_GRAVITY!.Value);
+
+            double OildeadVisocity = Pvt.OilViscosity.Dead.BeggsRobinson(FL_AVG_RESERVOIR_BH_TEMP!.Value, FL_OIL_DISC_WELL_GRAVITY!.Value);
+
+            double Oilvisocity = Pvt.OilViscosity.Saturated.BeggsRobinson(OildeadVisocity, Rs);
+
+            double OilformationVolumeFactor = FL_FORMATION_VOLUME_FACTOR ??
+                                              Pvt.OilFormationVolumeFactor.VasquezBeggs(Rs, FL_AVG_RESERVOIR_BH_TEMP!.Value, FL_OIL_DISC_WELL_GRAVITY!.Value, FL_G_1_GAS_GRAVITY!.Value);
+
+            double Oilcompressibility =
+                Pvt.OilCompressibility.VasquezBeggs(Rs, FL_AVG_RESERVOIR_BHP!.Value, FL_AVG_RESERVOIR_BH_TEMP!.Value, FL_OIL_DISC_WELL_GRAVITY!.Value, FL_G_1_GAS_GRAVITY!.Value);
+
+            if(reservoirData.OilProperties.FormationVolumeFactor.IsNullOrLessThanZero())
+            {
+                if(OilformationVolumeFactor.IsNotZero())
+                {
+                    reservoirData.OilProperties.FormationVolumeFactor = OilformationVolumeFactor;
+                }
+            }
+
+            if(reservoirData.OilProperties.Visocity.IsNullOrLessThanZero())
+            {
+                if(Oilvisocity.IsNotLessThanZero())
+                {
+                    reservoirData.OilProperties.Visocity = Oilvisocity;
+                }
+            }
+
+            if(reservoirData.OilProperties.Compressibility.IsNullOrLessThanZero())
+            {
+                if(Oilcompressibility.IsNotLessThanZero())
+                {
+                    reservoirData.OilProperties.Compressibility = Oilcompressibility;
+                }
+            }
+
+            if(reservoirData.OilProperties.ReferenceTemperature.IsNullOrLessThanZero())
+            {
+                if(FL_AVG_RESERVOIR_BH_TEMP.IsNotNullOrLessThanZero())
+                {
+                    reservoirData.OilProperties.ReferenceTemperature = FL_AVG_RESERVOIR_BH_TEMP;
+                }
+            }
+
+            if(reservoirData.OilProperties.ReferencePressure.IsNullOrLessThanZero())
+            {
+                if(FL_AVG_RESERVOIR_BHP.IsNotNullOrLessThanZero())
+                {
+                    reservoirData.OilProperties.ReferencePressure = FL_AVG_RESERVOIR_BHP;
+                }
+            }
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+        private static void oilLeasePvt(ref ReservoirData? reservoirData,
+                                        in  double?        AVG_RESERVOIR_BHP,
+                                        in  double?        AVG_RESERVOIR_BH_TEMP,
+                                        in  double?        FORMATION_VOLUME_FACTOR,
+                                        in  double?        GAS_GRAVITY,
+                                        in  double?        OIL_GRAVITY,
+                                        in  double?        SOLUTION_GAS_OIL_RATIO)
+        {
+            if(reservoirData is null)
+            {
+                return;
+            }
+
+            if(OIL_GRAVITY.IsNullOrZero())
+            {
+                return;
+            }
+
+            reservoirData.OilProperties ??= new OilProperties();
+
+            if(reservoirData.OilProperties.Density.IsNullOrLessThanZero())
+            {
+                if(OIL_GRAVITY.IsNotNullOrLessThanZero())
+                {
+                    reservoirData.OilProperties.Density = OIL_GRAVITY;
+                }
+            }
+
+            if(AVG_RESERVOIR_BHP.IsNullOrZero() || AVG_RESERVOIR_BH_TEMP.IsNullOrZero() || GAS_GRAVITY.IsNullOrZero())
+            {
+                return;
+            }
+
+            double Rs = SOLUTION_GAS_OIL_RATIO ?? Pvt.GasSolubility.VasquezBeggs(AVG_RESERVOIR_BHP!.Value, AVG_RESERVOIR_BH_TEMP!.Value, OIL_GRAVITY!.Value, GAS_GRAVITY!.Value);
+
+            double OildeadVisocity = Pvt.OilViscosity.Dead.BeggsRobinson(AVG_RESERVOIR_BH_TEMP!.Value, OIL_GRAVITY!.Value);
+
+            double Oilvisocity = Pvt.OilViscosity.Saturated.BeggsRobinson(OildeadVisocity, Rs);
+
+            double OilformationVolumeFactor = FORMATION_VOLUME_FACTOR ?? Pvt.OilFormationVolumeFactor.VasquezBeggs(Rs, AVG_RESERVOIR_BH_TEMP!.Value, OIL_GRAVITY!.Value, GAS_GRAVITY!.Value);
+
+            double Oilcompressibility = Pvt.OilCompressibility.VasquezBeggs(Rs, AVG_RESERVOIR_BHP!.Value, AVG_RESERVOIR_BH_TEMP!.Value, OIL_GRAVITY!.Value, GAS_GRAVITY!.Value);
+
+            if(reservoirData.OilProperties.FormationVolumeFactor.IsNullOrLessThanZero())
+            {
+                if(OilformationVolumeFactor.IsNotLessThanZero())
+                {
+                    reservoirData.OilProperties.FormationVolumeFactor = OilformationVolumeFactor;
+                }
+            }
+
+            if(reservoirData.OilProperties.Visocity.IsNullOrLessThanZero())
+            {
+                if(Oilvisocity.IsNotLessThanZero())
+                {
+                    reservoirData.OilProperties.Visocity = Oilvisocity;
+                }
+            }
+
+            if(reservoirData.OilProperties.Compressibility.IsNullOrLessThanZero())
+            {
+                if(Oilcompressibility.IsNotLessThanZero())
+                {
+                    reservoirData.OilProperties.Compressibility = Oilcompressibility;
+                }
+            }
+
+            if(reservoirData.OilProperties.ReferenceTemperature.IsNullOrLessThanZero())
+            {
+                if(AVG_RESERVOIR_BH_TEMP.IsNotNullOrLessThanZero())
+                {
+                    reservoirData.OilProperties.ReferenceTemperature = AVG_RESERVOIR_BH_TEMP;
+                }
+            }
+
+            if(reservoirData.OilProperties.ReferencePressure.IsNullOrLessThanZero())
+            {
+                if(AVG_RESERVOIR_BHP.IsNotNullOrLessThanZero())
+                {
+                    reservoirData.OilProperties.ReferencePressure = AVG_RESERVOIR_BHP;
+                }
+            }
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+        private static void gasFieldPvt(ref ReservoirData? reservoirData,
+                                        double?            FL_G_1_GAS_GRAVITY,
+                                        double?            FL_AVG_RESERVOIR_BHP,
+                                        double?            FL_AVG_RESERVOIR_BH_TEMP)
+        {
+            if(reservoirData is null)
+            {
+                return;
+            }
+
+            if(FL_G_1_GAS_GRAVITY.IsNullOrZero())
+            {
+                return;
+            }
+
+            reservoirData.GasProperties ??= new GasProperties();
+
+            if(reservoirData.GasProperties.SpecificGravity.IsNullOrLessThanZero())
+            {
+                if(FL_G_1_GAS_GRAVITY.IsNotNullOrLessThanZero())
+                {
+                    reservoirData.GasProperties.SpecificGravity = FL_G_1_GAS_GRAVITY;
+                }
+            }
+
+            if(FL_AVG_RESERVOIR_BHP.IsNullOrZero() || FL_AVG_RESERVOIR_BH_TEMP.IsNullOrZero())
+            {
+                return;
+            }
+
+            double Gasvisocity        = Pvt.GasViscosity.CarrKobayashiBurrows(FL_AVG_RESERVOIR_BHP!.Value, FL_AVG_RESERVOIR_BH_TEMP!.Value, FL_G_1_GAS_GRAVITY!.Value);
+            double Gascompressibility = Pvt.GasCompressibility.ZFactor(FL_AVG_RESERVOIR_BHP!.Value, FL_AVG_RESERVOIR_BH_TEMP!.Value, FL_G_1_GAS_GRAVITY!.Value);
+
+            if(reservoirData.GasProperties.Visocity.IsNullOrLessThanZero())
+            {
+                if(Gasvisocity.IsNotLessThanZero())
+                {
+                    reservoirData.GasProperties.Visocity = Gasvisocity;
+                }
+            }
+
+            if(reservoirData.GasProperties.Compressibility.IsNullOrLessThanZero())
+            {
+                if(Gascompressibility.IsNotLessThanZero())
+                {
+                    reservoirData.GasProperties.Compressibility = Gascompressibility;
+                }
+            }
+
+            if(reservoirData.GasProperties.ReferenceTemperature.IsNullOrLessThanZero())
+            {
+                if(FL_AVG_RESERVOIR_BH_TEMP.IsNotNullOrLessThanZero())
+                {
+                    reservoirData.GasProperties.ReferenceTemperature = FL_AVG_RESERVOIR_BH_TEMP;
+                }
+            }
+
+            if(reservoirData.GasProperties.ReferencePressure.IsNullOrLessThanZero())
+            {
+                if(FL_AVG_RESERVOIR_BHP.IsNotNullOrLessThanZero())
+                {
+                    reservoirData.GasProperties.ReferencePressure = FL_AVG_RESERVOIR_BHP;
+                }
+            }
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+        private static void gasLeasePvt(ref ReservoirData? reservoirData,
+                                        double?            GAS_GRAVITY,
+                                        double?            AVG_RESERVOIR_BHP,
+                                        double?            AVG_RESERVOIR_BH_TEMP)
+        {
+            if(reservoirData is null)
+            {
+                return;
+            }
+
+            if(GAS_GRAVITY.IsNullOrZero())
+            {
+                return;
+            }
+
+            reservoirData.GasProperties ??= new GasProperties();
+
+            if(reservoirData.GasProperties.SpecificGravity.IsNullOrLessThanZero())
+            {
+                if(GAS_GRAVITY.IsNotNullOrLessThanZero())
+                {
+                    reservoirData.GasProperties.SpecificGravity = GAS_GRAVITY;
+                }
+            }
+
+            if(AVG_RESERVOIR_BHP.IsNullOrZero() || AVG_RESERVOIR_BH_TEMP.IsNullOrZero())
+            {
+                return;
+            }
+
+            double Gasvisocity        = Pvt.GasViscosity.CarrKobayashiBurrows(AVG_RESERVOIR_BHP!.Value, AVG_RESERVOIR_BH_TEMP!.Value, GAS_GRAVITY!.Value);
+            double Gascompressibility = Pvt.GasCompressibility.ZFactor(AVG_RESERVOIR_BHP!.Value, AVG_RESERVOIR_BH_TEMP!.Value, GAS_GRAVITY!.Value);
+
+            if(reservoirData.GasProperties.Visocity.IsNullOrLessThanZero())
+            {
+                if(Gasvisocity.IsNotLessThanZero())
+                {
+                    reservoirData.GasProperties.Visocity = Gasvisocity;
+                }
+            }
+
+            if(reservoirData.GasProperties.Compressibility.IsNullOrLessThanZero())
+            {
+                if(Gascompressibility.IsNotLessThanZero())
+                {
+                    reservoirData.GasProperties.Compressibility = Gascompressibility;
+                }
+            }
+
+            if(reservoirData.GasProperties.ReferenceTemperature.IsNullOrLessThanZero())
+            {
+                if(AVG_RESERVOIR_BH_TEMP.IsNotNullOrLessThanZero())
+                {
+                    reservoirData.GasProperties.ReferenceTemperature = AVG_RESERVOIR_BH_TEMP;
+                }
+            }
+
+            if(reservoirData.GasProperties.ReferencePressure.IsNullOrLessThanZero())
+            {
+                if(AVG_RESERVOIR_BHP.IsNotNullOrLessThanZero())
+                {
+                    reservoirData.GasProperties.ReferencePressure = AVG_RESERVOIR_BHP;
+                }
+            }
+        }
+
+        #endregion
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+        public static void LoadTexasDbs4(ImmutableList<ApiNumber> apis,
+                                         int                      districtNumber)
+        {
+            loadTexasDb4(apis, districtNumber);
+        }
+
+        /// <summary>
+        /// FieldPvt
+        /// </summary>
+        /// <param name="apis"></param>
+        /// <param name="districtNumber"></param>
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+        private static void loadTexasDb4(ImmutableList<ApiNumber> apis,
+                                         int                      districtNumber)
+        {
+            Parallel.ForEach(Partitioner.Create(0, apis.Count, apis.Count / Environment.ProcessorCount),
+                             row =>
+                             {
+                                 int threadId = System.Threading.Thread.CurrentThread.ManagedThreadId;
+
+                                 using RrcTexasDataAdapter _context = new RrcTexasDataAdapter();
+
+                                 using TexasAggregateContext tac = new TexasAggregateContext();
+                                 tac.ChangeTracker.AutoDetectChangesEnabled = false;
+
+                                 WellTestAggr? wellTest;
+
+                                 ReservoirData? reservoirData;
+
+                                 Well well;
+
+                                 double? maxDepth;
+
+                                 for(int i = row.Item1; i < row.Item2; i++)
+                                 {
+                                     well = _context.GetWellByApi(apis[i]);
+
+                                     if(well.Lease == null || well.Lease.Number == 0)
+                                     {
+                                         continue;
+                                     }
+
+                                     wellTest = tac.WellTestAggrTable.FirstOrDefault(w => w.FL_DISTRICT == districtNumber && w.FL_RRCID_DETERMINING_WELL == well.Lease.Number);
+
+                                     if(wellTest != null)
+                                     {
+                                         // if(well.WellboreDetails != null && FL_AVG_RESERVOIR_BHP
+                                         // is null)
+                                         //{
+                                         //    FL_AVG_RESERVOIR_BHP = well.WellboreDetails.TotalDepth
+                                         //    * 0.65;
+                                         //}
+
+                                         if(well.ReservoirData.Count == 0)
+                                         {
+                                             reservoirData = new ReservoirData(wellTest.FL_RESERVOIR_NAME ?? "Unknown");
+                                             well.ReservoirData.Add(reservoirData);
+                                         }
+                                         else
+                                         {
+                                             maxDepth = well.ReservoirData.Where(d => d.ReservoirDepth != null).Max(d => d.ReservoirDepth);
+
+                                             if(maxDepth is null)
+                                             {
+                                                 reservoirData = well.ReservoirData.FirstOrDefault() ?? new ReservoirData("Unknown");
+                                             }
+                                             else
+                                             {
+                                                 reservoirData = well.ReservoirData.FirstOrDefault(r => r.ReservoirDepth == maxDepth) ?? new ReservoirData("Unknown");
+                                             }
+                                         }
+
+                                         oilFieldPvt(ref reservoirData,
+                                                     wellTest.FL_OIL_DISC_WELL_GRAVITY,
+                                                     wellTest.FL_G_1_GAS_GRAVITY,
+                                                     wellTest.FL_AVG_RESERVOIR_BHP,
+                                                     wellTest.FL_AVG_RESERVOIR_BH_TEMP,
+                                                     wellTest.FL_FORMATION_VOLUME_FACTOR,
+                                                     wellTest.FL_SOLUTION_GAS_OIL_RATIO);
+
+                                         gasFieldPvt(ref reservoirData, wellTest.FL_G_1_GAS_GRAVITY, wellTest.FL_AVG_RESERVOIR_BHP, wellTest.FL_AVG_RESERVOIR_BH_TEMP);
+
+                                         reservoirData.ReservoirProperties = new ReservoirProperties
+                                         {
+                                             InitialPressure = wellTest.FL_AVG_RESERVOIR_BHP.IsNotNullOrZero() ? wellTest.FL_AVG_RESERVOIR_BHP : null,
+                                             Temperature     = wellTest.FL_AVG_RESERVOIR_BH_TEMP.IsNotNullOrZero() ? wellTest.FL_AVG_RESERVOIR_BH_TEMP : null
+                                         };
+
+                                         Console.WriteLine($"{well.Api}");
+
+                                         _context.Update(well);
+                                     }
+
+                                     if((i - row.Item1) % 100 == 0)
+                                     {
+                                         Console.WriteLine($"{threadId}: {i - row.Item1}");
+                                     }
+                                 }
+
+                                 tac.Connection.Close();
+
+                                 _context.Commit();
+                                 _context.CloseConnection();
+                             });
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+        public static void LoadTexasDbs5(ImmutableList<LeaseTestAggr> leaseTests)
+        {
+            loadTexasDbs5(leaseTests);
+        }
+
+        /// <summary>
+        /// LeasePvt
+        /// </summary>
+        /// <param name="apis"></param>
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+        private static void loadTexasDbs5(ImmutableList<LeaseTestAggr> leaseTests)
+        {
+            Parallel.ForEach(Partitioner.Create(0, leaseTests.Count, leaseTests.Count / Environment.ProcessorCount),
+                             row =>
+                             {
+                                 int threadId = System.Threading.Thread.CurrentThread.ManagedThreadId;
+
+                                 using RrcTexasDataAdapter _context = new RrcTexasDataAdapter();
+
+                                 LeaseTestAggr? leaseTest;
+
+                                 ReservoirData? reservoirData;
+
+                                 double? maxDepth;
+
+                                 Well well;
+
+                                 for(int i = row.Item1; i < row.Item2; i++)
+                                 {
+                                     leaseTest = leaseTests[i];
+
+                                     well = _context.GetWellByApi(leaseTest.Api);
+
+                                     if(well != null)
+                                     {
+                                         if(well.ReservoirData.Count == 0)
+                                         {
+                                             reservoirData = new ReservoirData("Unknown");
+                                             well.ReservoirData.Add(reservoirData);
+                                         }
+                                         else
+                                         {
+                                             maxDepth = well.ReservoirData.Where(d => d.ReservoirDepth != null).Max(d => d.ReservoirDepth);
+
+                                             if(maxDepth is null)
+                                             {
+                                                 reservoirData = well.ReservoirData.FirstOrDefault() ?? new ReservoirData("Unknown");
+                                             }
+                                             else
+                                             {
+                                                 reservoirData = well.ReservoirData.FirstOrDefault(r => r.ReservoirDepth == maxDepth) ?? new ReservoirData("Unknown");
+                                             }
+                                         }
+
+                                         oilLeasePvt(ref reservoirData,
+                                                     leaseTest.AVG_RESERVOIR_BHP,
+                                                     leaseTest.AVG_RESERVOIR_BH_TEMP,
+                                                     leaseTest.FORMATION_VOLUME_FACTOR,
+                                                     leaseTest.GAS_GRAVITY,
+                                                     leaseTest.OIL_GRAVITY,
+                                                     leaseTest.SOLUTION_GAS_OIL_RATIO);
+
+                                         gasLeasePvt(ref reservoirData, leaseTest.GAS_GRAVITY, leaseTest.AVG_RESERVOIR_BHP, leaseTest.AVG_RESERVOIR_BH_TEMP);
+
+                                         if(reservoirData.ReservoirProperties is null)
+                                         {
+                                             reservoirData.ReservoirProperties = new ReservoirProperties
+                                             {
+                                                 InitialPressure = leaseTest.AVG_RESERVOIR_BHP, Temperature = leaseTest.AVG_RESERVOIR_BH_TEMP
+                                             };
+                                         }
+                                         else
+                                         {
+                                             if(reservoirData.ReservoirProperties.InitialPressure.IsNullOrLessThanZero())
+                                             {
+                                                 if(leaseTest.AVG_RESERVOIR_BHP.IsNotNullOrLessThanZero())
+                                                 {
+                                                     reservoirData.ReservoirProperties.InitialPressure = leaseTest.AVG_RESERVOIR_BHP;
+                                                 }
+                                             }
+
+                                             if(reservoirData.ReservoirProperties.Temperature.IsNullOrLessThanZero())
+                                             {
+                                                 if(leaseTest.AVG_RESERVOIR_BH_TEMP.IsNotNullOrLessThanZero())
+                                                 {
+                                                     reservoirData.ReservoirProperties.Temperature = leaseTest.AVG_RESERVOIR_BH_TEMP;
+                                                 }
+                                             }
+                                         }
+
+                                         _context.Update(well);
+                                     }
+
+                                     if((i - row.Item1) % 100 == 0)
+                                     {
+                                         Console.WriteLine($"{threadId}: {i - row.Item1}");
+                                     }
+                                 }
+
+                                 _context.Commit();
+                                 _context.CloseConnection();
+                             });
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+        public static void LoadTexasDbs6(ImmutableList<ApiNumber> apis)
+        {
+            loadTexasDbs6(apis);
+        }
+
+        /// <summary>
+        /// MonthlyProduction
+        /// </summary>
+        /// <param name="apis"></param>
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+        private static void loadTexasDbs6(ImmutableList<ApiNumber> apis)
+        {
+            Parallel.ForEach(Partitioner.Create(0, apis.Count, apis.Count / Environment.ProcessorCount),
+                             row =>
+                             {
+                                 int threadId = System.Threading.Thread.CurrentThread.ManagedThreadId;
+
+                                 using RrcTexasDataAdapter _context = new RrcTexasDataAdapter();
+
+                                 using TexasAggregateContext tac = new TexasAggregateContext();
+                                 tac.ChangeTracker.AutoDetectChangesEnabled = false;
+
+                                 ImmutableList<WellProductionAggr> production;
+
+                                 Well well;
+
+                                 for(int i = row.Item1; i < row.Item2; i++)
+                                 {
+                                     well = _context.GetWellByApi(apis[i]);
+
+                                     production = tac.WellProductionAggrTable.Where(w => w.Api == well.Api).ToImmutableList();
+
+                                     if(production != null && production.Count > 0)
+                                     {
+                                         well.MonthlyProduction.Clear();
+
+                                         foreach(WellProductionAggr monthly in production)
+                                         {
+                                             well.MonthlyProduction.Add(new MonthlyProduction(monthly.Date,
+                                                                                              (double)(monthly.GAS_VOL  ?? 0.0),
+                                                                                              (double)(monthly.COND_VOL ?? 0.0),
+                                                                                              (double)(monthly.OIL_VOL  ?? 0.0),
+                                                                                              0.0));
+                                         }
+
+                                         //Console.WriteLine($"{well.Api}");
+
+                                         _context.Update(well);
+                                     }
+
+                                     if((i - row.Item1) % 100 == 0)
+                                     {
+                                         Console.WriteLine($"{threadId}: {i - row.Item1}");
+                                     }
+                                 }
+
+                                 tac.Connection.Close();
+
+                                 _context.Commit();
+                                 _context.CloseConnection();
+                             });
         }
     }
 }

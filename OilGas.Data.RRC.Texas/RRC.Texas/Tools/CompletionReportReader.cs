@@ -261,7 +261,7 @@ namespace OilGas.Data.RRC.Texas
 
             PdfDocument pdfDocument = PdfDocument.LoadFromFileAsync(file).GetAwaiter().GetResult();
 
-            if(pdfDocument == null)
+            if(pdfDocument is null)
             {
                 throw new NullReferenceException(nameof(pdfDocument));
             }

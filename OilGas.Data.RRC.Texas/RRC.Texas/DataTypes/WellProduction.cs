@@ -124,14 +124,14 @@ namespace OilGas.Data.RRC.Texas
 
             SpecificLeaseProductionQueryData firstRow = dataRows.FirstOrDefault();
 
-            if(firstRow == null)
+            if(firstRow is null)
             {
                 throw new Exception();
             }
 
             SpecificLeaseProductionQueryData lastRow = dataRows.LastOrDefault();
 
-            if(lastRow == null)
+            if(lastRow is null)
             {
                 throw new Exception();
             }

@@ -41,7 +41,6 @@ namespace OilGas.Data.RRC.Texas
         public const string P15 = "P15";
     }
 
-
     ////dynamic map service layer
     //operationalLayerUrl: "https://gis.rrc.texas.gov/server/rest/services/rrc_public/RRC_Public_Viewer_Srvs/MapServer",
     ////operationalLayerUrl: "https://gis.rrc.texas.gov/server/rest/services/rrc_public/RRC_Web_Direct_temp/MapServer",
@@ -189,10 +188,7 @@ namespace OilGas.Data.RRC.Texas
 
             IBrowsingContext context = BrowsingContext.New(config);
 
-            HtmlParserOptions options = new HtmlParserOptions
-            {
-                IsScripting = context != null && context.IsScripting()
-            };
+            HtmlParserOptions options = new HtmlParserOptions {IsScripting = context != null && context.IsScripting()};
 
             HtmlParser parser = new HtmlParser(options, context);
 
@@ -247,9 +243,7 @@ namespace OilGas.Data.RRC.Texas
 
         private static readonly JsonSerializerSettings settings = new JsonSerializerSettings
         {
-            Formatting               = Formatting.Indented,
-            MetadataPropertyHandling = MetadataPropertyHandling.Ignore,
-            DateParseHandling        = DateParseHandling.None
+            Formatting = Formatting.Indented, MetadataPropertyHandling = MetadataPropertyHandling.Ignore, DateParseHandling = DateParseHandling.None
         };
 
         private static string FlattenParameters(Dictionary<string, string> parameters)
@@ -286,171 +280,61 @@ namespace OilGas.Data.RRC.Texas
 
             Dictionary<string, string> parameters = new Dictionary<string, string>
             {
-                {
-                    "searchArgs.fromSubmitDtArgHndlr.inputValue", ""
-                },
-                {
-                    "searchArgs.toSubmitDtArgHndlr.inputValue", ""
-                },
-                {
-                    "searchArgs.districtCodeArgHndlr.inputValue", ""
-                },
-                {
-                    "searchArgs.packetIdArgHndlr.inputValue", ""
-                },
-                {
-                    "searchArgs.wellTypeArgHndlr.inputValue", ""
-                },
-                {
-                    "searchArgs.operatorNoArgHndlr.inputValue", ""
-                },
-                {
-                    "searchArgs.statusCodeArgHndlr.inputValue", ""
-                },
-                {
-                    "searchArgs.orderByHndlr.inputValue", ""
-                },
-                {
-                    "searchArgs.packetTypeCodeHndlr.inputValue", ""
-                },
-                {
-                    "searchArgs.apiNoHndlr.inputValue", "25532662"
-                },
-                {
-                    "searchArgs.dpNoHndlr.inputValue", ""
-                },
-                {
-                    "searchArgs.countyCodeHndlr.inputValue", ""
-                },
-                {
-                    "searchArgs.leaseNoArgHndlr.inputValue", ""
-                },
-                {
-                    "searchArgs.fieldNoArgHndlr.inputValue", ""
-                },
-                {
-                    "searchArgs.wellboreProfileArgHndlr.inputValue", ""
-                },
-                {
-                    "searchArgs.purposeOfFilingArgHndlr.inputValue", ""
-                },
-                {
-                    "searchArgs.filingMethodArgHndlr.inputValue", ""
-                },
-                {
-                    "searchArgs.horzWellboreTypePsaHndlr.booleanValue", "false"
-                },
-                {
-                    "searchArgs.horzWellboreTypeAllocationHndlr.booleanValue", "false"
-                },
-                {
-                    "searchArgs.horzWellboreTypeStackedLatHndlr.booleanValue", "false"
-                },
-                {
-                    "searchArgs.excludeStatusAndApprovedDtHndlr.booleanValue", "false"
-                },
-                {
-                    "searchArgs.stackedLatStatusNoParentHndlr.inputValue", ""
-                },
-                {
-                    "methodToCall", "searchByApiNo"
-                },
-                {
-                    "actionManager.recordCountHndlr.inputValue", "3"
-                },
-                {
-                    "actionManager.currentIndexHndlr.inputValue", "2"
-                },
-                {
-                    "actionManager.actionRcrd[0].actionDisplayNmHndlr.inputValue", ""
-                },
-                {
-                    "actionManager.actionRcrd[0].hostHndlr.inputValue", "webapps2.rrc.texas.gov:80"
-                },
-                {
-                    "actionManager.actionRcrd[0].contextPathHndlr.inputValue", "/EWA"
-                },
-                {
-                    "actionManager.actionRcrd[0].actionHndlr.inputValue", "/wellboreQueryAction.do"
-                },
-                {
-                    "actionManager.actionRcrd[0].actionParameterHndlr.inputValue", "methodToCall"
-                },
-                {
-                    "actionManager.actionRcrd[0].actionMethodHndlr.inputValue", "returnToSearch"
-                },
-                {
-                    "actionManager.actionRcrd[0].pagerParameterKeyHndlr.inputValue", ""
-                },
-                {
-                    "actionManager.actionRcrd[0].actionParametersHndlr.inputValue", ""
-                },
-                {
-                    "actionManager.actionRcrd[0].returnIndexHndlr.inputValue", "0"
-                },
-                {
-                    "actionManager.actionRcrd[0].argRcrdParameters(searchArgs.paramValue)", "|7=255|8=32662|9=Y"
-                },
-                {
-                    "actionManager.actionRcrd[1].actionDisplayNmHndlr.inputValue", ""
-                },
-                {
-                    "actionManager.actionRcrd[1].hostHndlr.inputValue", "webapps2.rrc.texas.gov:80"
-                },
-                {
-                    "actionManager.actionRcrd[1].contextPathHndlr.inputValue", "/EWA"
-                },
-                {
-                    "actionManager.actionRcrd[1].actionHndlr.inputValue", "/wellboreQueryAction.do"
-                },
-                {
-                    "actionManager.actionRcrd[1].actionParameterHndlr.inputValue", "methodToCall"
-                },
-                {
-                    "actionManager.actionRcrd[1].actionMethodHndlr.inputValue", "search"
-                },
-                {
-                    "actionManager.actionRcrd[1].pagerParameterKeyHndlr.inputValue", "wellborePager.paramValue"
-                },
-                {
-                    "actionManager.actionRcrd[1].actionParametersHndlr.inputValue", ""
-                },
-                {
-                    "actionManager.actionRcrd[1].returnIndexHndlr.inputValue", "0"
-                },
-                {
-                    "actionManager.actionRcrd[1].argRcrdParameters(searchArgs.paramValue)", "|7=255|8=32662|9=Y"
-                },
-                {
-                    "actionManager.actionRcrd[1].argRcrdParameters(wellborePager.paramValue)", "|1=1|2=10|3=1|4=0|5=1|6=10"
-                },
-                {
-                    "actionManager.actionRcrd[2].actionDisplayNmHndlr.inputValue", ""
-                },
-                {
-                    "actionManager.actionRcrd[2].hostHndlr.inputValue", "webapps.rrc.texas.gov:80"
-                },
-                {
-                    "actionManager.actionRcrd[2].contextPathHndlr.inputValue", "/CMPL"
-                },
-                {
-                    "actionManager.actionRcrd[2].actionHndlr.inputValue", "/ewaSearchAction.do"
-                },
-                {
-                    "actionManager.actionRcrd[2].actionParameterHndlr.inputValue", "methodToCall"
-                },
-                {
-                    "actionManager.actionRcrd[2].actionMethodHndlr.inputValue", "searchByApiNo"
-                },
-                {
-                    "actionManager.actionRcrd[2].pagerParameterKeyHndlr.inputValue", ""
-                },
-                {
-                    "actionManager.actionRcrd[2].actionParametersHndlr.inputValue", "&amp;apiNo=25532662"
-                },
-                {
-                    "actionManager.actionRcrd[2].returnIndexHndlr.inputValue", "1"
-                }
+                {"searchArgs.fromSubmitDtArgHndlr.inputValue", ""},
+                {"searchArgs.toSubmitDtArgHndlr.inputValue", ""},
+                {"searchArgs.districtCodeArgHndlr.inputValue", ""},
+                {"searchArgs.packetIdArgHndlr.inputValue", ""},
+                {"searchArgs.wellTypeArgHndlr.inputValue", ""},
+                {"searchArgs.operatorNoArgHndlr.inputValue", ""},
+                {"searchArgs.statusCodeArgHndlr.inputValue", ""},
+                {"searchArgs.orderByHndlr.inputValue", ""},
+                {"searchArgs.packetTypeCodeHndlr.inputValue", ""},
+                {"searchArgs.apiNoHndlr.inputValue", "25532662"},
+                {"searchArgs.dpNoHndlr.inputValue", ""},
+                {"searchArgs.countyCodeHndlr.inputValue", ""},
+                {"searchArgs.leaseNoArgHndlr.inputValue", ""},
+                {"searchArgs.fieldNoArgHndlr.inputValue", ""},
+                {"searchArgs.wellboreProfileArgHndlr.inputValue", ""},
+                {"searchArgs.purposeOfFilingArgHndlr.inputValue", ""},
+                {"searchArgs.filingMethodArgHndlr.inputValue", ""},
+                {"searchArgs.horzWellboreTypePsaHndlr.booleanValue", "false"},
+                {"searchArgs.horzWellboreTypeAllocationHndlr.booleanValue", "false"},
+                {"searchArgs.horzWellboreTypeStackedLatHndlr.booleanValue", "false"},
+                {"searchArgs.excludeStatusAndApprovedDtHndlr.booleanValue", "false"},
+                {"searchArgs.stackedLatStatusNoParentHndlr.inputValue", ""},
+                {"methodToCall", "searchByApiNo"},
+                {"actionManager.recordCountHndlr.inputValue", "3"},
+                {"actionManager.currentIndexHndlr.inputValue", "2"},
+                {"actionManager.actionRcrd[0].actionDisplayNmHndlr.inputValue", ""},
+                {"actionManager.actionRcrd[0].hostHndlr.inputValue", "webapps2.rrc.texas.gov:80"},
+                {"actionManager.actionRcrd[0].contextPathHndlr.inputValue", "/EWA"},
+                {"actionManager.actionRcrd[0].actionHndlr.inputValue", "/wellboreQueryAction.do"},
+                {"actionManager.actionRcrd[0].actionParameterHndlr.inputValue", "methodToCall"},
+                {"actionManager.actionRcrd[0].actionMethodHndlr.inputValue", "returnToSearch"},
+                {"actionManager.actionRcrd[0].pagerParameterKeyHndlr.inputValue", ""},
+                {"actionManager.actionRcrd[0].actionParametersHndlr.inputValue", ""},
+                {"actionManager.actionRcrd[0].returnIndexHndlr.inputValue", "0"},
+                {"actionManager.actionRcrd[0].argRcrdParameters(searchArgs.paramValue)", "|7=255|8=32662|9=Y"},
+                {"actionManager.actionRcrd[1].actionDisplayNmHndlr.inputValue", ""},
+                {"actionManager.actionRcrd[1].hostHndlr.inputValue", "webapps2.rrc.texas.gov:80"},
+                {"actionManager.actionRcrd[1].contextPathHndlr.inputValue", "/EWA"},
+                {"actionManager.actionRcrd[1].actionHndlr.inputValue", "/wellboreQueryAction.do"},
+                {"actionManager.actionRcrd[1].actionParameterHndlr.inputValue", "methodToCall"},
+                {"actionManager.actionRcrd[1].actionMethodHndlr.inputValue", "search"},
+                {"actionManager.actionRcrd[1].pagerParameterKeyHndlr.inputValue", "wellborePager.paramValue"},
+                {"actionManager.actionRcrd[1].actionParametersHndlr.inputValue", ""},
+                {"actionManager.actionRcrd[1].returnIndexHndlr.inputValue", "0"},
+                {"actionManager.actionRcrd[1].argRcrdParameters(searchArgs.paramValue)", "|7=255|8=32662|9=Y"},
+                {"actionManager.actionRcrd[1].argRcrdParameters(wellborePager.paramValue)", "|1=1|2=10|3=1|4=0|5=1|6=10"},
+                {"actionManager.actionRcrd[2].actionDisplayNmHndlr.inputValue", ""},
+                {"actionManager.actionRcrd[2].hostHndlr.inputValue", "webapps.rrc.texas.gov:80"},
+                {"actionManager.actionRcrd[2].contextPathHndlr.inputValue", "/CMPL"},
+                {"actionManager.actionRcrd[2].actionHndlr.inputValue", "/ewaSearchAction.do"},
+                {"actionManager.actionRcrd[2].actionParameterHndlr.inputValue", "methodToCall"},
+                {"actionManager.actionRcrd[2].actionMethodHndlr.inputValue", "searchByApiNo"},
+                {"actionManager.actionRcrd[2].pagerParameterKeyHndlr.inputValue", ""},
+                {"actionManager.actionRcrd[2].actionParametersHndlr.inputValue", "&amp;apiNo=25532662"},
+                {"actionManager.actionRcrd[2].returnIndexHndlr.inputValue", "1"}
             };
 
             return parameters;
@@ -568,18 +452,7 @@ namespace OilGas.Data.RRC.Texas
 
             Dictionary<string, string> requestParams = new Dictionary<string, string>
             {
-                {
-                    "searchArgs.apiNoPrefixArg", pre
-                },
-                {
-                    "searchArgs.apiNoSuffixArg", suf
-                },
-                {
-                    "searchArgs.scheduleTypeArg", scheduleType
-                },
-                {
-                    "methodToCall", "search"
-                }
+                {"searchArgs.apiNoPrefixArg", pre}, {"searchArgs.apiNoSuffixArg", suf}, {"searchArgs.scheduleTypeArg", scheduleType}, {"methodToCall", "search"}
             };
 
             return await PerformQueryAndCreateDocument(WellboreQueryAction, requestParams);
@@ -598,18 +471,7 @@ namespace OilGas.Data.RRC.Texas
         {
             Dictionary<string, string> requestParams = new Dictionary<string, string>
             {
-                {
-                    "searchArgs.districtCodeArg", districtCode.ToString()
-                },
-                {
-                    "searchArgs.wellTypeArg", wellType
-                },
-                {
-                    "searchArgs.scheduleTypeArg", scheduleType
-                },
-                {
-                    "methodToCall", "search"
-                }
+                {"searchArgs.districtCodeArg", districtCode.ToString()}, {"searchArgs.wellTypeArg", wellType}, {"searchArgs.scheduleTypeArg", scheduleType}, {"methodToCall", "search"}
             };
 
             return await PerformQueryAndCreateDocument(WellboreQueryAction, requestParams);
@@ -620,36 +482,65 @@ namespace OilGas.Data.RRC.Texas
             return await WellboreQueryByLeaseNumber(leaseNumber, ScheduleType.Both);
         }
 
+        public static async Task<IHtmlDocument> WellboreQueryByLeaseNumber(string leaseNumber,
+                                                                           string districtCode)
+        {
+            return await WellboreQueryByLeaseNumber(leaseNumber, new DistrictCode(districtCode), ScheduleType.Both);
+        }
+
         public static async Task<IHtmlDocument> WellboreQueryByLeaseNumber(string       leaseNumber,
+                                                                           DistrictCode districtCode,
                                                                            ScheduleType scheduleType)
         {
             Dictionary<string, string> requestParams = new Dictionary<string, string>
             {
-                {
-                    "searchArgs.leaseNumberArg", leaseNumber
-                },
-                {
-                    "searchArgs.scheduleTypeArg", scheduleType
-                },
-                {
-                    "methodToCall", "toLeaseQuery"
-                }
+                {"searchArgs.leaseNumberArg", leaseNumber},
+                {"searchArgs.districtCodeArg", districtCode.ToString()},
+                {"searchArgs.scheduleTypeArg", scheduleType},
+                {"methodToCall", "toLeaseQuery"}
             };
 
             return await PerformQueryAndCreateDocument(WellboreQueryAction, requestParams);
         }
 
-        public static async Task<IHtmlDocument> OrganizationNameQuery(string operatorNumber)
+        public static async Task<IHtmlDocument> WellboreQueryByLeaseNumber(string       leaseNumber,
+                                                                           ScheduleType scheduleType)
         {
             Dictionary<string, string> requestParams = new Dictionary<string, string>
             {
-                {
-                    "number", operatorNumber
-                },
-                {
-                    "methodToCall", "searchByNumber"
-                }
+                {"searchArgs.leaseNumberArg", leaseNumber}, {"searchArgs.scheduleTypeArg", scheduleType}, {"methodToCall", "toLeaseQuery"}
             };
+
+            return await PerformQueryAndCreateDocument(WellboreQueryAction, requestParams);
+        }
+
+        public static LeaseQueryData GetApiFromLeaseNumber(string leaseNumber)
+        {
+            IHtmlDocument wellboreQueryResult = WellboreQueryByLeaseNumber(leaseNumber).Result;
+
+            WellboreQueryData wellboreQueryData = QueryParser.ParseWellboreQuery(wellboreQueryResult).FirstOrDefault();
+
+            return new LeaseQueryData(wellboreQueryData.Columns.ApiNo, wellboreQueryData.Columns.District, leaseNumber);
+        }
+
+        public static LeaseQueryData? GetApiFromLeaseNumber(string leaseNumber,
+                                                           string districtCode)
+        {
+            IHtmlDocument wellboreQueryResult = WellboreQueryByLeaseNumber(leaseNumber, districtCode).Result;
+
+            WellboreQueryData wellboreQueryData = QueryParser.ParseWellboreQuery(wellboreQueryResult).FirstOrDefault();
+
+            if(wellboreQueryData is null)
+            {
+                return null;
+            }
+
+            return new LeaseQueryData(wellboreQueryData.Columns.ApiNo, districtCode, leaseNumber);
+        }
+
+        public static async Task<IHtmlDocument> OrganizationNameQuery(string operatorNumber)
+        {
+            Dictionary<string, string> requestParams = new Dictionary<string, string> {{"number", operatorNumber}, {"methodToCall", "searchByNumber"}};
 
             //TODO
             //IHtmlDocument organizationNameQueryResult = PerformQuery(OrganizationQueryAction,
@@ -679,9 +570,9 @@ namespace OilGas.Data.RRC.Texas
 
             WellboreQueryData wellboreQueryData = QueryParser.ParseWellboreQuery(wellboreQueryResult).FirstOrDefault(wqd => wqd.Columns.OnSchedule == "Y");
 
-            if(wellboreQueryData == null)
+            if(wellboreQueryData is null)
             {
-                throw new Exception("wellboreQueryData == null");
+                throw new Exception("wellboreQueryData is null");
             }
 
             LeaseDetailQueryData leaseDetailQueryData = await LeaseDetailQuery(wellboreQueryData);
@@ -702,138 +593,33 @@ namespace OilGas.Data.RRC.Texas
         {
             Dictionary<string, string> requestParams = new Dictionary<string, string>
             {
-                {
-                    "actionManager.actionRcrd[0].actionDisplayNmHndlr.inputValue", "Search Criteria"
-                },
-                {
-                    "actionManager.actionRcrd[0].actionHndlr.inputValue", "/specificLeaseQueryAction.do"
-                },
-                {
-                    "actionManager.actionRcrd[0].actionMethodHndlr.inputValue", "unspecified"
-                },
-                {
-                    "actionManager.actionRcrd[0].actionParameterHndlr.inputValue", "methodToCall"
-                },
-                {
-                    "actionManager.actionRcrd[0].actionParametersHndlr.inputValue", ""
-                },
-                {
-                    "actionManager.actionRcrd[0].contextPathHndlr.inputValue", "/EWA"
-                },
-                {
-                    "actionManager.actionRcrd[0].hostHndlr.inputValue", "webapps2.rrc.state.tx.us:80"
-                },
-                {
-                    "actionManager.actionRcrd[0].pagerParameterKeyHndlr.inputValue", ""
-                },
-                {
-                    "actionManager.actionRcrd[0].returnIndexHndlr.inputValue", "0"
-                },
-                {
-                    "actionManager.currentIndexHndlr.inputValue", "0"
-                },
-                {
-                    "actionManager.recordCountHndlr.inputValue", "1"
-                },
-                {
-                    "methodToCall", "generateSpecificLeaseCSVReport"
-                },
-                {
-                    "searchArgs.activeTabsFlagwordHndlr.inputValue", "0"
-                },
-                {
-                    "searchArgs.leaseNumberArg", leaseNumber
-                },
-                {
-                    "searchArgs.districtCodeArg", districtCode.ToString()
-                },
-                {
-                    "searchArgs.oilOrGasArg", leaseType == LeaseType.Oil ? "O" : "G"
-                },
-                {
-                    "searchArgs.startMonthArg", "01"
-                },
-                {
-                    "searchArgs.startYearArg", "1993"
-                },
-                {
-                    "searchArgs.endMonthArg", DateTime.Now.Month.ToString("D2", CultureInfo.InvariantCulture)
-                },
-                {
-                    "searchArgs.endYearArg", DateTime.Now.Year.ToString("D4", CultureInfo.InvariantCulture)
-                },
-                {
-                    "searchArgs.orderByHndlr.inputValue", ""
-                },
-                {
-                    "searchArgs.searchType", "specificLease"
-                },
-                {
-                    "searchType", "specificLease"
-                },
-                {
-                    "submit", "Submit"
-                },
-                {
-                    "viewType", "init"
-                }
+                {"actionManager.actionRcrd[0].actionDisplayNmHndlr.inputValue", "Search Criteria"},
+                {"actionManager.actionRcrd[0].actionHndlr.inputValue", "/specificLeaseQueryAction.do"},
+                {"actionManager.actionRcrd[0].actionMethodHndlr.inputValue", "unspecified"},
+                {"actionManager.actionRcrd[0].actionParameterHndlr.inputValue", "methodToCall"},
+                {"actionManager.actionRcrd[0].actionParametersHndlr.inputValue", ""},
+                {"actionManager.actionRcrd[0].contextPathHndlr.inputValue", "/EWA"},
+                {"actionManager.actionRcrd[0].hostHndlr.inputValue", "webapps2.rrc.state.tx.us:80"},
+                {"actionManager.actionRcrd[0].pagerParameterKeyHndlr.inputValue", ""},
+                {"actionManager.actionRcrd[0].returnIndexHndlr.inputValue", "0"},
+                {"actionManager.currentIndexHndlr.inputValue", "0"},
+                {"actionManager.recordCountHndlr.inputValue", "1"},
+                {"methodToCall", "generateSpecificLeaseCSVReport"},
+                {"searchArgs.activeTabsFlagwordHndlr.inputValue", "0"},
+                {"searchArgs.leaseNumberArg", leaseNumber},
+                {"searchArgs.districtCodeArg", districtCode.ToString()},
+                {"searchArgs.oilOrGasArg", leaseType == LeaseType.Oil ? "O" : "G"},
+                {"searchArgs.startMonthArg", "01"},
+                {"searchArgs.startYearArg", "1993"},
+                {"searchArgs.endMonthArg", DateTime.Now.Month.ToString("D2", CultureInfo.InvariantCulture)},
+                {"searchArgs.endYearArg", DateTime.Now.Year.ToString("D4", CultureInfo.InvariantCulture)},
+                {"searchArgs.orderByHndlr.inputValue", ""},
+                {"searchArgs.searchType", "specificLease"},
+                {"searchType", "specificLease"},
+                {"submit", "Submit"},
+                {"viewType", "init"}
             };
 
-            // searchArgs.orderByColumnName	""
-            // searchArgs.initialViewArgHndlr.inputValue	""
-            // searchArgs.startMonthArgHndlr.inputValue	"01"
-            // searchArgs.startYearArgHndlr.inputValue	"1993"
-            // searchArgs.endMonthArgHndlr.inputValue	"01"
-            // searchArgs.endYearArgHndlr.inputValue	"2020"
-            // searchArgs.oilOrGasArgHndlr.inputValue	"G"
-            // searchArgs.gasWellNoHndlr.inputValue	"01H"
-            // searchArgs.searchTypeHndlr.inputValue	"specificLease"
-            // searchArgs.viewTypeHndlr.inputValue	"prodAndTotalDisp"
-            // searchArgs.activeTabsFlagwordHndlr.inputValue	"0"
-            // searchArgs.orderByHndlr.inputValue	""
-            // searchArgs.leaseTypeArgHndlr.inputValue	""
-            // searchArgs.districtCodeArgHndlr.inputValue	"02"
-            // searchArgs.leaseNumberArgHndlr.inputValue	"267697"
-            // searchArgs.fieldNumbersArgHndlr.inputValue	""
-            // searchArgs.fieldNamesHndlr.inputValue	""
-            // searchArgs.operatorNumbersArgHndlr.inputValue	""
-            // searchArgs.operatorNamesHndlr.inputValue	""
-            // searchArgs.onShoreCountyCodeArgHndlr.inputValue	""
-            // searchArgs.offShoreCountyCodeArgHndlr.inputValue	""
-            // searchArgs.leaseNameArgHndlr.inputValue	"HOPE+SCHORLEMER+01"
-            // searchArgs.geoRegionOptionHndlr.inputValue	"district"
-            // searchArgs.statewideFlagHndlr.inputValue	""
-            // methodToCall	"generateSpecificLeaseCSVReport"
-            // actionManager.recordCountHndlr.inputValue	"2"
-            // actionManager.currentIndexHndlr.inputValue	"1"
-            // actionManager.actionRcrd[0].actionDisplayNmHndlr.inputValue	"Search+Criteria"
-            // actionManager.actionRcrd[0].hostHndlr.inputValue	"webapps2.rrc.texas.gov:80"
-            // actionManager.actionRcrd[0].contextPathHndlr.inputValue	"/EWA"
-            // actionManager.actionRcrd[0].actionHndlr.inputValue	"/specificLeaseQueryAction.do"
-            // actionManager.actionRcrd[0].actionParameterHndlr.inputValue	"methodToCall"
-            // actionManager.actionRcrd[0].actionMethodHndlr.inputValue	"unspecified"
-            // actionManager.actionRcrd[0].pagerParameterKeyHndlr.inputValue	""
-            // actionManager.actionRcrd[0].actionParametersHndlr.inputValue	""
-            // actionManager.actionRcrd[0].returnIndexHndlr.inputValue	"0"
-            // actionManager.actionRcrd[0].argRcrdParameters(searchArgs.paramValue)	"|2=01|3=1993|4=01|5=2020|6=G|8=specificLease|9=prodAndTotalDisp|10=0|102=02|103=267697|203=HOPE+SCHORLEMER+01|204=district"
-            // actionManager.actionRcrd[1].actionDisplayNmHndlr.inputValue	"District:+02"
-            // actionManager.actionRcrd[1].hostHndlr.inputValue	"webapps2.rrc.texas.gov:80"
-            // actionManager.actionRcrd[1].contextPathHndlr.inputValue	"/EWA"
-            // actionManager.actionRcrd[1].actionHndlr.inputValue	"/specificLeaseQueryAction.do"
-            // actionManager.actionRcrd[1].actionParameterHndlr.inputValue	"methodToCall"
-            // actionManager.actionRcrd[1].actionMethodHndlr.inputValue	"search"
-            // actionManager.actionRcrd[1].pagerParameterKeyHndlr.inputValue	"slPager.paramValue"
-            // actionManager.actionRcrd[1].actionParametersHndlr.inputValue	""
-            // actionManager.actionRcrd[1].returnIndexHndlr.inputValue	"0"
-            // actionManager.actionRcrd[1].argRcrdParameters(searchArgs.paramValue)	"|2=01|3=1993|4=01|5=2020|6=G|7=01H|8=specificLease|9=prodAndTotalDisp|10=0|102=02|103=267697|203=HOPE+SCHORLEMER+01|204=district"
-            // actionManager.actionRcrd[1].argRcrdParameters(slPager.paramValue)	"|1=1|2=10|3=103|4=0|5=11|6=10"
-            // searchArgs.startMonthArg	"01"
-            // searchArgs.startYearArg	"1993"
-            // searchArgs.endMonthArg	"01"
-            // searchArgs.endYearArg	"2020"
-            // pager.pageSize	"10"
-
-            // http://webapps2.rrc.texas.gov/EWA/specificLeaseQueryAction.do?searchArgs.orderByColumnName=&searchArgs.initialViewArgHndlr.inputValue=&searchArgs.startMonthArgHndlr.inputValue=01&searchArgs.startYearArgHndlr.inputValue=1993&searchArgs.endMonthArgHndlr.inputValue=01&searchArgs.endYearArgHndlr.inputValue=2020&searchArgs.oilOrGasArgHndlr.inputValue=G&searchArgs.gasWellNoHndlr.inputValue=01H&searchArgs.searchTypeHndlr.inputValue=specificLease&searchArgs.viewTypeHndlr.inputValue=prodAndTotalDisp&searchArgs.activeTabsFlagwordHndlr.inputValue=0&searchArgs.orderByHndlr.inputValue=&searchArgs.leaseTypeArgHndlr.inputValue=&searchArgs.districtCodeArgHndlr.inputValue=02&searchArgs.leaseNumberArgHndlr.inputValue=267697&searchArgs.fieldNumbersArgHndlr.inputValue=&searchArgs.fieldNamesHndlr.inputValue=&searchArgs.operatorNumbersArgHndlr.inputValue=&searchArgs.operatorNamesHndlr.inputValue=&searchArgs.onShoreCountyCodeArgHndlr.inputValue=&searchArgs.offShoreCountyCodeArgHndlr.inputValue=&searchArgs.leaseNameArgHndlr.inputValue=HOPE+SCHORLEMER+01&searchArgs.geoRegionOptionHndlr.inputValue=district&searchArgs.statewideFlagHndlr.inputValue=&methodToCall=generateSpecificLeaseCSVReport&actionManager.recordCountHndlr.inputValue=2&actionManager.currentIndexHndlr.inputValue=1&actionManager.actionRcrd%5B0%5D.actionDisplayNmHndlr.inputValue=Search+Criteria&actionManager.actionRcrd%5B0%5D.hostHndlr.inputValue=webapps2.rrc.texas.gov%3A80&actionManager.actionRcrd%5B0%5D.contextPathHndlr.inputValue=%2FEWA&actionManager.actionRcrd%5B0%5D.actionHndlr.inputValue=%2FspecificLeaseQueryAction.do&actionManager.actionRcrd%5B0%5D.actionParameterHndlr.inputValue=methodToCall&actionManager.actionRcrd%5B0%5D.actionMethodHndlr.inputValue=unspecified&actionManager.actionRcrd%5B0%5D.pagerParameterKeyHndlr.inputValue=&actionManager.actionRcrd%5B0%5D.actionParametersHndlr.inputValue=&actionManager.actionRcrd%5B0%5D.returnIndexHndlr.inputValue=0&actionManager.actionRcrd%5B0%5D.argRcrdParameters%28searchArgs.paramValue%29=%7C2%3D01%7C3%3D1993%7C4%3D01%7C5%3D2020%7C6%3DG%7C8%3DspecificLease%7C9%3DprodAndTotalDisp%7C10%3D0%7C102%3D02%7C103%3D267697%7C203%3DHOPE%2BSCHORLEMER%2B01%7C204%3Ddistrict&actionManager.actionRcrd%5B1%5D.actionDisplayNmHndlr.inputValue=District%3A+02&actionManager.actionRcrd%5B1%5D.hostHndlr.inputValue=webapps2.rrc.texas.gov%3A80&actionManager.actionRcrd%5B1%5D.contextPathHndlr.inputValue=%2FEWA&actionManager.actionRcrd%5B1%5D.actionHndlr.inputValue=%2FspecificLeaseQueryAction.do&actionManager.actionRcrd%5B1%5D.actionParameterHndlr.inputValue=methodToCall&actionManager.actionRcrd%5B1%5D.actionMethodHndlr.inputValue=search&actionManager.actionRcrd%5B1%5D.pagerParameterKeyHndlr.inputValue=slPager.paramValue&actionManager.actionRcrd%5B1%5D.actionParametersHndlr.inputValue=&actionManager.actionRcrd%5B1%5D.returnIndexHndlr.inputValue=0&actionManager.actionRcrd%5B1%5D.argRcrdParameters%28searchArgs.paramValue%29=%7C2%3D01%7C3%3D1993%7C4%3D01%7C5%3D2020%7C6%3DG%7C7%3D01H%7C8%3DspecificLease%7C9%3DprodAndTotalDisp%7C10%3D0%7C102%3D02%7C103%3D267697%7C203%3DHOPE%2BSCHORLEMER%2B01%7C204%3Ddistrict&actionManager.actionRcrd%5B1%5D.argRcrdParameters%28slPager.paramValue%29=%7C1%3D1%7C2%3D10%7C3%3D103%7C4%3D0%7C5%3D11%7C6%3D10&searchArgs.startMonthArg=01&searchArgs.startYearArg=1993&searchArgs.endMonthArg=01&searchArgs.endYearArg=2020&pager.pageSize=10
             return await PerformCsvQuery(SpecificLeaseQueryAction, requestParams);
         }
 
@@ -880,308 +666,116 @@ namespace OilGas.Data.RRC.Texas
 
             Dictionary<string, string> requestParams = new Dictionary<string, string>
             {
-                {
-                    "methodToCall", "search"
-                },
-                {
-                    "searchArgs.permitStatusNoHndlr.inputValue", ""
-                },
-                {
-                    "searchArgs.apiNoHndlr.inputValue", ""
-                },
-                {
-                    keyName, keyValue
-                },
-                {
-                    "searchArgs.npzFlagHndlr.inputValue", ""
-                },
-                {
-                    "searchArgs.offLeaseSurfLocFlagHndlr.inputValue", ""
-                },
-                {
-                    "searchArgs.offLeasePntrnPtFlagHndlr.inputValue", ""
-                },
-                {
-                    "searchArgs.operatorNameWildcardHndlr.inputValue", "beginsWith"
-                },
-                {
-                    "searchArgs.operatorNameHndlr.inputValue", ""
-                },
-                {
-                    "searchArgs.operatorNoHndlr.inputValue", ""
-                },
-                {
-                    "searchArgs.leaseNameWildcardHndlr.inputValue", "beginsWith"
-                },
-                {
-                    "searchArgs.leaseNameHndlr.inputValue", ""
-                },
-                {
-                    "searchArgs.leaseNoHndlr.inputValue", ""
-                },
-                {
-                    "searchArgs.wellNoHndlr.inputValue", ""
-                },
-                {
-                    "searchArgs.fieldNameWildcardHndlr.inputValue", "beginsWith"
-                },
-                {
-                    "searchArgs.fieldNameHndlr.inputValue", ""
-                },
-                {
-                    "searchArgs.fieldNoHndlr.inputValue", ""
-                },
-                {
-                    "searchArgs.surveyNameWildcardHndlr.inputValue", "beginsWith"
-                },
-                {
-                    "searchArgs.surveyNameHndlr.inputValue", ""
-                },
-                {
-                    "searchArgs.wellTypeCodeHndlr.inputValue", ""
-                },
-                {
-                    "searchArgs.totalDepthHndlr.inputValue", ""
-                },
-                {
-                    "searchArgs.filingPurposeCodeHndlr.inputValue", ""
-                },
-                {
-                    "searchArgs.ammendmentFlagHndlr.inputValue", ""
-                },
-                {
-                    "searchArgs.statusCodeHndlr.inputValue", ""
-                },
-                {
-                    "searchArgs.wellboreProfileCodeHndlr.inputValue", ""
-                },
-                {
-                    "searchArgs.wellLocationCodeHndlr.inputValue", ""
-                },
-                {
-                    "searchArgs.completionStatusCodeHndlr.inputValue", ""
-                },
-                {
-                    "searchArgs.psaFlagHndlr.inputValue", ""
-                },
-                {
-                    "searchArgs.allocationFlagHndlr.inputValue", ""
-                },
-                {
-                    "searchArgs.stackedLateralFlagHndlr.inputValue", ""
-                },
-                {
-                    "searchArgs.approvedDtFromHndlr.inputValue", $"{fromMonth}/{fromDay}/{fromYear}"
-                },
-                {
-                    "searchArgs.approvedDtToHndlr.inputValue", $"{toMonth}/{toDay}/{toYear}"
-                },
-                {
-                    "searchArgs.submittedDtFromHndlr.inputValue", ""
-                },
-                {
-                    "searchArgs.submittedDtToHndlr.inputValue", ""
-                }
+                {"methodToCall", "search"},
+                {"searchArgs.permitStatusNoHndlr.inputValue", ""},
+                {"searchArgs.apiNoHndlr.inputValue", ""},
+                {keyName, keyValue},
+                {"searchArgs.npzFlagHndlr.inputValue", ""},
+                {"searchArgs.offLeaseSurfLocFlagHndlr.inputValue", ""},
+                {"searchArgs.offLeasePntrnPtFlagHndlr.inputValue", ""},
+                {"searchArgs.operatorNameWildcardHndlr.inputValue", "beginsWith"},
+                {"searchArgs.operatorNameHndlr.inputValue", ""},
+                {"searchArgs.operatorNoHndlr.inputValue", ""},
+                {"searchArgs.leaseNameWildcardHndlr.inputValue", "beginsWith"},
+                {"searchArgs.leaseNameHndlr.inputValue", ""},
+                {"searchArgs.leaseNoHndlr.inputValue", ""},
+                {"searchArgs.wellNoHndlr.inputValue", ""},
+                {"searchArgs.fieldNameWildcardHndlr.inputValue", "beginsWith"},
+                {"searchArgs.fieldNameHndlr.inputValue", ""},
+                {"searchArgs.fieldNoHndlr.inputValue", ""},
+                {"searchArgs.surveyNameWildcardHndlr.inputValue", "beginsWith"},
+                {"searchArgs.surveyNameHndlr.inputValue", ""},
+                {"searchArgs.wellTypeCodeHndlr.inputValue", ""},
+                {"searchArgs.totalDepthHndlr.inputValue", ""},
+                {"searchArgs.filingPurposeCodeHndlr.inputValue", ""},
+                {"searchArgs.ammendmentFlagHndlr.inputValue", ""},
+                {"searchArgs.statusCodeHndlr.inputValue", ""},
+                {"searchArgs.wellboreProfileCodeHndlr.inputValue", ""},
+                {"searchArgs.wellLocationCodeHndlr.inputValue", ""},
+                {"searchArgs.completionStatusCodeHndlr.inputValue", ""},
+                {"searchArgs.psaFlagHndlr.inputValue", ""},
+                {"searchArgs.allocationFlagHndlr.inputValue", ""},
+                {"searchArgs.stackedLateralFlagHndlr.inputValue", ""},
+                {"searchArgs.approvedDtFromHndlr.inputValue", $"{fromMonth}/{fromDay}/{fromYear}"},
+                {"searchArgs.approvedDtToHndlr.inputValue", $"{toMonth}/{toDay}/{toYear}"},
+                {"searchArgs.submittedDtFromHndlr.inputValue", ""},
+                {"searchArgs.submittedDtToHndlr.inputValue", ""}
             };
 
             IHtmlDocument document = await PerformQueryAndCreateDocument(DrillingPermitsQueryAction, requestParams);
 
             Dictionary<string, string> requestParams2 = new Dictionary<string, string>
             {
-                {
-                    "searchArgs.orderByColumnName", ""
-                },
-                {
-                    "searchArgs.orderByHndlr.inputValue", ""
-                },
-                {
-                    "searchArgs.universalDocNoHndlr.inputValue", ""
-                },
-                {
-                    "searchArgs.permitStatusNoHndlr.inputValue", ""
-                },
-                {
-                    "searchArgs.apiNoHndlr.inputValue", ""
-                },
-                {
-                    "searchArgs.districtCodeHndlr.inputValue", (districtCode != null ? $"{(int)districtCode}" : "")
-                },
-                {
-                    "searchArgs.countyCodeHndlr.inputValue", (county != null ? $"{(int)county}" : "")
-                },
-                {
-                    "searchArgs.operatorNameWildcardHndlr.inputValue", "beginsWith"
-                },
-                {
-                    "searchArgs.operatorNameHndlr.inputValue", ""
-                },
-                {
-                    "searchArgs.operatorNoHndlr.inputValue", ""
-                },
-                {
-                    "searchArgs.leaseNameWildcardHndlr.inputValue", "beginsWith"
-                },
-                {
-                    "searchArgs.leaseNameHndlr.inputValue", ""
-                },
-                {
-                    "searchArgs.leaseNoHndlr.inputValue", ""
-                },
-                {
-                    "searchArgs.wellNoHndlr.inputValue", ""
-                },
-                {
-                    "searchArgs.fieldNameWildcardHndlr.inputValue", "beginsWith"
-                },
-                {
-                    "searchArgs.fieldNameHndlr.inputValue", ""
-                },
-                {
-                    "searchArgs.fieldNoHndlr.inputValue", ""
-                },
-                {
-                    "searchArgs.surveyNameWildcardHndlr.inputValue", "beginsWith"
-                },
-                {
-                    "searchArgs.surveyNameHndlr.inputValue", ""
-                },
-                {
-                    "searchArgs.wellTypeCodeHndlr.inputValue", ""
-                },
-                {
-                    "searchArgs.totalDepthHndlr.inputValue", ""
-                },
-                {
-                    "searchArgs.filingPurposeCodeHndlr.inputValue", ""
-                },
-                {
-                    "searchArgs.statusCodeHndlr.inputValue", ""
-                },
-                {
-                    "searchArgs.wellboreProfileCodeHndlr.inputValue", ""
-                },
-                {
-                    "searchArgs.wellLocationCodeHndlr.inputValue", ""
-                },
-                {
-                    "searchArgs.completionStatusCodeHndlr.inputValue", ""
-                },
-                {
-                    "searchArgs.approvedDtFromHndlr.inputValue", $"{fromMonth}/{fromDay}/{fromYear}"
-                },
-                {
-                    "searchArgs.approvedDtToHndlr.inputValue", $"{toMonth}/{toDay}/{toYear}"
-                },
-                {
-                    "searchArgs.submittedDtFromHndlr.inputValue", ""
-                },
-                {
-                    "searchArgs.submittedDtToHndlr.inputValue", ""
-                },
-                {
-                    "searchArgs.npzFlagHndlr.inputValue", ""
-                },
-                {
-                    "searchArgs.ammendmentFlagHndlr.inputValue", ""
-                },
-                {
-                    "searchArgs.swrExceptionCodeHndlr.inputValue", ""
-                },
-                {
-                    "searchArgs.psaFlagHndlr.inputValue", ""
-                },
-                {
-                    "searchArgs.allocationFlagHndlr.inputValue", ""
-                },
-                {
-                    "searchArgs.stackedLateralFlagHndlr.inputValue", ""
-                },
-                {
-                    "searchArgs.offLeasePntrnPtFlagHndlr.inputValue", ""
-                },
-                {
-                    "searchArgs.offLeaseSurfLocFlagHndlr.inputValue", ""
-                },
-                {
-                    "methodToCall", "genDrillingPermitsCSVRpt"
-                },
-                {
-                    "actionManager.recordCountHndlr.inputValue", "2"
-                },
-                {
-                    "actionManager.currentIndexHndlr.inputValue", "1"
-                },
-                {
-                    "actionManager.actionRcrd[0].actionDisplayNmHndlr.inputValue", ""
-                },
-                {
-                    "actionManager.actionRcrd[0].hostHndlr.inputValue", "webapps2.rrc.texas.gov:80"
-                },
-                {
-                    "actionManager.actionRcrd[0].contextPathHndlr.inputValue", "/EWA"
-                },
-                {
-                    "actionManager.actionRcrd[0].actionHndlr.inputValue", "/drillingPermitsQueryAction.do"
-                },
-                {
-                    "actionManager.actionRcrd[0].actionParameterHndlr.inputValue", "methodToCall"
-                },
-                {
-                    "actionManager.actionRcrd[0].actionMethodHndlr.inputValue", "returnToSearch"
-                },
-                {
-                    "actionManager.actionRcrd[0].pagerParameterKeyHndlr.inputValue", ""
-                },
-                {
-                    "actionManager.actionRcrd[0].actionParametersHndlr.inputValue", ""
-                },
-                {
-                    "actionManager.actionRcrd[0].returnIndexHndlr.inputValue", "0"
-                },
+                {"searchArgs.orderByColumnName", ""},
+                {"searchArgs.orderByHndlr.inputValue", ""},
+                {"searchArgs.universalDocNoHndlr.inputValue", ""},
+                {"searchArgs.permitStatusNoHndlr.inputValue", ""},
+                {"searchArgs.apiNoHndlr.inputValue", ""},
+                {"searchArgs.districtCodeHndlr.inputValue", (districtCode != null ? $"{(int)districtCode}" : "")},
+                {"searchArgs.countyCodeHndlr.inputValue", (county         != null ? $"{(int)county}" : "")},
+                {"searchArgs.operatorNameWildcardHndlr.inputValue", "beginsWith"},
+                {"searchArgs.operatorNameHndlr.inputValue", ""},
+                {"searchArgs.operatorNoHndlr.inputValue", ""},
+                {"searchArgs.leaseNameWildcardHndlr.inputValue", "beginsWith"},
+                {"searchArgs.leaseNameHndlr.inputValue", ""},
+                {"searchArgs.leaseNoHndlr.inputValue", ""},
+                {"searchArgs.wellNoHndlr.inputValue", ""},
+                {"searchArgs.fieldNameWildcardHndlr.inputValue", "beginsWith"},
+                {"searchArgs.fieldNameHndlr.inputValue", ""},
+                {"searchArgs.fieldNoHndlr.inputValue", ""},
+                {"searchArgs.surveyNameWildcardHndlr.inputValue", "beginsWith"},
+                {"searchArgs.surveyNameHndlr.inputValue", ""},
+                {"searchArgs.wellTypeCodeHndlr.inputValue", ""},
+                {"searchArgs.totalDepthHndlr.inputValue", ""},
+                {"searchArgs.filingPurposeCodeHndlr.inputValue", ""},
+                {"searchArgs.statusCodeHndlr.inputValue", ""},
+                {"searchArgs.wellboreProfileCodeHndlr.inputValue", ""},
+                {"searchArgs.wellLocationCodeHndlr.inputValue", ""},
+                {"searchArgs.completionStatusCodeHndlr.inputValue", ""},
+                {"searchArgs.approvedDtFromHndlr.inputValue", $"{fromMonth}/{fromDay}/{fromYear}"},
+                {"searchArgs.approvedDtToHndlr.inputValue", $"{toMonth}/{toDay}/{toYear}"},
+                {"searchArgs.submittedDtFromHndlr.inputValue", ""},
+                {"searchArgs.submittedDtToHndlr.inputValue", ""},
+                {"searchArgs.npzFlagHndlr.inputValue", ""},
+                {"searchArgs.ammendmentFlagHndlr.inputValue", ""},
+                {"searchArgs.swrExceptionCodeHndlr.inputValue", ""},
+                {"searchArgs.psaFlagHndlr.inputValue", ""},
+                {"searchArgs.allocationFlagHndlr.inputValue", ""},
+                {"searchArgs.stackedLateralFlagHndlr.inputValue", ""},
+                {"searchArgs.offLeasePntrnPtFlagHndlr.inputValue", ""},
+                {"searchArgs.offLeaseSurfLocFlagHndlr.inputValue", ""},
+                {"methodToCall", "genDrillingPermitsCSVRpt"},
+                {"actionManager.recordCountHndlr.inputValue", "2"},
+                {"actionManager.currentIndexHndlr.inputValue", "1"},
+                {"actionManager.actionRcrd[0].actionDisplayNmHndlr.inputValue", ""},
+                {"actionManager.actionRcrd[0].hostHndlr.inputValue", "webapps2.rrc.texas.gov:80"},
+                {"actionManager.actionRcrd[0].contextPathHndlr.inputValue", "/EWA"},
+                {"actionManager.actionRcrd[0].actionHndlr.inputValue", "/drillingPermitsQueryAction.do"},
+                {"actionManager.actionRcrd[0].actionParameterHndlr.inputValue", "methodToCall"},
+                {"actionManager.actionRcrd[0].actionMethodHndlr.inputValue", "returnToSearch"},
+                {"actionManager.actionRcrd[0].pagerParameterKeyHndlr.inputValue", ""},
+                {"actionManager.actionRcrd[0].actionParametersHndlr.inputValue", ""},
+                {"actionManager.actionRcrd[0].returnIndexHndlr.inputValue", "0"},
                 {
                     "actionManager.actionRcrd[0].argRcrdParameters(searchArgs.paramValue)",
                     $"|{(county != null ? $"1004={(int)county}" : $"1003={(int)districtCode}")}|1005=beginsWith|1008=beginsWith|1012=beginsWith|1015=beginsWith|1024={fromMonth}/{fromDay}/{fromYear}|1025={toMonth}/{toDay}/{toYear}"
                 },
-                {
-                    "actionManager.actionRcrd[1].actionDisplayNmHndlr.inputValue", ""
-                },
-                {
-                    "actionManager.actionRcrd[1].hostHndlr.inputValue", "webapps2.rrc.texas.gov:80"
-                },
-                {
-                    "actionManager.actionRcrd[1].contextPathHndlr.inputValue", "/EWA"
-                },
-                {
-                    "actionManager.actionRcrd[1].actionHndlr.inputValue", "/drillingPermitsQueryAction.do"
-                },
-                {
-                    "actionManager.actionRcrd[1].actionParameterHndlr.inputValue", "methodToCall"
-                },
-                {
-                    "actionManager.actionRcrd[1].actionMethodHndlr.inputValue", "search"
-                },
-                {
-                    "actionManager.actionRcrd[1].pagerParameterKeyHndlr.inputValue", "pager.paramValue"
-                },
-                {
-                    "actionManager.actionRcrd[1].actionParametersHndlr.inputValue", ""
-                },
-                {
-                    "actionManager.actionRcrd[1].returnIndexHndlr.inputValue", "0"
-                },
-                {
-                    "actionManager.actionRcrd[1].argRcrdParameters(pager.paramValue)", "|1=1|2=10|3=6668|4=0|5=667|6=10"
-                },
+                {"actionManager.actionRcrd[1].actionDisplayNmHndlr.inputValue", ""},
+                {"actionManager.actionRcrd[1].hostHndlr.inputValue", "webapps2.rrc.texas.gov:80"},
+                {"actionManager.actionRcrd[1].contextPathHndlr.inputValue", "/EWA"},
+                {"actionManager.actionRcrd[1].actionHndlr.inputValue", "/drillingPermitsQueryAction.do"},
+                {"actionManager.actionRcrd[1].actionParameterHndlr.inputValue", "methodToCall"},
+                {"actionManager.actionRcrd[1].actionMethodHndlr.inputValue", "search"},
+                {"actionManager.actionRcrd[1].pagerParameterKeyHndlr.inputValue", "pager.paramValue"},
+                {"actionManager.actionRcrd[1].actionParametersHndlr.inputValue", ""},
+                {"actionManager.actionRcrd[1].returnIndexHndlr.inputValue", "0"},
+                {"actionManager.actionRcrd[1].argRcrdParameters(pager.paramValue)", "|1=1|2=10|3=6668|4=0|5=667|6=10"},
                 {
                     "actionManager.actionRcrd[1].argRcrdParameters(searchArgs.paramValue)",
                     $"|{(county != null ? $"1004={(int)county}" : $"1003={(int)districtCode}")}|1005=beginsWith|1008=beginsWith|1012=beginsWith|1015=beginsWith|1024={fromMonth}/{fromDay}/{fromYear}|1025={toMonth}/{toDay}/{toYear}"
                 },
-                {
-                    "pager.pageSize", "10"
-                },
-                {
-                    "propertyValue", ""
-                }
+                {"pager.pageSize", "10"},
+                {"propertyValue", ""}
             };
 
             string payload = "?" + FlattenParameters(requestParams2);
@@ -1198,372 +792,128 @@ namespace OilGas.Data.RRC.Texas
         {
             Dictionary<string, string> parameters = new Dictionary<string, string>
             {
-                {
-                    "org.apache.struts.taglib.html.TOKEN", "a592c28abe1fee63279fe193e53bd1aa"
-                },
-                {
-                    "formData.methodHndlr.inputValue", "dsSearch"
-                },
-                {
-                    "formData.filingOperatorNoHndlr.inputValue", ""
-                },
-                {
-                    "formData.filingOperatorNameHndlr.inputValue", ""
-                },
-                {
-                    "formData.pageForwardHndlr.inputValue", "home"
-                },
-                {
-                    "formData.pageReturnHndlr.inputValue", ""
-                },
-                {
-                    "formData.headerTabSelectedHndlr.inputValue", "home"
-                },
-                {
-                    "formData.resetPagerFlagHndlr.inputValue", ""
-                },
-                {
-                    "formData.actionFlagHndlr.inputValue", "0"
-                },
-                {
-                    "searchArgs.packetSummaryIdArgHndlr.inputValue", ""
-                },
-                {
-                    "searchArgs.operatorNoArgHndlr.inputValue", ""
-                },
-                {
-                    "searchArgs.apiNoArgHndlr.inputValue", ""
-                },
-                {
-                    "searchArgs.orderByHndlr.inputValue", ""
-                },
-                {
-                    "searchArgs.dpIdHndlr.inputValue", ""
-                },
-                {
-                    "queryArgs.drillingPermitNoArgHndlr.inputValue", ""
-                },
-                {
-                    "queryArgs.apiNoArgHndlr.inputValue", ""
-                },
-                {
-                    "queryArgs.operatorNoArgHndlr.inputValue", ""
-                },
-                {
-                    "queryArgs.orderByHndlr.inputValue", ""
-                },
-                {
-                    "queryArgs.trackingNoArgHndlr.inputValue", $"{trackingNo}"
-                },
-                {
-                    "queryArgs.statusArgHndlr.inputValue", "3"
-                },
-                {
-                    "queryArgs.depthArgHndlr.inputValue", ""
-                },
-                {
-                    "queryArgs.typeArgHndlr.inputValue", ""
-                },
-                {
-                    "queryArgs.unUsedCertifiedArgHndlr.inputValue", ""
-                },
-                {
-                    "queryArgs.unUsedUnCertifiedArgHndlr.inputValue", ""
-                },
-                {
-                    "queryArgs.internalSearchHndlr.inputValue", "N"
-                },
-                {
-                    "queryArgs.hardCopyFromDtArgHndlr.inputValue", ""
-                },
-                {
-                    "queryArgs.hardCopyToDtArgHndlr.inputValue", ""
-                },
-                {
-                    "queryArgs.unCertifiedHardCopyArgHndlr.inputValue", ""
-                },
-                {
-                    "queryArgs.certifiedFromDtArgHndlr.inputValue", ""
-                },
-                {
-                    "queryArgs.certifiedToDtArgHndlr.inputValue", ""
-                },
-                {
-                    "packetInputRecord.idHndlr.inputValue", ""
-                },
-                {
-                    "packetInputRecord.createdByHndlr.inputValue", ""
-                },
-                {
-                    "packetInputRecord.createdDateHndlr.inputValue", ""
-                },
-                {
-                    "packetInputRecord.createdTimestampHndlr.inputValue", ""
-                },
-                {
-                    "packetInputRecord.modifiedByHndlr.inputValue", ""
-                },
-                {
-                    "packetInputRecord.modifiedDateHndlr.inputValue", ""
-                },
-                {
-                    "packetInputRecord.modifiedTimestampHndlr.inputValue", ""
-                },
-                {
-                    "packetInputRecord.validationHndlr.inputValue", ""
-                },
-                {
-                    "packetInputRecord.editedRowHndlr.inputValue", ""
-                },
-                {
-                    "packetInputRecord.editedGridHndlr.inputValue", ""
-                },
-                {
-                    "packetInputRecord.packetSummaryIdHndlr.inputValue", ""
-                },
-                {
-                    "packetInputRecord.formTypeCodeHndlr.inputValue", ""
-                },
-                {
-                    "packetInputRecord.ctxHndlr.inputValue", "1"
-                },
-                {
-                    "packetInputRecord.activePageHndlr.inputValue", "1"
-                },
-                {
-                    "packetInputRecord.currentPageHndlr.inputValue", "1"
-                },
-                {
-                    "packetInputRecord.lockedByHndlr.inputValue", ""
-                },
-                {
-                    "packetInputRecord.cycleCodeHndlr.inputValue", ""
-                },
-                {
-                    "packetInputRecord.rootIdHndlr.inputValue", ""
-                },
-                {
-                    "packetInputRecord.universalDocNoHndlr.inputValue", ""
-                },
-                {
-                    "packetInputRecord.drillingPermitNoHndlr.inputValue", ""
-                },
-                {
-                    "packetInputRecord.operatorNoHndlr.inputValue", ""
-                },
-                {
-                    "packetInputRecord.theAPINoHndlr.inputValue", ""
-                },
-                {
-                    "packetInputRecord.wellNoHndlr.inputValue", ""
-                },
-                {
-                    "packetInputRecord.statusCodeHndlr.inputValue", ""
-                },
-                {
-                    "packetInputRecord.rule37CaseNoHndlr.inputValue", ""
-                },
-                {
-                    "packetInputRecord.waterInjectionPermitDateHndlr.inputValue", ""
-                },
-                {
-                    "packetInputRecord.waterInjectionPermitNoHndlr.inputValue", ""
-                },
-                {
-                    "packetInputRecord.saltWaterDisposalPermitDateHndlr.inputValue", ""
-                },
-                {
-                    "packetInputRecord.saltWaterDisposalPermitNoHndlr.inputValue", ""
-                },
-                {
-                    "packetInputRecord.leaseNoHndlr.inputValue", ""
-                },
-                {
-                    "packetInputRecord.fieldNoHndlr.inputValue", ""
-                },
-                {
-                    "packetInputRecord.leaseNameHndlr.inputValue", ""
-                },
-                {
-                    "packetInputRecord.districtCodeHndlr.inputValue", ""
-                },
-                {
-                    "packetInputRecord.countyFipsCodeHndlr.inputValue", ""
-                },
-                {
-                    "packetInputRecord.fieldNameHndlr.inputValue", ""
-                },
-                {
-                    "packetInputRecord.surveyHndlr.inputValue", ""
-                },
-                {
-                    "packetInputRecord.formerWellNoCodeHndlr.inputValue", ""
-                },
-                {
-                    "packetInputRecord.directionNearestTownHndlr.inputValue", ""
-                },
-                {
-                    "packetInputRecord.rule37CaseDateHndlr.inputValue", ""
-                },
-                {
-                    "packetInputRecord.latitudeHndlr.inputValue", ""
-                },
-                {
-                    "packetInputRecord.longitudeHndlr.inputValue", ""
-                },
-                {
-                    "packetInputRecord.electricLogRunHndlr.inputValue", ""
-                },
-                {
-                    "packetInputRecord.drillingPermitDateHndlr.inputValue", ""
-                },
-                {
-                    "packetInputRecord.wellboreProfileHndlr.inputValue", ""
-                },
-                {
-                    "packetInputRecord.totalAcresHndlr.inputValue", ""
-                },
-                {
-                    "packetInputRecord.numberOfProducingWellsHndlr.inputValue", ""
-                },
-                {
-                    "packetInputRecord.nearestWellDistanceHndlr.inputValue", ""
-                },
-                {
-                    "packetInputRecord.dpOperatorNoHndlr.inputValue", ""
-                },
-                {
-                    "packetInputRecord.dpFieldNameHndlr.inputValue", ""
-                },
-                {
-                    "packetInputRecord.latLongCodeHndlr.inputValue", ""
-                },
-                {
-                    "packetInputRecord.latLongOtherHndlr.inputValue", ""
-                },
-                {
-                    "packetInputRecord.dpTotalDepthHndlr.inputValue", ""
-                },
-                {
-                    "packetInputRecord.dpFieldNoHndlr.inputValue", ""
-                },
-                {
-                    "packetInputRecord.fieldFromHndlr.inputValue", ""
-                },
-                {
-                    "packetInputRecord.dpLeaseNoHndlr.inputValue", ""
-                },
-                {
-                    "packetInputRecord.internalUserHndlr.inputValue", "N"
-                },
-                {
-                    "packetInputRecord.pooledUnitHndlr.inputValue", "N"
-                },
-                {
-                    "packetInputRecord.oilGasTypeCodeHndlr.inputValue", ""
-                },
-                {
-                    "packetInputRecord.surveyBlockHndlr.inputValue", ""
-                },
-                {
-                    "packetInputRecord.surveySectionHndlr.inputValue", ""
-                },
-                {
-                    "packetInputRecord.surveyAbstractHndlr.inputValue", ""
-                },
-                {
-                    "packetInputRecord.fieldValidatedDateHndlr.inputValue", ""
-                },
-                {
-                    "packetInputRecord.unitNoHndlr.inputValue", ""
-                },
-                {
-                    "packetInputRecord.dpWellNoHndlr.inputValue", ""
-                },
-                {
-                    "packetInputRecord.origDpNoHndlr.inputValue", ""
-                },
-                {
-                    "packetInputRecord.origDpDateHndlr.inputValue", ""
-                },
-                {
-                    "packetInputRecord.mfProcessDateHndlr.inputValue", ""
-                },
-                {
-                    "packetInputRecord.spudDtHndlr.inputValue", ""
-                },
-                {
-                    "packetInputRecord.distDirectionMilesHndlr.inputValue", ""
-                },
-                {
-                    "packetInputRecord.distDirectionDirectionHndlr.inputValue", ""
-                },
-                {
-                    "packetInputRecord.stackedLatStatusNoParentHndlr.inputValue", ""
-                },
-                {
-                    "packetInputRecord.fieldHorzSeveranceDepthTxtHndlr.inputValue", ""
-                },
-                {
-                    "packetInputRecord.latMinTxtHndlr.inputValue", ""
-                },
-                {
-                    "packetInputRecord.latSecTxtHndlr.inputValue", ""
-                },
-                {
-                    "packetInputRecord.longMinTxtHndlr.inputValue", ""
-                },
-                {
-                    "packetInputRecord.longSecTxtHndlr.inputValue", ""
-                },
-                {
-                    "packetInputRecord.statePlaneXTxtHndlr.inputValue", ""
-                },
-                {
-                    "packetInputRecord.statePlaneYTxtHndlr.inputValue", ""
-                },
-                {
-                    "packetInputRecord.statePlaneZoneCodeHndlr.inputValue", ""
-                },
-                {
-                    "packetInputRecord.fieldHorzSeveranceDepthLowHndlr.inputValue", ""
-                },
-                {
-                    "packetInputRecord.reservoirDataRowHndlr.inputValue", ""
-                },
-                {
-                    "packetInputRecord.horzWellboreTypesCatLstHndlr.inputValue", ""
-                },
-                {
-                    "packetInputRecord.sectionLine1DistanceHndlr.inputValue", ""
-                },
-                {
-                    "packetInputRecord.sectionLine1DirectionHndlr.inputValue", ""
-                },
-                {
-                    "packetInputRecord.sectionLine2DistanceHndlr.inputValue", ""
-                },
-                {
-                    "packetInputRecord.sectionLine2DirectionHndlr.inputValue", ""
-                },
-                {
-                    "expandId", ""
-                },
-                {
-                    "deleteId", ""
-                },
-                {
-                    "expandDetail", "N"
-                },
-                {
-                    "queryArgs.internalSearch", "N"
-                },
-                {
-                    "isInternalUser", "N"
-                },
-                {
-                    "certificationLetterId", ""
-                }
+                {"org.apache.struts.taglib.html.TOKEN", "a592c28abe1fee63279fe193e53bd1aa"},
+                {"formData.methodHndlr.inputValue", "dsSearch"},
+                {"formData.filingOperatorNoHndlr.inputValue", ""},
+                {"formData.filingOperatorNameHndlr.inputValue", ""},
+                {"formData.pageForwardHndlr.inputValue", "home"},
+                {"formData.pageReturnHndlr.inputValue", ""},
+                {"formData.headerTabSelectedHndlr.inputValue", "home"},
+                {"formData.resetPagerFlagHndlr.inputValue", ""},
+                {"formData.actionFlagHndlr.inputValue", "0"},
+                {"searchArgs.packetSummaryIdArgHndlr.inputValue", ""},
+                {"searchArgs.operatorNoArgHndlr.inputValue", ""},
+                {"searchArgs.apiNoArgHndlr.inputValue", ""},
+                {"searchArgs.orderByHndlr.inputValue", ""},
+                {"searchArgs.dpIdHndlr.inputValue", ""},
+                {"queryArgs.drillingPermitNoArgHndlr.inputValue", ""},
+                {"queryArgs.apiNoArgHndlr.inputValue", ""},
+                {"queryArgs.operatorNoArgHndlr.inputValue", ""},
+                {"queryArgs.orderByHndlr.inputValue", ""},
+                {"queryArgs.trackingNoArgHndlr.inputValue", $"{trackingNo}"},
+                {"queryArgs.statusArgHndlr.inputValue", "3"},
+                {"queryArgs.depthArgHndlr.inputValue", ""},
+                {"queryArgs.typeArgHndlr.inputValue", ""},
+                {"queryArgs.unUsedCertifiedArgHndlr.inputValue", ""},
+                {"queryArgs.unUsedUnCertifiedArgHndlr.inputValue", ""},
+                {"queryArgs.internalSearchHndlr.inputValue", "N"},
+                {"queryArgs.hardCopyFromDtArgHndlr.inputValue", ""},
+                {"queryArgs.hardCopyToDtArgHndlr.inputValue", ""},
+                {"queryArgs.unCertifiedHardCopyArgHndlr.inputValue", ""},
+                {"queryArgs.certifiedFromDtArgHndlr.inputValue", ""},
+                {"queryArgs.certifiedToDtArgHndlr.inputValue", ""},
+                {"packetInputRecord.idHndlr.inputValue", ""},
+                {"packetInputRecord.createdByHndlr.inputValue", ""},
+                {"packetInputRecord.createdDateHndlr.inputValue", ""},
+                {"packetInputRecord.createdTimestampHndlr.inputValue", ""},
+                {"packetInputRecord.modifiedByHndlr.inputValue", ""},
+                {"packetInputRecord.modifiedDateHndlr.inputValue", ""},
+                {"packetInputRecord.modifiedTimestampHndlr.inputValue", ""},
+                {"packetInputRecord.validationHndlr.inputValue", ""},
+                {"packetInputRecord.editedRowHndlr.inputValue", ""},
+                {"packetInputRecord.editedGridHndlr.inputValue", ""},
+                {"packetInputRecord.packetSummaryIdHndlr.inputValue", ""},
+                {"packetInputRecord.formTypeCodeHndlr.inputValue", ""},
+                {"packetInputRecord.ctxHndlr.inputValue", "1"},
+                {"packetInputRecord.activePageHndlr.inputValue", "1"},
+                {"packetInputRecord.currentPageHndlr.inputValue", "1"},
+                {"packetInputRecord.lockedByHndlr.inputValue", ""},
+                {"packetInputRecord.cycleCodeHndlr.inputValue", ""},
+                {"packetInputRecord.rootIdHndlr.inputValue", ""},
+                {"packetInputRecord.universalDocNoHndlr.inputValue", ""},
+                {"packetInputRecord.drillingPermitNoHndlr.inputValue", ""},
+                {"packetInputRecord.operatorNoHndlr.inputValue", ""},
+                {"packetInputRecord.theAPINoHndlr.inputValue", ""},
+                {"packetInputRecord.wellNoHndlr.inputValue", ""},
+                {"packetInputRecord.statusCodeHndlr.inputValue", ""},
+                {"packetInputRecord.rule37CaseNoHndlr.inputValue", ""},
+                {"packetInputRecord.waterInjectionPermitDateHndlr.inputValue", ""},
+                {"packetInputRecord.waterInjectionPermitNoHndlr.inputValue", ""},
+                {"packetInputRecord.saltWaterDisposalPermitDateHndlr.inputValue", ""},
+                {"packetInputRecord.saltWaterDisposalPermitNoHndlr.inputValue", ""},
+                {"packetInputRecord.leaseNoHndlr.inputValue", ""},
+                {"packetInputRecord.fieldNoHndlr.inputValue", ""},
+                {"packetInputRecord.leaseNameHndlr.inputValue", ""},
+                {"packetInputRecord.districtCodeHndlr.inputValue", ""},
+                {"packetInputRecord.countyFipsCodeHndlr.inputValue", ""},
+                {"packetInputRecord.fieldNameHndlr.inputValue", ""},
+                {"packetInputRecord.surveyHndlr.inputValue", ""},
+                {"packetInputRecord.formerWellNoCodeHndlr.inputValue", ""},
+                {"packetInputRecord.directionNearestTownHndlr.inputValue", ""},
+                {"packetInputRecord.rule37CaseDateHndlr.inputValue", ""},
+                {"packetInputRecord.latitudeHndlr.inputValue", ""},
+                {"packetInputRecord.longitudeHndlr.inputValue", ""},
+                {"packetInputRecord.electricLogRunHndlr.inputValue", ""},
+                {"packetInputRecord.drillingPermitDateHndlr.inputValue", ""},
+                {"packetInputRecord.wellboreProfileHndlr.inputValue", ""},
+                {"packetInputRecord.totalAcresHndlr.inputValue", ""},
+                {"packetInputRecord.numberOfProducingWellsHndlr.inputValue", ""},
+                {"packetInputRecord.nearestWellDistanceHndlr.inputValue", ""},
+                {"packetInputRecord.dpOperatorNoHndlr.inputValue", ""},
+                {"packetInputRecord.dpFieldNameHndlr.inputValue", ""},
+                {"packetInputRecord.latLongCodeHndlr.inputValue", ""},
+                {"packetInputRecord.latLongOtherHndlr.inputValue", ""},
+                {"packetInputRecord.dpTotalDepthHndlr.inputValue", ""},
+                {"packetInputRecord.dpFieldNoHndlr.inputValue", ""},
+                {"packetInputRecord.fieldFromHndlr.inputValue", ""},
+                {"packetInputRecord.dpLeaseNoHndlr.inputValue", ""},
+                {"packetInputRecord.internalUserHndlr.inputValue", "N"},
+                {"packetInputRecord.pooledUnitHndlr.inputValue", "N"},
+                {"packetInputRecord.oilGasTypeCodeHndlr.inputValue", ""},
+                {"packetInputRecord.surveyBlockHndlr.inputValue", ""},
+                {"packetInputRecord.surveySectionHndlr.inputValue", ""},
+                {"packetInputRecord.surveyAbstractHndlr.inputValue", ""},
+                {"packetInputRecord.fieldValidatedDateHndlr.inputValue", ""},
+                {"packetInputRecord.unitNoHndlr.inputValue", ""},
+                {"packetInputRecord.dpWellNoHndlr.inputValue", ""},
+                {"packetInputRecord.origDpNoHndlr.inputValue", ""},
+                {"packetInputRecord.origDpDateHndlr.inputValue", ""},
+                {"packetInputRecord.mfProcessDateHndlr.inputValue", ""},
+                {"packetInputRecord.spudDtHndlr.inputValue", ""},
+                {"packetInputRecord.distDirectionMilesHndlr.inputValue", ""},
+                {"packetInputRecord.distDirectionDirectionHndlr.inputValue", ""},
+                {"packetInputRecord.stackedLatStatusNoParentHndlr.inputValue", ""},
+                {"packetInputRecord.fieldHorzSeveranceDepthTxtHndlr.inputValue", ""},
+                {"packetInputRecord.latMinTxtHndlr.inputValue", ""},
+                {"packetInputRecord.latSecTxtHndlr.inputValue", ""},
+                {"packetInputRecord.longMinTxtHndlr.inputValue", ""},
+                {"packetInputRecord.longSecTxtHndlr.inputValue", ""},
+                {"packetInputRecord.statePlaneXTxtHndlr.inputValue", ""},
+                {"packetInputRecord.statePlaneYTxtHndlr.inputValue", ""},
+                {"packetInputRecord.statePlaneZoneCodeHndlr.inputValue", ""},
+                {"packetInputRecord.fieldHorzSeveranceDepthLowHndlr.inputValue", ""},
+                {"packetInputRecord.reservoirDataRowHndlr.inputValue", ""},
+                {"packetInputRecord.horzWellboreTypesCatLstHndlr.inputValue", ""},
+                {"packetInputRecord.sectionLine1DistanceHndlr.inputValue", ""},
+                {"packetInputRecord.sectionLine1DirectionHndlr.inputValue", ""},
+                {"packetInputRecord.sectionLine2DistanceHndlr.inputValue", ""},
+                {"packetInputRecord.sectionLine2DirectionHndlr.inputValue", ""},
+                {"expandId", ""},
+                {"deleteId", ""},
+                {"expandDetail", "N"},
+                {"queryArgs.internalSearch", "N"},
+                {"isInternalUser", "N"},
+                {"certificationLetterId", ""}
             };
 
             return "http://webapps.rrc.texas.gov/CMPL/directionalSurveyQueryAction.do?" + FlattenParameters(parameters);
@@ -1574,231 +924,83 @@ namespace OilGas.Data.RRC.Texas
         {
             Dictionary<string, string> parameters = new Dictionary<string, string>
             {
-                {
-                    "org.apache.struts.taglib.html.TOKEN", "a592c28abe1fee63279fe193e53bd1aa"
-                },
+                {"org.apache.struts.taglib.html.TOKEN", "a592c28abe1fee63279fe193e53bd1aa"},
                 //{
                 //    "methodToCall", "displayBySummaryId"
                 //},
-                {
-                    "packetSummaryId", trackingNo
-                },
-                {
-                    "formData.methodHndlr.inputValue", "displayBySummaryId"
-                },
-                {
-                    "formData.filingOperatorNoHndlr.inputValue", ""
-                },
-                {
-                    "formData.filingOperatorNameHndlr.inputValue", ""
-                },
-                {
-                    "formData.pageForwardHndlr.inputValue", ""
-                },
-                {
-                    "formData.pageReturnHndlr.inputValue", ""
-                },
-                {
-                    "formData.headerTabSelectedHndlr.inputValue", ""
-                },
-                {
-                    "formData.resetPagerFlagHndlr.inputValue", ""
-                },
-                {
-                    "formData.actionFlagHndlr.inputValue", "0"
-                },
-                {
-                    "searchArgs.fromSubmitDtArgHndlr.inputValue", ""
-                },
-                {
-                    "searchArgs.toSubmitDtArgHndlr.inputValue", ""
-                },
-                {
-                    "searchArgs.districtCodeArgHndlr.inputValue", ""
-                },
-                {
-                    "searchArgs.packetIdArgHndlr.inputValue", ""
-                },
-                {
-                    "searchArgs.wellTypeArgHndlr.inputValue", ""
-                },
-                {
-                    "searchArgs.operatorNoArgHndlr.inputValue", ""
-                },
-                {
-                    "searchArgs.statusCodeArgHndlr.inputValue", ""
-                },
-                {
-                    "searchArgs.orderByHndlr.inputValue", ""
-                },
-                {
-                    "searchArgs.packetTypeCodeHndlr.inputValue", ""
-                },
-                {
-                    "searchArgs.apiNoHndlr.inputValue", $"{api.CountyCode}{api.UniqueWellIdentifier}"
-                },
-                {
-                    "searchArgs.dpNoHndlr.inputValue", ""
-                },
-                {
-                    "searchArgs.countyCodeHndlr.inputValue", ""
-                },
-                {
-                    "searchArgs.leaseNoArgHndlr.inputValue", ""
-                },
-                {
-                    "searchArgs.fieldNoArgHndlr.inputValue", ""
-                },
-                {
-                    "searchArgs.wellboreProfileArgHndlr.inputValue", ""
-                },
-                {
-                    "searchArgs.purposeOfFilingArgHndlr.inputValue", ""
-                },
-                {
-                    "searchArgs.filingMethodArgHndlr.inputValue", ""
-                },
-                {
-                    "searchArgs.horzWellboreTypePsaHndlr.booleanValue", "false"
-                },
-                {
-                    "searchArgs.horzWellboreTypeAllocationHndlr.booleanValue", "false"
-                },
-                {
-                    "searchArgs.horzWellboreTypeStackedLatHndlr.booleanValue", "false"
-                },
-                {
-                    "searchArgs.excludeStatusAndApprovedDtHndlr.booleanValue", "false"
-                },
-                {
-                    "searchArgs.stackedLatStatusNoParentHndlr.inputValue", ""
-                },
-                {
-                    "methodToCall", "displayBySummaryId"
-                },
-                {
-                    "actionManager.recordCountHndlr.inputValue", "4"
-                },
-                {
-                    "actionManager.currentIndexHndlr.inputValue", "3"
-                },
-                {
-                    "actionManager.actionRcrd[0].actionDisplayNmHndlr.inputValue", ""
-                },
-                {
-                    "actionManager.actionRcrd[0].hostHndlr.inputValue", "webapps2.rrc.state.tx.us:80"
-                },
-                {
-                    "actionManager.actionRcrd[0].contextPathHndlr.inputValue", "/EWA"
-                },
-                {
-                    "actionManager.actionRcrd[0].actionHndlr.inputValue", "/wellboreQueryAction.do"
-                },
-                {
-                    "actionManager.actionRcrd[0].actionParameterHndlr.inputValue", "methodToCall"
-                },
-                {
-                    "actionManager.actionRcrd[0].actionMethodHndlr.inputValue", "returnToSearch"
-                },
-                {
-                    "actionManager.actionRcrd[0].pagerParameterKeyHndlr.inputValue", ""
-                },
-                {
-                    "actionManager.actionRcrd[0].actionParametersHndlr.inputValue", ""
-                },
-                {
-                    "actionManager.actionRcrd[0].returnIndexHndlr.inputValue", "0"
-                },
-                {
-                    "actionManager.actionRcrd[0].argRcrdParameters(searchArgs.paramValue)", $"|7={api.CountyCode}|8={api.UniqueWellIdentifier}"
-                },
-                {
-                    "actionManager.actionRcrd[1].actionDisplayNmHndlr.inputValue", ""
-                },
-                {
-                    "actionManager.actionRcrd[1].hostHndlr.inputValue", "webapps2.rrc.state.tx.us:80"
-                },
-                {
-                    "actionManager.actionRcrd[1].contextPathHndlr.inputValue", "/EWA"
-                },
-                {
-                    "actionManager.actionRcrd[1].actionHndlr.inputValue", "/wellboreQueryAction.do"
-                },
-                {
-                    "actionManager.actionRcrd[1].actionParameterHndlr.inputValue", "methodToCall"
-                },
-                {
-                    "actionManager.actionRcrd[1].actionMethodHndlr.inputValue", "search"
-                },
-                {
-                    "actionManager.actionRcrd[1].pagerParameterKeyHndlr.inputValue", "wellborePager.paramValue"
-                },
-                {
-                    "actionManager.actionRcrd[1].actionParametersHndlr.inputValue", ""
-                },
-                {
-                    "actionManager.actionRcrd[1].returnIndexHndlr.inputValue", "0"
-                },
-                {
-                    "actionManager.actionRcrd[1].argRcrdParameters(searchArgs.paramValue)", $"|7={api.CountyCode}|8={api.UniqueWellIdentifier}"
-                },
-                {
-                    "actionManager.actionRcrd[1].argRcrdParameters(wellborePager.paramValue)", "|1=1|2=10|3=1|4=0|5=1|6=10"
-                },
-                {
-                    "actionManager.actionRcrd[2].actionDisplayNmHndlr.inputValue", ""
-                },
-                {
-                    "actionManager.actionRcrd[2].hostHndlr.inputValue", "webapps.rrc.texas.gov:80"
-                },
-                {
-                    "actionManager.actionRcrd[2].contextPathHndlr.inputValue", "/CMPL"
-                },
-                {
-                    "actionManager.actionRcrd[2].actionHndlr.inputValue", "/ewaSearchAction.do"
-                },
-                {
-                    "actionManager.actionRcrd[2].actionParameterHndlr.inputValue", "methodToCall"
-                },
-                {
-                    "actionManager.actionRcrd[2].actionMethodHndlr.inputValue", "searchByApiNo"
-                },
-                {
-                    "actionManager.actionRcrd[2].pagerParameterKeyHndlr.inputValue", ""
-                },
-                {
-                    "actionManager.actionRcrd[2].actionParametersHndlr.inputValue", $"&amp;apiNo={api.CountyCode}{api.UniqueWellIdentifier}"
-                },
-                {
-                    "actionManager.actionRcrd[2].returnIndexHndlr.inputValue", "1"
-                },
-                {
-                    "actionManager.actionRcrd[3].actionDisplayNmHndlr.inputValue", ""
-                },
-                {
-                    "actionManager.actionRcrd[3].hostHndlr.inputValue", "webapps.rrc.texas.gov:80"
-                },
-                {
-                    "actionManager.actionRcrd[3].contextPathHndlr.inputValue", "/CMPL"
-                },
-                {
-                    "actionManager.actionRcrd[3].actionHndlr.inputValue", "/ewaSearchAction.do"
-                },
-                {
-                    "actionManager.actionRcrd[3].actionParameterHndlr.inputValue", "methodToCall"
-                },
-                {
-                    "actionManager.actionRcrd[3].actionMethodHndlr.inputValue", "displayBySummaryId"
-                },
-                {
-                    "actionManager.actionRcrd[3].pagerParameterKeyHndlr.inputValue", ""
-                },
-                {
-                    "actionManager.actionRcrd[3].actionParametersHndlr.inputValue", ""
-                },
-                {
-                    "actionManager.actionRcrd[3].returnIndexHndlr.inputValue", "2"
-                }
+                {"packetSummaryId", trackingNo},
+                {"formData.methodHndlr.inputValue", "displayBySummaryId"},
+                {"formData.filingOperatorNoHndlr.inputValue", ""},
+                {"formData.filingOperatorNameHndlr.inputValue", ""},
+                {"formData.pageForwardHndlr.inputValue", ""},
+                {"formData.pageReturnHndlr.inputValue", ""},
+                {"formData.headerTabSelectedHndlr.inputValue", ""},
+                {"formData.resetPagerFlagHndlr.inputValue", ""},
+                {"formData.actionFlagHndlr.inputValue", "0"},
+                {"searchArgs.fromSubmitDtArgHndlr.inputValue", ""},
+                {"searchArgs.toSubmitDtArgHndlr.inputValue", ""},
+                {"searchArgs.districtCodeArgHndlr.inputValue", ""},
+                {"searchArgs.packetIdArgHndlr.inputValue", ""},
+                {"searchArgs.wellTypeArgHndlr.inputValue", ""},
+                {"searchArgs.operatorNoArgHndlr.inputValue", ""},
+                {"searchArgs.statusCodeArgHndlr.inputValue", ""},
+                {"searchArgs.orderByHndlr.inputValue", ""},
+                {"searchArgs.packetTypeCodeHndlr.inputValue", ""},
+                {"searchArgs.apiNoHndlr.inputValue", $"{api.CountyCode}{api.UniqueWellIdentifier}"},
+                {"searchArgs.dpNoHndlr.inputValue", ""},
+                {"searchArgs.countyCodeHndlr.inputValue", ""},
+                {"searchArgs.leaseNoArgHndlr.inputValue", ""},
+                {"searchArgs.fieldNoArgHndlr.inputValue", ""},
+                {"searchArgs.wellboreProfileArgHndlr.inputValue", ""},
+                {"searchArgs.purposeOfFilingArgHndlr.inputValue", ""},
+                {"searchArgs.filingMethodArgHndlr.inputValue", ""},
+                {"searchArgs.horzWellboreTypePsaHndlr.booleanValue", "false"},
+                {"searchArgs.horzWellboreTypeAllocationHndlr.booleanValue", "false"},
+                {"searchArgs.horzWellboreTypeStackedLatHndlr.booleanValue", "false"},
+                {"searchArgs.excludeStatusAndApprovedDtHndlr.booleanValue", "false"},
+                {"searchArgs.stackedLatStatusNoParentHndlr.inputValue", ""},
+                {"methodToCall", "displayBySummaryId"},
+                {"actionManager.recordCountHndlr.inputValue", "4"},
+                {"actionManager.currentIndexHndlr.inputValue", "3"},
+                {"actionManager.actionRcrd[0].actionDisplayNmHndlr.inputValue", ""},
+                {"actionManager.actionRcrd[0].hostHndlr.inputValue", "webapps2.rrc.state.tx.us:80"},
+                {"actionManager.actionRcrd[0].contextPathHndlr.inputValue", "/EWA"},
+                {"actionManager.actionRcrd[0].actionHndlr.inputValue", "/wellboreQueryAction.do"},
+                {"actionManager.actionRcrd[0].actionParameterHndlr.inputValue", "methodToCall"},
+                {"actionManager.actionRcrd[0].actionMethodHndlr.inputValue", "returnToSearch"},
+                {"actionManager.actionRcrd[0].pagerParameterKeyHndlr.inputValue", ""},
+                {"actionManager.actionRcrd[0].actionParametersHndlr.inputValue", ""},
+                {"actionManager.actionRcrd[0].returnIndexHndlr.inputValue", "0"},
+                {"actionManager.actionRcrd[0].argRcrdParameters(searchArgs.paramValue)", $"|7={api.CountyCode}|8={api.UniqueWellIdentifier}"},
+                {"actionManager.actionRcrd[1].actionDisplayNmHndlr.inputValue", ""},
+                {"actionManager.actionRcrd[1].hostHndlr.inputValue", "webapps2.rrc.state.tx.us:80"},
+                {"actionManager.actionRcrd[1].contextPathHndlr.inputValue", "/EWA"},
+                {"actionManager.actionRcrd[1].actionHndlr.inputValue", "/wellboreQueryAction.do"},
+                {"actionManager.actionRcrd[1].actionParameterHndlr.inputValue", "methodToCall"},
+                {"actionManager.actionRcrd[1].actionMethodHndlr.inputValue", "search"},
+                {"actionManager.actionRcrd[1].pagerParameterKeyHndlr.inputValue", "wellborePager.paramValue"},
+                {"actionManager.actionRcrd[1].actionParametersHndlr.inputValue", ""},
+                {"actionManager.actionRcrd[1].returnIndexHndlr.inputValue", "0"},
+                {"actionManager.actionRcrd[1].argRcrdParameters(searchArgs.paramValue)", $"|7={api.CountyCode}|8={api.UniqueWellIdentifier}"},
+                {"actionManager.actionRcrd[1].argRcrdParameters(wellborePager.paramValue)", "|1=1|2=10|3=1|4=0|5=1|6=10"},
+                {"actionManager.actionRcrd[2].actionDisplayNmHndlr.inputValue", ""},
+                {"actionManager.actionRcrd[2].hostHndlr.inputValue", "webapps.rrc.texas.gov:80"},
+                {"actionManager.actionRcrd[2].contextPathHndlr.inputValue", "/CMPL"},
+                {"actionManager.actionRcrd[2].actionHndlr.inputValue", "/ewaSearchAction.do"},
+                {"actionManager.actionRcrd[2].actionParameterHndlr.inputValue", "methodToCall"},
+                {"actionManager.actionRcrd[2].actionMethodHndlr.inputValue", "searchByApiNo"},
+                {"actionManager.actionRcrd[2].pagerParameterKeyHndlr.inputValue", ""},
+                {"actionManager.actionRcrd[2].actionParametersHndlr.inputValue", $"&amp;apiNo={api.CountyCode}{api.UniqueWellIdentifier}"},
+                {"actionManager.actionRcrd[2].returnIndexHndlr.inputValue", "1"},
+                {"actionManager.actionRcrd[3].actionDisplayNmHndlr.inputValue", ""},
+                {"actionManager.actionRcrd[3].hostHndlr.inputValue", "webapps.rrc.texas.gov:80"},
+                {"actionManager.actionRcrd[3].contextPathHndlr.inputValue", "/CMPL"},
+                {"actionManager.actionRcrd[3].actionHndlr.inputValue", "/ewaSearchAction.do"},
+                {"actionManager.actionRcrd[3].actionParameterHndlr.inputValue", "methodToCall"},
+                {"actionManager.actionRcrd[3].actionMethodHndlr.inputValue", "displayBySummaryId"},
+                {"actionManager.actionRcrd[3].pagerParameterKeyHndlr.inputValue", ""},
+                {"actionManager.actionRcrd[3].actionParametersHndlr.inputValue", ""},
+                {"actionManager.actionRcrd[3].returnIndexHndlr.inputValue", "2"}
             };
 
             return "http://webapps.rrc.texas.gov/CMPL/ewaSearchAction.do?" + FlattenParameters(parameters);
@@ -1822,9 +1024,9 @@ namespace OilGas.Data.RRC.Texas
 
             WellboreQueryData wellboreQueryData = QueryParser.ParseWellboreQuery(wellboreQueryResult).FirstOrDefault(wqd => wqd.Columns.OnSchedule == "Y");
 
-            if(wellboreQueryData == null)
+            if(wellboreQueryData is null)
             {
-                throw new Exception("wellboreQueryData == null");
+                throw new Exception("wellboreQueryData is null");
             }
 
             IHtmlDocument completionsQueryResult = await OpenUri(wellboreQueryData.Columns.CompletionLink);
@@ -1873,9 +1075,9 @@ namespace OilGas.Data.RRC.Texas
 
             WellboreQueryData wellboreQueryData = QueryParser.ParseWellboreQuery(wellboreQueryResult).FirstOrDefault(wqd => wqd.Columns.OnSchedule == "Y");
 
-            if(wellboreQueryData == null)
+            if(wellboreQueryData is null)
             {
-                throw new Exception("wellboreQueryData == null");
+                throw new Exception("wellboreQueryData is null");
             }
 
             IHtmlDocument completionsQueryResult = await OpenUri(wellboreQueryData.Columns.CompletionLink);
@@ -1906,7 +1108,7 @@ namespace OilGas.Data.RRC.Texas
                 }
             }
 
-            string tempPath = @"D:\OilGasData";//Path.GetTempPath();
+            string tempPath = @"D:\OilGasData"; //Path.GetTempPath();
             string path     = $"{api.ToString()}.G1.pdf";
 
             string tempFile = Path.Combine(tempPath, path);
@@ -1971,9 +1173,9 @@ namespace OilGas.Data.RRC.Texas
 
             WellboreQueryData wellboreQueryData = QueryParser.ParseWellboreQuery(wellboreQueryResult).FirstOrDefault(wqd => wqd.Columns.OnSchedule == "Y");
 
-            if(wellboreQueryData == null)
+            if(wellboreQueryData is null)
             {
-                throw new Exception("wellboreQueryData == null");
+                throw new Exception("wellboreQueryData is null");
             }
 
             IHtmlDocument completionsQueryResult = await OpenUri(wellboreQueryData.Columns.CompletionLink);

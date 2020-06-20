@@ -1,4 +1,5 @@
-﻿using System;
+﻿#nullable enable
+using System;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Runtime.CompilerServices;
@@ -8,6 +9,7 @@ using System.Xml.Serialization;
 using Engineering.DataSource;
 
 using Newtonsoft.Json;
+using Newtonsoft.Json.Serialization;
 
 namespace OilGas.Data.RRC.Texas
 {
@@ -117,7 +119,7 @@ namespace OilGas.Data.RRC.Texas
         [XmlIgnore]
         [JsonIgnore]
         [Key]
-        public string ABSTRACT_N
+        public string? ABSTRACT_N
         {
             [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
             get;
@@ -129,7 +131,7 @@ namespace OilGas.Data.RRC.Texas
         [XmlIgnore]
         [JsonIgnore]
         [Key]
-        public string LEVEL1_SUR
+        public string? LEVEL1_SUR
         {
             [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
             get;
@@ -141,7 +143,7 @@ namespace OilGas.Data.RRC.Texas
         [XmlIgnore]
         [JsonIgnore]
         [Key]
-        public string LEVLE2_BLO
+        public string? LEVLE2_BLO
         {
             [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
             get;
@@ -153,7 +155,7 @@ namespace OilGas.Data.RRC.Texas
         [XmlIgnore]
         [JsonIgnore]
         [Key]
-        public string LEVEL3_SUR
+        public string? LEVEL3_SUR
         {
             [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
             get;
@@ -165,7 +167,7 @@ namespace OilGas.Data.RRC.Texas
         [XmlIgnore]
         [JsonIgnore]
         [Key]
-        public string LEVEL4_SUR
+        public string? LEVEL4_SUR
         {
             [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
             get;
@@ -177,7 +179,7 @@ namespace OilGas.Data.RRC.Texas
         [XmlIgnore]
         [JsonIgnore]
         [Key]
-        public string ABSTRACT_L
+        public string? ABSTRACT_L
         {
             [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
             get;
@@ -189,7 +191,7 @@ namespace OilGas.Data.RRC.Texas
         [XmlIgnore]
         [JsonIgnore]
         [Key]
-        public string SCRAP_FILE
+        public string? SCRAP_FILE
         {
             [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
             get;
@@ -200,7 +202,7 @@ namespace OilGas.Data.RRC.Texas
 
     public sealed class SurveyB
     {
-        public string BAYNUM
+        public string? BAYNUM
         {
             [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
             get;
@@ -208,7 +210,7 @@ namespace OilGas.Data.RRC.Texas
             set;
         }
 
-        public string BAYID
+        public string? BAYID
         {
             [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
             get;
@@ -216,7 +218,7 @@ namespace OilGas.Data.RRC.Texas
             set;
         }
 
-        public string TRACTNUM
+        public string? TRACTNUM
         {
             [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
             get;
@@ -224,7 +226,7 @@ namespace OilGas.Data.RRC.Texas
             set;
         }
 
-        public string NAME
+        public string? NAME
         {
             [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
             get;
@@ -232,7 +234,7 @@ namespace OilGas.Data.RRC.Texas
             set;
         }
 
-        public string TYPE
+        public string? TYPE
         {
             [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
             get;
@@ -240,7 +242,7 @@ namespace OilGas.Data.RRC.Texas
             set;
         }
 
-        public string CREATED_US
+        public string? CREATED_US
         {
             [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
             get;
@@ -248,7 +250,7 @@ namespace OilGas.Data.RRC.Texas
             set;
         }
 
-        public string CREATED_DA
+        public string? CREATED_DA
         {
             [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
             get;
@@ -256,7 +258,7 @@ namespace OilGas.Data.RRC.Texas
             set;
         }
 
-        public string LAST_EDITE
+        public string? LAST_EDITE
         {
             [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
             get;
@@ -264,7 +266,7 @@ namespace OilGas.Data.RRC.Texas
             set;
         }
 
-        public string LAST_EDI_1
+        public string? LAST_EDI_1
         {
             [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
             get;
@@ -283,7 +285,7 @@ namespace OilGas.Data.RRC.Texas
             set;
         }
 
-        public string QUAD15M
+        public string? QUAD15M
         {
             [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
             get;
@@ -302,7 +304,7 @@ namespace OilGas.Data.RRC.Texas
             set;
         }
 
-        public string TEXTSTRING
+        public string? TEXTSTRING
         {
             [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
             get;
@@ -310,7 +312,7 @@ namespace OilGas.Data.RRC.Texas
             set;
         }
 
-        public string FONTNAME
+        public string? FONTNAME
         {
             [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
             get;
@@ -334,7 +336,7 @@ namespace OilGas.Data.RRC.Texas
             set;
         }
 
-        public string JUST
+        public string? JUST
         {
             [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
             get;
@@ -342,7 +344,7 @@ namespace OilGas.Data.RRC.Texas
             set;
         }
 
-        public string NAME
+        public string? NAME
         {
             [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
             get;
@@ -377,7 +379,7 @@ namespace OilGas.Data.RRC.Texas
             set;
         }
 
-        public string FONTNAME
+        public string? FONTNAME
         {
             [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
             get;
@@ -401,7 +403,7 @@ namespace OilGas.Data.RRC.Texas
             set;
         }
 
-        public string JUST
+        public string? JUST
         {
             [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
             get;
@@ -409,7 +411,7 @@ namespace OilGas.Data.RRC.Texas
             set;
         }
 
-        public string NAME
+        public string? NAME
         {
             [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
             get;
@@ -433,10 +435,194 @@ namespace OilGas.Data.RRC.Texas
             set;
         }
     }
-
+    
+    [Serializable]
+    [DataContract]
+    [XmlRoot(nameof(WellB))]
+    [Table(nameof(WellB))]
     public sealed class WellB
     {
-        public double BOTTOM_ID
+        [IgnoreDataMember]
+        [XmlIgnore]
+        [JsonIgnore]
+        [Key]
+        public int Id
+        {
+            [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+            get;
+            [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+            set;
+        }
+        
+        [DataMember]
+        [XmlElement]
+        [JsonProperty(nameof(BOTTOM_ID), NamingStrategyType = typeof(DefaultNamingStrategy))]
+        public long? BOTTOM_ID
+        {
+            [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+            get;
+            [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+            set;
+        }
+        
+        [DataMember]
+        [XmlElement]
+        [JsonProperty(nameof(SURFACE_ID), NamingStrategyType = typeof(DefaultNamingStrategy))]
+        public long? SURFACE_ID
+        {
+            [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+            get;
+            [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+            set;
+        }
+        
+        [DataMember]
+        [XmlElement]
+        [JsonProperty(nameof(SYMNUM), NamingStrategyType = typeof(DefaultNamingStrategy))]
+        public long? SYMNUM
+        {
+            [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+            get;
+            [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+            set;
+        }
+        
+        [DataMember]
+        [XmlElement]
+        [JsonProperty(nameof(APINUM), NamingStrategyType = typeof(DefaultNamingStrategy))]
+        public string? APINUM
+        {
+            [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+            get;
+            [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+            set;
+        }
+        
+        [DataMember]
+        [XmlElement]
+        [JsonProperty(nameof(RELIAB), NamingStrategyType = typeof(DefaultNamingStrategy))]
+        public string? RELIAB
+        {
+            [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+            get;
+            [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+            set;
+        }
+        
+        [DataMember]
+        [XmlElement]
+        [JsonProperty(nameof(API10), NamingStrategyType = typeof(DefaultNamingStrategy))]
+        public string? API10
+        {
+            [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+            get;
+            [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+            set;
+        }
+        
+        [DataMember]
+        [XmlElement]
+        [JsonProperty(nameof(API), NamingStrategyType = typeof(DefaultNamingStrategy))]
+        public string? API
+        {
+            [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+            get;
+            [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+            set;
+        }
+        
+        [DataMember]
+        [XmlElement]
+        [JsonProperty(nameof(LONG27), NamingStrategyType = typeof(DefaultNamingStrategy))]
+        public double? LONG27
+        {
+            [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+            get;
+            [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+            set;
+        }
+        
+        [DataMember]
+        [XmlElement]
+        [JsonProperty(nameof(LAT27), NamingStrategyType = typeof(DefaultNamingStrategy))]
+        public double? LAT27
+        {
+            [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+            get;
+            [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+            set;
+        }
+        
+        [DataMember]
+        [XmlElement]
+        [JsonProperty(nameof(LONG83), NamingStrategyType = typeof(DefaultNamingStrategy))]
+        public double? LONG83
+        {
+            [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+            get;
+            [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+            set;
+        }
+        
+        [DataMember]
+        [XmlElement]
+        [JsonProperty(nameof(LAT83), NamingStrategyType = typeof(DefaultNamingStrategy))]
+        public double? LAT83
+        {
+            [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+            get;
+            [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+            set;
+        }
+        
+        [DataMember]
+        [XmlElement]
+        [JsonProperty(nameof(OUT_FIPS), NamingStrategyType = typeof(DefaultNamingStrategy))]
+        public string? OUT_FIPS
+        {
+            [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+            get;
+            [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+            set;
+        }
+        
+        [DataMember]
+        [XmlElement]
+        [JsonProperty(nameof(CWELLNUM), NamingStrategyType = typeof(DefaultNamingStrategy))]
+        public string? CWELLNUM
+        {
+            [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+            get;
+            [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+            set;
+        }
+        
+        [DataMember]
+        [XmlElement]
+        [JsonProperty(nameof(RADIOACT), NamingStrategyType = typeof(DefaultNamingStrategy))]
+        public string? RADIOACT
+        {
+            [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+            get;
+            [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+            set;
+        }
+        
+        [DataMember]
+        [XmlElement]
+        [JsonProperty(nameof(WELLID), NamingStrategyType = typeof(DefaultNamingStrategy))]
+        public string? WELLID
+        {
+            [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+            get;
+            [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+            set;
+        }
+        
+        [DataMember]
+        [XmlElement]
+        [JsonProperty(nameof(STCODE), NamingStrategyType = typeof(DefaultNamingStrategy))]
+        public string? STCODE
         {
             [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
             get;
@@ -444,130 +630,44 @@ namespace OilGas.Data.RRC.Texas
             set;
         }
 
-        public double SURFACE_ID
+        public WellB()
         {
-            [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
-            get;
-            [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
-            set;
         }
 
-        public long SYMNUM
+        public WellB(string[] values)
         {
-            [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
-            get;
-            [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
-            set;
-        }
+            int index = 0;
 
-        public string APINUM
-        {
-            [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
-            get;
-            [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
-            set;
-        }
-
-        public string RELIAB
-        {
-            [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
-            get;
-            [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
-            set;
-        }
-
-        public string API10
-        {
-            [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
-            get;
-            [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
-            set;
-        }
-
-        public ApiNumber API
-        {
-            [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
-            get;
-            [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
-            set;
-        }
-
-        public double LONG27
-        {
-            [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
-            get;
-            [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
-            set;
-        }
-
-        public double LAT27
-        {
-            [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
-            get;
-            [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
-            set;
-        }
-
-        public double LONG83
-        {
-            [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
-            get;
-            [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
-            set;
-        }
-
-        public double LAT83
-        {
-            [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
-            get;
-            [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
-            set;
-        }
-
-        public string OUT_FIPS
-        {
-            [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
-            get;
-            [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
-            set;
-        }
-
-        public string CWELLNUM
-        {
-            [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
-            get;
-            [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
-            set;
-        }
-
-        public string RADIOACT
-        {
-            [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
-            get;
-            [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
-            set;
-        }
-
-        public string WELLID
-        {
-            [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
-            get;
-            [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
-            set;
-        }
-
-        public string STCODE
-        {
-            [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
-            get;
-            [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
-            set;
+            BOTTOM_ID = long.Parse(values[index++].TrimEnd());
+            SURFACE_ID = long.Parse(values[index++].TrimEnd());
+            SYMNUM = long.Parse(values[index++].TrimEnd());
+            APINUM = values[index++].TrimEnd();
+            RELIAB = values[index++].TrimEnd();
+            API10 = values[index++].TrimEnd();
+            API = "42" + values[index++].TrimEnd();
+            LONG27 = double.Parse(values[index++].TrimEnd());
+            LAT27 = double.Parse(values[index++].TrimEnd());
+            LONG83 = double.Parse(values[index++].TrimEnd());
+            LAT83 = double.Parse(values[index++].TrimEnd());
+            OUT_FIPS = values[index++].TrimEnd();
+            CWELLNUM = values[index++].TrimEnd();
+            RADIOACT = values[index++].TrimEnd();
+            WELLID = values[index++].TrimEnd();
+            STCODE = values[index].TrimEnd();
         }
     }
-
+    
+    [Serializable]
+    [DataContract]
+    [XmlRoot(nameof(WellS))]
+    [Table(nameof(WellS))]
     public sealed class WellS
     {
-        public double SURFACE_ID
+        [IgnoreDataMember]
+        [XmlIgnore]
+        [JsonIgnore]
+        [Key]
+        public int Id
         {
             [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
             get;
@@ -575,6 +675,20 @@ namespace OilGas.Data.RRC.Texas
             set;
         }
 
+        [DataMember]
+        [XmlElement]
+        [JsonProperty(nameof(SURFACE_ID), NamingStrategyType = typeof(DefaultNamingStrategy))]
+        public long SURFACE_ID
+        {
+            [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+            get;
+            [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+            set;
+        }
+        
+        [DataMember]
+        [XmlElement]
+        [JsonProperty(nameof(SYMNUM), NamingStrategyType = typeof(DefaultNamingStrategy))]
         public long SYMNUM
         {
             [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
@@ -582,23 +696,32 @@ namespace OilGas.Data.RRC.Texas
             [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
             set;
         }
-
-        public ApiNumber API
+        
+        [DataMember]
+        [XmlElement]
+        [JsonProperty(nameof(API), NamingStrategyType = typeof(DefaultNamingStrategy))]
+        public string? API
         {
             [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
             get;
             [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
             set;
         }
-
-        public string RELIAB
+        
+        [DataMember]
+        [XmlElement]
+        [JsonProperty(nameof(RELIAB), NamingStrategyType = typeof(DefaultNamingStrategy))]
+        public string? RELIAB
         {
             [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
             get;
             [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
             set;
         }
-
+        
+        [DataMember]
+        [XmlElement]
+        [JsonProperty(nameof(LONG27), NamingStrategyType = typeof(DefaultNamingStrategy))]
         public double LONG27
         {
             [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
@@ -606,7 +729,10 @@ namespace OilGas.Data.RRC.Texas
             [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
             set;
         }
-
+        
+        [DataMember]
+        [XmlElement]
+        [JsonProperty(nameof(LAT27), NamingStrategyType = typeof(DefaultNamingStrategy))]
         public double LAT27
         {
             [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
@@ -614,7 +740,10 @@ namespace OilGas.Data.RRC.Texas
             [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
             set;
         }
-
+        
+        [DataMember]
+        [XmlElement]
+        [JsonProperty(nameof(LONG83), NamingStrategyType = typeof(DefaultNamingStrategy))]
         public double LONG83
         {
             [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
@@ -622,7 +751,10 @@ namespace OilGas.Data.RRC.Texas
             [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
             set;
         }
-
+        
+        [DataMember]
+        [XmlElement]
+        [JsonProperty(nameof(LAT83), NamingStrategyType = typeof(DefaultNamingStrategy))]
         public double LAT83
         {
             [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
@@ -630,34 +762,41 @@ namespace OilGas.Data.RRC.Texas
             [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
             set;
         }
-
-        public string WELLID
+        
+        [DataMember]
+        [XmlElement]
+        [JsonProperty(nameof(WELLID), NamingStrategyType = typeof(DefaultNamingStrategy))]
+        public string? WELLID
         {
             [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
             get;
             [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
             set;
+        }
+
+        public WellS()
+        {
         }
 
         public WellS(string[] values)
         {
             int index = 0;
 
-            SURFACE_ID = double.Parse(values[index++]);
-            SYMNUM     = long.Parse(values[index++]);
-            API        = "42" + values[index++];
-            RELIAB     = values[index++];
-            LONG27     = double.Parse(values[index++]);
-            LAT27      = double.Parse(values[index++]);
-            LONG83     = double.Parse(values[index++]);
-            LAT83      = double.Parse(values[index++]);
-            WELLID     = values[index];
+            SURFACE_ID = long.Parse(values[index++].TrimEnd());
+            SYMNUM = long.Parse(values[index++].TrimEnd());
+            API = "42" + values[index++].TrimEnd();
+            RELIAB = values[index++].TrimEnd();
+            LONG27 = double.Parse(values[index++].TrimEnd());
+            LAT27 = double.Parse(values[index++].TrimEnd());
+            LONG83 = double.Parse(values[index++].TrimEnd());
+            LAT83 = double.Parse(values[index++].TrimEnd());
+            WELLID = values[index].TrimEnd();
         }
     }
 
     public sealed class WellL
     {
-        public double BOTTOM_ID
+        public long BOTTOM_ID
         {
             [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
             get;
@@ -665,7 +804,7 @@ namespace OilGas.Data.RRC.Texas
             set;
         }
 
-        public double SURFACE_ID
+        public long SURFACE_ID
         {
             [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
             get;
@@ -673,7 +812,7 @@ namespace OilGas.Data.RRC.Texas
             set;
         }
 
-        public string API10
+        public string? API10
         {
             [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
             get;
@@ -689,12 +828,23 @@ namespace OilGas.Data.RRC.Texas
             set;
         }
 
-        public string STCODE
+        public string? STCODE
         {
             [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
             get;
             [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
             set;
+        }
+
+        public WellL(string[] values)
+        {
+            int index = 0;
+
+            BOTTOM_ID  = long.Parse(values[index++].TrimEnd());
+            SURFACE_ID = long.Parse(values[index++].TrimEnd());
+            API10      = values[index++].TrimEnd();
+            API        = "42" + values[index++].TrimEnd();
+            STCODE     = values[index].TrimEnd();
         }
     }
 }

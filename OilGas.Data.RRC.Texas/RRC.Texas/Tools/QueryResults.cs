@@ -1,6 +1,7 @@
 ﻿using System.Runtime.CompilerServices;
 
 using AngleSharp.Dom;
+using AngleSharp.Html.Dom;
 
 using Engineering.DataSource;
 
@@ -104,6 +105,24 @@ namespace OilGas.Data.RRC.Texas
         public override string ToString()
         {
             return Columns.ToString();
+        }
+    }
+
+    public sealed class LeaseQueryData
+    {
+        public ApiNumber Api { get; set; }
+
+        public string DistrictNo { get; set; }
+
+        public string LeaseNo { get; set; }
+
+        public LeaseQueryData(ApiNumber api,
+                              string districtNo,
+                              string leaseNo)
+        {
+            Api = api;
+            DistrictNo = districtNo;
+            LeaseNo = leaseNo;
         }
     }
 

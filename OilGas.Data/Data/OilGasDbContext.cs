@@ -7,15 +7,25 @@ using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 
 using Engineering.DataSource;
+using Engineering.DataSource.CoordinateSystems;
 using Engineering.DataSource.OilGas;
 using Engineering.DataSource.Tools;
 
 using Kokkos;
 
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.ChangeTracking;
+using Microsoft.EntityFrameworkCore.Diagnostics;
+using Microsoft.EntityFrameworkCore.Diagnostics.Internal;
+using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Utilities;
 using Microsoft.Extensions.Caching.Memory;
+using Microsoft.Extensions.Logging;
 
 using Npgsql;
+
+using NpgsqlTypes;
 
 namespace OilGas.Data
 {
@@ -43,12 +53,17 @@ namespace OilGas.Data
         }
     }
 
+    /// <summary>
+    /// New Mexico https://wwwapps.emnrd.state.nm.us/ocd/ocdpermitting/Data/Wells.aspx
+    /// </summary>
     public sealed class OilGasDbContext : DbContext
     {
         public const string DefaultDbName = "R:\\OilGas.db";
         public const string InMemoryName  = ":memory:";
 
         private static readonly IMemoryCache _cache = new MemoryCache(new MemoryCacheOptions());
+
+        public DbSet<ShapeFileLocation> ShapeFileLocations { get; set; }
 
         public DbSet<Company> Companys { get; set; }
 
@@ -58,9 +73,17 @@ namespace OilGas.Data
 
         public DbSet<Field> Fields { get; set; }
 
+        public DbSet<Lease> Leases { get; set; }
+
         public DbSet<Location> Locations { get; set; }
 
+        public DbSet<WellboreDetails> WellboreDetails { get; set; }
+
         public DbSet<CompletionDetails> CompletionDetails { get; set; }
+
+        public DbSet<ReservoirData> ReservoirData { get; set; }
+
+        public DbSet<PerforationInterval> PerforationIntervals { get; set; }
 
         public DbSet<OilProperties> OilProperties { get; set; }
 
@@ -87,7 +110,12 @@ namespace OilGas.Data
         }
 
         public OilGasDbContext(NpgsqlConnection connection)
-            : base(new DbContextOptionsBuilder<OilGasDbContext>().UseNpgsql(connection)/*.UseMemoryCache(_cache)*/.Options)
+            : base(new DbContextOptionsBuilder<OilGasDbContext>().UseLazyLoadingProxies()
+                                                                 .UseMemoryCache(_cache)
+                                                                 .UseNpgsql(connection)
+                                                                 .EnableSensitiveDataLogging()
+                                                                  /*.LogTo(Console.WriteLine, LogLevel.Information)*/
+                                                                 .Options)
         {
             Connection = connection;
 
@@ -106,9 +134,22 @@ namespace OilGas.Data
 
         private static NpgsqlConnection CreateAndOpen()
         {
-            NpgsqlConnection connection = new NpgsqlConnection($"Host=trmdataserver;Port=1433;Username={Encryption.Username};Password={Encryption.Password};Database=OilGas");
+            //NpgsqlConnection connection = new NpgsqlConnection($"Host=timothyrmcnealy.com;Port=5432;Username={Encryption.Username};Password={Encryption.Password};Database=OilGas");
 
-            connection.Open();
+            NpgsqlConnection connection;
+
+            try
+            {
+                connection = new NpgsqlConnection($"Host=timothyrmcnealy.com;Port=5432;Username={Encryption.Username};Password={Encryption.Password};Database=OilGas");
+
+                connection.Open();
+            }
+            catch(Exception)
+            {
+                connection = new NpgsqlConnection("Host=timothyrmcnealy.com;Port=5432;Username=db_user;Password=dbAccess;Database=OilGas");
+
+                connection.Open();
+            }
 
             //NpgsqlCommand command = connection.CreateCommand();
 
@@ -131,158 +172,76 @@ namespace OilGas.Data
             return connection;
         }
 
+        public void CloseConnection()
+        {
+            Connection.Close();
+        }
+
+        //protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+        //{
+        //}
+
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            modelBuilder.Entity<CompletionDetails>()
-                        .HasIndex(dp => new
-                         {
-                             dp.Id, dp.Api
-                         });
+            modelBuilder.Entity<ShapeFileLocation>().HasIndex(dp => new {dp.Id, dp.Api}).IsCreatedConcurrently().IsUnique();
 
-            modelBuilder.Entity<CumulativeProduction>()
-                        .HasIndex(dp => new
-                         {
-                             dp.Id,
-                             dp.Api,
-                             dp.Date
-                         });
+            modelBuilder.Entity<WellboreDetails>().HasIndex(dp => new {dp.Id}).IsCreatedConcurrently().IsUnique();
 
-            modelBuilder.Entity<DailyProduction>()
-                        .HasIndex(dp => new
-                         {
-                             dp.Id,
-                             dp.Api,
-                             dp.Date
-                         });
+            modelBuilder.Entity<CompletionDetails>().HasIndex(dp => new {dp.Id}).IsCreatedConcurrently().IsUnique();
 
-            modelBuilder.Entity<DirectionalSurvey>()
-                        .HasIndex(dp => new
-                         {
-                             dp.Id, dp.Api
-                         });
+            modelBuilder.Entity<ReservoirData>().HasIndex(dp => new {dp.Id}).IsCreatedConcurrently().IsUnique();
 
-            modelBuilder.Entity<DrillingPermit>()
-                        .HasIndex(dp => new
-                         {
-                             dp.Id, dp.Api
-                         });
+            modelBuilder.Entity<PerforationInterval>().HasIndex(dp => new {dp.Id}).IsCreatedConcurrently();
 
-            modelBuilder.Entity<Field>()
-                        .HasIndex(dp => new
-                         {
-                             dp.Number
-                         });
+            modelBuilder.Entity<CumulativeProduction>().HasIndex(dp => new {dp.Id, dp.Date}).IsCreatedConcurrently().IsUnique();
 
-            modelBuilder.Entity<Location>()
-                        .HasIndex(dp => new
-                         {
-                             dp.Id, dp.Api
-                         });
+            modelBuilder.Entity<DailyProduction>().HasIndex(dp => new {dp.Id, dp.Date}).IsCreatedConcurrently().IsUnique();
 
-            modelBuilder.Entity<GasProperties>()
-                        .HasIndex(dp => new
-                         {
-                             dp.Id, dp.Api
-                         });
+            modelBuilder.Entity<DirectionalSurvey>().HasIndex(dp => new {dp.Id});
 
-            modelBuilder.Entity<MonthlyProduction>()
-                        .HasIndex(dp => new
-                         {
-                             dp.Id,
-                             dp.Api,
-                             dp.Date
-                         });
+            modelBuilder.Entity<DrillingPermit>().HasIndex(dp => new {dp.Id}).IsCreatedConcurrently().IsUnique();
 
-            modelBuilder.Entity<OilProperties>()
-                        .HasIndex(dp => new
-                         {
-                             dp.Id, dp.Api
-                         });
+            modelBuilder.Entity<Lease>().HasIndex(dp => new {dp.Number, dp.District}).IsCreatedConcurrently().IsUnique();
 
-            modelBuilder.Entity<Company>()
-                        .HasIndex(dp => new
-                         {
-                             dp.Number
-                         });
+            modelBuilder.Entity<Field>().HasIndex(dp => new {dp.Number, dp.District}).IsCreatedConcurrently().IsUnique();
 
-            modelBuilder.Entity<ReservoirProperties>()
-                        .HasIndex(dp => new
-                         {
-                             dp.Id, dp.Api
-                         });
+            modelBuilder.Entity<Location>().HasIndex(dp => new {dp.Id}).IsCreatedConcurrently().IsUnique();
 
-            modelBuilder.Entity<WaterProperties>()
-                        .HasIndex(dp => new
-                         {
-                             dp.Id, dp.Api
-                         });
+            modelBuilder.Entity<GasProperties>().HasIndex(dp => new {dp.Id}).IsCreatedConcurrently().IsUnique();
 
-            modelBuilder.Entity<Well>()
-                        .HasIndex(dp => new
-                         {
-                             dp.Id, dp.Api
-                         });
+            modelBuilder.Entity<MonthlyProduction>().HasIndex(dp => new {dp.Id, dp.Date}).IsCreatedConcurrently().IsUnique();
 
-            modelBuilder.Entity<Company>(entity =>
-                                          {
-                                              entity.HasIndex(e => e.Number).IsUnique();
-                                          });
+            modelBuilder.Entity<OilProperties>().HasIndex(dp => new {dp.Id}).IsCreatedConcurrently().IsUnique();
 
-            modelBuilder.Entity<Field>(entity =>
-                                       {
-                                           entity.HasIndex(e => e.Number).IsUnique();
-                                       });
+            modelBuilder.Entity<Company>().HasIndex(dp => dp.Number).IsCreatedConcurrently().IsUnique();
 
-            modelBuilder.Entity<CompletionDetails>().Property(p => p.Api).HasConversion(v => v.ToString(), v => new ApiNumber(v));
-            modelBuilder.Entity<CumulativeProduction>().Property(p => p.Api).HasConversion(v => v.ToString(), v => new ApiNumber(v));
-            modelBuilder.Entity<DailyProduction>().Property(p => p.Api).HasConversion(v => v.ToString(), v => new ApiNumber(v));
-            modelBuilder.Entity<DirectionalSurvey>().Property(p => p.Api).HasConversion(v => v.ToString(), v => new ApiNumber(v));
+            modelBuilder.Entity<ReservoirProperties>().HasIndex(dp => new {dp.Id}).IsCreatedConcurrently().IsUnique();
+
+            modelBuilder.Entity<WaterProperties>().HasIndex(dp => new {dp.Id}).IsCreatedConcurrently().IsUnique();
+
+            modelBuilder.Entity<Well>().HasIndex(dp => dp.Api).IsCreatedConcurrently().IsUnique();
+
+
+            modelBuilder.Entity<ShapeFileLocation>().Property(p => p.Api).HasConversion(v => v.ToString(), v => new ApiNumber(v));
             modelBuilder.Entity<DrillingPermit>().Property(p => p.Api).HasConversion(v => v.ToString(), v => new ApiNumber(v));
-            modelBuilder.Entity<Location>().Property(p => p.Api).HasConversion(v => v.ToString(), v => new ApiNumber(v));
-            modelBuilder.Entity<GasProperties>().Property(p => p.Api).HasConversion(v => v.ToString(), v => new ApiNumber(v));
-            modelBuilder.Entity<MonthlyProduction>().Property(p => p.Api).HasConversion(v => v.ToString(), v => new ApiNumber(v));
-            modelBuilder.Entity<OilProperties>().Property(p => p.Api).HasConversion(v => v.ToString(), v => new ApiNumber(v));
-            modelBuilder.Entity<ReservoirProperties>().Property(p => p.Api).HasConversion(v => v.ToString(), v => new ApiNumber(v));
-            modelBuilder.Entity<WaterProperties>().Property(p => p.Api).HasConversion(v => v.ToString(), v => new ApiNumber(v));
             modelBuilder.Entity<Well>().Property(p => p.Api).HasConversion(v => v.ToString(), v => new ApiNumber(v));
 
-            modelBuilder.Entity<CumulativeProduction>().Property(p => p.Date).HasConversion(v => v.ToString(), v => new ProductionDate(v));
-            modelBuilder.Entity<DailyProduction>().Property(p => p.Date).HasConversion(v => v.ToString(), v => new ProductionDate(v));
-            modelBuilder.Entity<MonthlyProduction>().Property(p => p.Date).HasConversion(v => v.ToString(), v => new ProductionDate(v));
-
-            modelBuilder.Entity<CompletionDetails>().HasKey(p => p.Id);
-            modelBuilder.Entity<CumulativeProduction>().HasKey(p => p.Id);
-            modelBuilder.Entity<DailyProduction>().HasKey(p => p.Id);
-            modelBuilder.Entity<DirectionalSurvey>().HasKey(p => p.Id);
-            modelBuilder.Entity<DrillingPermit>().HasKey(p => p.Id);
-            modelBuilder.Entity<Location>().HasKey(p => p.Id);
-            modelBuilder.Entity<GasProperties>().HasKey(p => p.Id);
-            modelBuilder.Entity<MonthlyProduction>().HasKey(p => p.Id);
-            modelBuilder.Entity<OilProperties>().HasKey(p => p.Id);
-            modelBuilder.Entity<ReservoirProperties>().HasKey(p => p.Id);
-            modelBuilder.Entity<WaterProperties>().HasKey(p => p.Id);
-            modelBuilder.Entity<Well>().HasKey(p => p.Id);
-
-            modelBuilder.Entity<CumulativeProduction>().HasKey(p => p.Id);
-            modelBuilder.Entity<DailyProduction>().HasKey(p => p.Id);
-            modelBuilder.Entity<MonthlyProduction>().HasKey(p => p.Id);
-
+            modelBuilder.Entity<CumulativeProduction>().Property(p => p.Date).HasConversion(v => (DateTime)v, v => (ProductionDate)v);
+            modelBuilder.Entity<DailyProduction>().Property(p => p.Date).HasConversion(v => (DateTime)v, v => (ProductionDate)v);
+            modelBuilder.Entity<MonthlyProduction>().Property(p => p.Date).HasConversion(v => (DateTime)v, v => (ProductionDate)v);
 
             //modelBuilder.HasPostgresExtension("hstore");
             //HasPostgresExtension("uuid-ossp")
-
-
-
-
         }
 
         public override void Dispose()
         {
             base.Dispose();
 
-            if(Connection.State == ConnectionState.Open)
+            if(Connection.State != ConnectionState.Closed)
             {
                 Connection.Close();
+                Connection.Dispose();
             }
         }
 
@@ -328,7 +287,8 @@ namespace OilGas.Data
         {
             NpgsqlCommand command = Connection.CreateCommand();
 
-            command.CommandText = $"DROP TABLE \"Well\",\"WaterProperties\",\"ReservoirProperties\",\"Companys\",\"OilProperties\",\"MonthlyProduction\",\"Location\",\"GasProperties\",\"Field\",\"DrillingPermit\",\"DirectionalSurvey\",\"DailyProduction\",\"CumulativeProduction\",\"CompletionDetails\" CASCADE;";
+            command.CommandText =
+                "DROP TABLE \"Well\",\"WaterProperties\",\"ReservoirProperties\",\"Companys\",\"OilProperties\",\"MonthlyProduction\",\"Location\",\"GasProperties\",\"Field\",\"DrillingPermit\",\"DirectionalSurvey\",\"DailyProduction\",\"CumulativeProduction\",\"CompletionDetails\" CASCADE;";
 
             command.ExecuteNonQuery();
 
@@ -347,6 +307,31 @@ namespace OilGas.Data
             command.CommandText = $"BACKUP DATABASE databasename TO DISK = \"{DefaultDbName}\";";
 
             command.ExecuteNonQuery();
+        }
+
+        public void LoadRelationalProperties(Well well)
+        {
+            //Entry(well).Reference(nameof(Well.Company)).Load();
+            //Entry(well).Reference(nameof(Well.Field)).Load();
+            //Entry(well).Reference(nameof(Well.Lease)).Load();
+            //Entry(well).Reference(nameof(Well.Location)).Load();
+            //Entry(well).Reference(nameof(Well.WellboreDetails)).Load();
+
+            //Entry(well).Collection(nameof(Well.CompletionDetails)).Load();
+
+            //Entry(well).Collection(nameof(Well.DirectionalSurvey)).Load();
+            //Entry(well).Collection(nameof(Well.DailyProduction)).Load();
+            //Entry(well).Collection(nameof(Well.MonthlyProduction)).Load();
+            //Entry(well).Collection(nameof(Well.CumulativeProduction)).Load();
+            //Entry(well).Collection(nameof(Well.ReservoirData)).Load();
+
+            //foreach(ReservoirData reservoirData in well.ReservoirData)
+            //{
+            //    Entry(reservoirData).Reference(nameof(Engineering.DataSource.OilGas.ReservoirData.GasProperties)).Load();
+            //    Entry(reservoirData).Reference(nameof(Engineering.DataSource.OilGas.ReservoirData.OilProperties)).Load();
+            //    Entry(reservoirData).Reference(nameof(Engineering.DataSource.OilGas.ReservoirData.WaterProperties)).Load();
+            //    Entry(reservoirData).Reference(nameof(Engineering.DataSource.OilGas.ReservoirData.ReservoirProperties)).Load();
+            //}
         }
 
         public void LoadDb(string filePath)
@@ -465,7 +450,7 @@ namespace OilGas.Data
                                  string    stackedLateralParentWellDp;
                                  string    currentQueue;
 
-                                 int      operatorNumber;
+                                 int     operatorNumber;
                                  Company company;
 
                                  //for(int i = 0; i < rows.Count; i++)
@@ -478,7 +463,7 @@ namespace OilGas.Data
                                      api                        = new ApiNumber("42" + rows[i][index++]);
                                      operatorNameNumber         = rows[i][index++];
                                      leaseName                  = rows[i][index++];
-                                     wellNumber = rows[i][index++];
+                                     wellNumber                 = rows[i][index++];
                                      dist                       = rows[i][index++];
                                      county                     = rows[i][index++];
                                      wellboreProfile            = rows[i][index++];
@@ -490,9 +475,9 @@ namespace OilGas.Data
 
                                      operatorNumber = OperatorNumber(operatorNameNumber);
 
-                                     company      = companies.FirstOrDefault(o => o.Number == operatorNumber);
+                                     company = companies.FirstOrDefault(o => o.Number == operatorNumber);
 
-                                     entries[i] = new Well(api, leaseName, wellNumber, new Location(api, county, "Texas"), company);
+                                     entries[i] = new Well(api, leaseName, wellNumber, new Location(county, "Texas"), company);
                                  }
                              });
 
@@ -534,41 +519,88 @@ namespace OilGas.Data
             //}
         }
 
+        public void AddRange(List<ShapeFileLocation> locations)
+        {
+            ShapeFileLocations.AddRange(locations);
+        }
+
+        public void ConvertLocations()
+        {
+            List<ShapeFileLocation> shapeFileLocations = ShapeFileLocations.ToList();
+
+            double surfaceEasting;
+            double surfaceNorthing;
+            double bottomEasting;
+            double bottomNorthing;
+
+            ShapeFileLocation shapeFileLocation;
+
+            for(int i = 0; i < shapeFileLocations.Count(); ++i)
+            {
+                shapeFileLocation = shapeFileLocations[i];
+
+                if(!shapeFileLocation.SurfaceLatitude83.HasValue  ||
+                   !shapeFileLocation.SurfaceLongitude83.HasValue ||
+                   !shapeFileLocation.BottomLatitude83.HasValue   ||
+                   !shapeFileLocation.BottomLongitude83.HasValue)
+                {
+                    continue;
+                }
+
+                (surfaceEasting, surfaceNorthing) = CoordinateConverter.toWebMercator(shapeFileLocation.SurfaceLongitude83.Value, shapeFileLocation.SurfaceLatitude83.Value);
+                (bottomEasting, bottomNorthing)   = CoordinateConverter.toWebMercator(shapeFileLocation.BottomLongitude83.Value,  shapeFileLocation.BottomLatitude83.Value);
+
+                shapeFileLocation.SurfaceEasting83  = surfaceEasting;
+                shapeFileLocation.SurfaceNorthing83 = surfaceNorthing;
+                shapeFileLocation.BottomEasting83   = bottomEasting;
+                shapeFileLocation.BottomNorthing83  = bottomNorthing;
+
+                ShapeFileLocations.Update(shapeFileLocation);
+            }
+
+            SaveChanges();
+        }
+
         public void Add(Well well)
         {
             Wells.Add(well);
-
-            SaveChanges();
         }
 
         public async Task AddAsync(Well well)
         {
             await Wells.AddAsync(well);
-
-            await SaveChangesAsync();
         }
 
         public void AddRange(List<Well> wells)
         {
             Wells.AddRange(wells);
-
-            SaveChanges();
         }
 
         public async Task AddRangeAsync(List<Well> wells)
         {
             await Wells.AddRangeAsync(wells);
-
-            await SaveChangesAsync();
         }
 
         public void Update(Well well)
         {
             Wells.Update(well);
-
-            SaveChanges();
         }
 
+        public void Remove(Well well)
+        {
+            Wells.Remove(well);
+        }
+
+        public async Task RemoveAsync(Well well)
+        {
+            await Task.FromResult(Wells.Remove(well));
+        }
+
+        public void RemoveRange(List<Well> wells)
+        {
+            Wells.RemoveRange(wells);
+        }
+        
         public void Commit()
         {
             SaveChanges();
@@ -579,83 +611,90 @@ namespace OilGas.Data
             await SaveChangesAsync();
         }
 
-        public List<Well> GetAllWellsIncluding()
+        private IQueryable<Well> GetAllWellsIncluding()
         {
-            return Wells.Include(wp => wp.Location)
-                        .Include(wp => wp.Company)
-                        .Include(wp => wp.Field)
-                        .Include(wp => wp.CompletionDetails)
-                        .Include(wp => wp.DirectionalSurvey)
-                        .Include(wp => wp.GasProperties)
-                        .Include(wp => wp.OilProperties)
-                        .Include(wp => wp.WaterProperties)
-                        .Include(wp => wp.ReservoirProperties)
-                        .Include(wp => wp.DailyProduction)
-                        .Include(wp => wp.MonthlyProduction)
-                        .Include(wp => wp.CumulativeProduction)
-                        .ToList();
+            return Wells.AsQueryable();
+        }
+
+        private async Task<IQueryable<Well>> GetAllWellsIncludingAsync()
+        {
+            return await Task.FromResult(Wells.AsQueryable());
+        }
+        
+        public List<Well> GetAllWells()
+        {
+            List<Well> wells = GetAllWellsIncluding().ToList();
+
+            return wells;
+        }
+
+        public async Task<List<Well>> GetAllWellsAsync()
+        {
+            List<Well> wells = (await GetAllWellsIncludingAsync()).ToList();
+            
+            return wells;
         }
 
         public List<Well> GetWellsByOperator(string name)
         {
-            List<Well> wells = Companys.Include(wp => wp.Wells).FirstOrDefault(w => w.Name == name)?.Wells;
+            List<Well> wells = GetAllWellsIncluding().Where(w => w.Company.Name.Contains(name)).ToList();
 
             return wells;
         }
 
         public async Task<List<Well>> GetWellsByOperatorAsync(string name)
         {
-            List<Well> wells = await Companys.Include(wp => wp.Wells).FirstOrDefaultAsync(w => w.Name == name).Select(o => o.Wells);
+            List<Well> wells = (await GetAllWellsIncludingAsync()).Where(w => w.Company.Name.Contains(name)).ToList();
 
+            return wells;
+        }
+
+        public List<Well> GetWellsByCounty(string county)
+        {
+            List<Well> wells = GetAllWellsIncluding().Where(w => w.Location.County == county.ToUpper()).ToList();
+
+            return wells;
+        }
+
+        public async Task<List<Well>> GetWellsByCountyAsync(string county)
+        {
+            List<Well> wells = (await GetAllWellsIncludingAsync()).Where(w => w.Location.County == county.ToUpper()).ToList();
+            
             return wells;
         }
 
         public Well GetWellByApi(ApiNumber api)
         {
-            Well well = Wells.Include(wp => wp.Location)
-                             .Include(wp => wp.Company)
-                             .Include(wp => wp.Field)
-                             .Include(wp => wp.CompletionDetails)
-                             .Include(wp => wp.DirectionalSurvey)
-                             .Include(wp => wp.GasProperties)
-                             .Include(wp => wp.OilProperties)
-                             .Include(wp => wp.WaterProperties)
-                             .Include(wp => wp.ReservoirProperties)
-                             .Include(wp => wp.DailyProduction)
-                             .Include(wp => wp.MonthlyProduction)
-                             .Include(wp => wp.CumulativeProduction)
-                             .FirstOrDefault(w => w.Api == api);
+            Well well = Wells.SingleOrDefault(w => w.Api == api);
 
             return well;
         }
 
         public async Task<Well> GetWellByApiAsync(ApiNumber api)
         {
-            Well well = await Wells.Include(wp => wp.Location)
-                                   .Include(wp => wp.Company)
-                                   .Include(wp => wp.Field)
-                                   .Include(wp => wp.CompletionDetails)
-                                   .Include(wp => wp.DirectionalSurvey)
-                                   .Include(wp => wp.GasProperties)
-                                   .Include(wp => wp.OilProperties)
-                                   .Include(wp => wp.WaterProperties)
-                                   .Include(wp => wp.ReservoirProperties)
-                                   .Include(wp => wp.DailyProduction)
-                                   .Include(wp => wp.MonthlyProduction)
-                                   .Include(wp => wp.CumulativeProduction)
-                                   .FirstOrDefaultAsync(w => w.Api == api);
+            Well well = await Wells.SingleOrDefaultAsync(w => w.Api == api);
 
             return well;
         }
-
-        public Field GetField(int number)
+        
+        public Lease GetLease(long number, int district)
         {
-            return Fields.FirstOrDefault(f => f.Number == number);
+            return Leases.FirstOrDefault(f => f.Number == number && f.District == district);
         }
 
-        public async Task<Field> GetFieldAsync(int number)
+        public async Task<Lease> GetLeaseAsync(long number, int district)
         {
-            return await Fields.FirstOrDefaultAsync(f => f.Number == number);
+            return await Leases.FirstOrDefaultAsync(f => f.Number == number && f.District == district);
+        }
+        
+        public Field GetField(long number, int district)
+        {
+            return Fields.FirstOrDefault(f => f.Number == number && f.District == district);
+        }
+
+        public async Task<Field> GetFieldAsync(long number, int district)
+        {
+            return await Fields.FirstOrDefaultAsync(f => f.Number == number && f.District == district);
         }
 
         public Field GetField(string name)
@@ -668,12 +707,12 @@ namespace OilGas.Data
             return await Fields.FirstOrDefaultAsync(f => f.Name.Contains(name));
         }
 
-        public Company GetOperator(int number)
+        public Company GetOperator(long number)
         {
             return Companys.FirstOrDefault(o => o.Number == number);
         }
 
-        public async Task<Company> GetOperatorAsync(int number)
+        public async Task<Company> GetOperatorAsync(long number)
         {
             return await Companys.FirstOrDefaultAsync(o => o.Number == number);
         }
@@ -689,321 +728,12 @@ namespace OilGas.Data
         }
 
         #region AddorUpdate
-        #region AddorUpdate Operator
-
-        public Company AddorUpdate(Company entity)
-        {
-            Company existing = Companys.FirstOrDefault(e => e.Number == entity.Number);
-
-            if (existing != null)
-            {
-                return Companys.Update(entity).Entity;
-            }
-
-            return Companys.Add(entity).Entity;
-        }
-
-        public async Task<Company> AddorUpdateAsync(Company entity)
-        {
-            Company existing = await Companys.FirstOrDefaultAsync(e => e.Number == entity.Number);
-
-            if (existing != null)
-            {
-                return Companys.Update(entity).Entity;
-            }
-
-            return (await Companys.AddAsync(entity)).Entity;
-        }
-
-        #endregion
-
-        #region AddorUpdate Field
-
-        public Field AddorUpdate(Field entity)
-        {
-            Field existing = Fields.FirstOrDefault(e => e.Number == entity.Number);
-
-            if (existing != null)
-            {
-                return Fields.Update(entity).Entity;
-            }
-
-            return Fields.Add(entity).Entity;
-        }
-
-        public async Task<Field> AddorUpdateAsync(Field entity)
-        {
-            Field existing = await Fields.FirstOrDefaultAsync(e => e.Number == entity.Number);
-
-            if (existing != null)
-            {
-                return Fields.Update(entity).Entity;
-            }
-
-            return (await Fields.AddAsync(entity)).Entity;
-        }
-
-        #endregion
-
-        #region AddorUpdate Location
-
-        public Location AddorUpdate(Location entity)
-        {
-            Location existing = Locations.FirstOrDefault(e => e.Api == entity.Api);
-
-            if (existing != null)
-            {
-                return Locations.Update(entity).Entity;
-            }
-
-            return Locations.Add(entity).Entity;
-        }
-
-        public async Task<Location> AddorUpdateAsync(Location entity)
-        {
-            Location existing = await Locations.FirstOrDefaultAsync(e => e.Api == entity.Api);
-
-            if (existing != null)
-            {
-                return Locations.Update(entity).Entity;
-            }
-
-            return (await Locations.AddAsync(entity)).Entity;
-        }
-
-        #endregion
-
-        #region AddorUpdate CompletionDetails
-
-        public CompletionDetails AddorUpdate(CompletionDetails entity)
-        {
-            CompletionDetails existing = CompletionDetails.FirstOrDefault(e => e.Api == entity.Api);
-
-            if (existing != null)
-            {
-                return CompletionDetails.Update(entity).Entity;
-            }
-
-            return CompletionDetails.Add(entity).Entity;
-        }
-
-        public async Task<CompletionDetails> AddorUpdateAsync(CompletionDetails entity)
-        {
-            CompletionDetails existing = await CompletionDetails.FirstOrDefaultAsync(e => e.Api == entity.Api);
-
-            if (existing != null)
-            {
-                return CompletionDetails.Update(entity).Entity;
-            }
-
-            return (await CompletionDetails.AddAsync(entity)).Entity;
-        }
-
-        #endregion
-
-        #region AddorUpdate OilProperties
-
-        public OilProperties AddorUpdate(OilProperties entity)
-        {
-            OilProperties existing = OilProperties.FirstOrDefault(e => e.Api == entity.Api);
-
-            if (existing != null)
-            {
-                return OilProperties.Update(entity).Entity;
-            }
-
-            return OilProperties.Add(entity).Entity;
-        }
-
-        public async Task<OilProperties> AddorUpdateAsync(OilProperties entity)
-        {
-            OilProperties existing = await OilProperties.FirstOrDefaultAsync(e => e.Api == entity.Api);
-
-            if (existing != null)
-            {
-                return OilProperties.Update(entity).Entity;
-            }
-
-            return (await OilProperties.AddAsync(entity)).Entity;
-        }
-
-        #endregion
-
-        #region AddorUpdate GasProperties
-
-        public GasProperties AddorUpdate(GasProperties entity)
-        {
-            GasProperties existing = GasProperties.FirstOrDefault(e => e.Api == entity.Api);
-
-            if (existing != null)
-            {
-                return GasProperties.Update(entity).Entity;
-            }
-
-            return GasProperties.Add(entity).Entity;
-        }
-
-        public async Task<GasProperties> AddorUpdateAsync(GasProperties entity)
-        {
-            GasProperties existing = await GasProperties.FirstOrDefaultAsync(e => e.Api == entity.Api);
-
-            if (existing != null)
-            {
-                return GasProperties.Update(entity).Entity;
-            }
-
-            return (await GasProperties.AddAsync(entity)).Entity;
-        }
-
-        #endregion
-
-        #region AddorUpdate WaterProperties
-
-        public WaterProperties AddorUpdate(WaterProperties entity)
-        {
-            WaterProperties existing = WaterProperties.FirstOrDefault(e => e.Api == entity.Api);
-
-            if (existing != null)
-            {
-                return WaterProperties.Update(entity).Entity;
-            }
-
-            return WaterProperties.Add(entity).Entity;
-        }
-
-        public async Task<WaterProperties> AddorUpdateAsync(WaterProperties entity)
-        {
-            WaterProperties existing = await WaterProperties.FirstOrDefaultAsync(e => e.Api == entity.Api);
-
-            if (existing != null)
-            {
-                return WaterProperties.Update(entity).Entity;
-            }
-
-            return (await WaterProperties.AddAsync(entity)).Entity;
-        }
-
-        #endregion
-
-        #region AddorUpdate ReservoirProperties
-
-        public ReservoirProperties AddorUpdate(ReservoirProperties entity)
-        {
-            ReservoirProperties existing = ReservoirProperties.FirstOrDefault(e => e.Api == entity.Api);
-
-            if (existing != null)
-            {
-                return ReservoirProperties.Update(entity).Entity;
-            }
-
-            return ReservoirProperties.Add(entity).Entity;
-        }
-
-        public async Task<ReservoirProperties> AddorUpdateAsync(ReservoirProperties entity)
-        {
-            ReservoirProperties existing = await ReservoirProperties.FirstOrDefaultAsync(e => e.Api == entity.Api);
-
-            if (existing != null)
-            {
-                return ReservoirProperties.Update(entity).Entity;
-            }
-
-            return (await ReservoirProperties.AddAsync(entity)).Entity;
-        }
-
-        #endregion
-
-        #region AddorUpdate DailyProduction
-
-        public DailyProduction AddorUpdate(DailyProduction entity)
-        {
-            DailyProduction existing = DailyProduction.FirstOrDefault(e => e.Api == entity.Api);
-
-            if (existing != null)
-            {
-                return DailyProduction.Update(entity).Entity;
-            }
-
-            return DailyProduction.Add(entity).Entity;
-        }
-
-        public async Task<DailyProduction> AddorUpdateAsync(DailyProduction entity)
-        {
-            DailyProduction existing = await DailyProduction.FirstOrDefaultAsync(e => e.Api == entity.Api);
-
-            if (existing != null)
-            {
-                return DailyProduction.Update(entity).Entity;
-            }
-
-            return (await DailyProduction.AddAsync(entity)).Entity;
-        }
-
-        #endregion
-
-        #region AddorUpdate MonthlyProduction
-
-        public MonthlyProduction AddorUpdate(MonthlyProduction entity)
-        {
-            MonthlyProduction existing = MonthlyProduction.FirstOrDefault(e => e.Api == entity.Api);
-
-            if (existing != null)
-            {
-                return MonthlyProduction.Update(entity).Entity;
-            }
-
-            return MonthlyProduction.Add(entity).Entity;
-        }
-
-        public async Task<MonthlyProduction> AddorUpdateAsync(MonthlyProduction entity)
-        {
-            MonthlyProduction existing = await MonthlyProduction.FirstOrDefaultAsync(e => e.Api == entity.Api);
-
-            if (existing != null)
-            {
-                return MonthlyProduction.Update(entity).Entity;
-            }
-
-            return (await MonthlyProduction.AddAsync(entity)).Entity;
-        }
-
-        #endregion
-
-        #region AddorUpdate CumulativeProduction
-
-        public CumulativeProduction AddorUpdate(CumulativeProduction entity)
-        {
-            CumulativeProduction existing = CumulativeProduction.FirstOrDefault(e => e.Api == entity.Api);
-
-            if (existing != null)
-            {
-                return CumulativeProduction.Update(entity).Entity;
-            }
-
-            return CumulativeProduction.Add(entity).Entity;
-        }
-
-        public async Task<CumulativeProduction> AddorUpdateAsync(CumulativeProduction entity)
-        {
-            CumulativeProduction existing = await CumulativeProduction.FirstOrDefaultAsync(e => e.Api == entity.Api);
-
-            if (existing != null)
-            {
-                return CumulativeProduction.Update(entity).Entity;
-            }
-
-            return (await CumulativeProduction.AddAsync(entity)).Entity;
-        }
-
-        #endregion
-
-        #region AddorUpdate Well
 
         public Well AddorUpdate(Well entity)
         {
             Well existing = Wells.FirstOrDefault(e => e.Api == entity.Api);
 
-            if (existing != null)
+            if(existing != null)
             {
                 return Wells.Update(entity).Entity;
             }
@@ -1015,7 +745,7 @@ namespace OilGas.Data
         {
             Well existing = await Wells.FirstOrDefaultAsync(e => e.Api == entity.Api);
 
-            if (existing != null)
+            if(existing != null)
             {
                 return Wells.Update(entity).Entity;
             }
@@ -1023,7 +753,6 @@ namespace OilGas.Data
             return (await Wells.AddAsync(entity)).Entity;
         }
 
-        #endregion 
         #endregion
     }
 }

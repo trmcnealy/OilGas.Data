@@ -39,7 +39,7 @@ namespace OilGas.Data.RRC.Texas
 
             List<WellboreQueryData> wellboreQueryData = new List<WellboreQueryData>(1);
 
-            if(dataGridTable == null)
+            if(dataGridTable is null)
             {
                 return wellboreQueryData;
             }

@@ -52,7 +52,7 @@ namespace OilGas.Data
             public const double G_C       = 32.174049;    // lb ft/s^2/lbf
             public const double LBMFTS_CP = 1488.1639;    // Convert lbm/(ft s) to cp
             public const double DCM_LBFFT = 6.8521766e-5; // convert dynes/cm to lbf/ft
-            public const double F_TO_R    = 460.0;        // add this to degF to convert to degR
+            public const double F_TO_R    = 459.67;        // add this to degF to convert to degR
 
             /// Standard condition values
             public const double TSC = 60.0 + F_TO_R; // degR
@@ -105,7 +105,7 @@ namespace OilGas.Data
                     const double C2 = 1.751e-5;
                     const double C3 = -1.811e-8;
 
-                    return 1.0 + C1 * Rs + (T - Constants.F_TO_R - 60) * (SGo_API / SGg_gs) * (C2 + C3 * Rs);
+                    return 1.0 + C1 * Rs + (T + Constants.F_TO_R - 60) * (SGo_API / SGg_gs) * (C2 + C3 * Rs);
                 }
                 else
                 {
@@ -113,7 +113,7 @@ namespace OilGas.Data
                     const double C2 = 1.100e-5;
                     const double C3 = 1.337e-9;
 
-                    return 1.0 + C1 * Rs + (T - Constants.F_TO_R - 60) * (SGo_API / SGg_gs) * (C2 + C3 * Rs);
+                    return 1.0 + C1 * Rs + (T + Constants.F_TO_R - 60) * (SGo_API / SGg_gs) * (C2 + C3 * Rs);
                 }
             }
 
@@ -126,7 +126,7 @@ namespace OilGas.Data
                 // Compute SGo
                 double SGo = API_to_SG(SGo_API);
 
-                double Bost = Rs * Math.Pow(SGg / SGo, 0.526) + 0.968 * (T - Constants.F_TO_R);
+                double Bost = Rs * Math.Pow(SGg / SGo, 0.526) + 0.968 * (T + Constants.F_TO_R);
 
                 double A = -6.58511 + 2.91329 * Math.Log10(Bost) - 0.27683 * Math.Pow(Math.Log10(Bost), 2.0);
 
@@ -144,7 +144,7 @@ namespace OilGas.Data
 
                 double a = Math.Pow(Rs, 0.3738);
                 double b = Math.Pow(SGg, 0.2914) / Math.Pow(SGo, 0.6265);
-                double c = Math.Pow(T - Constants.F_TO_R, 0.5371);
+                double c = Math.Pow(T + Constants.F_TO_R, 0.5371);
 
                 return 1.0113 + 7.2046e-5 * Math.Pow(a * b + 0.24626 * c, 3.0936);
             }
@@ -158,7 +158,7 @@ namespace OilGas.Data
                 // Compute SGo
                 double SGo = API_to_SG(SGo_API);
 
-                return 0.9759 + 0.000120 * Math.Pow(Rs * Math.Sqrt(SGg / SGo) + 1.25 * (T - Constants.F_TO_R), 1.2);
+                return 0.9759 + 0.000120 * Math.Pow(Rs * Math.Sqrt(SGg / SGo) + 1.25 * (T + Constants.F_TO_R), 1.2);
             }
 
             [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
@@ -198,7 +198,7 @@ namespace OilGas.Data
                                         double S = 0.0)
             {
                 // Convert temperature to degF (make the following easier
-                T = T - Constants.F_TO_R;
+                T = T + Constants.F_TO_R;
 
                 double dVt = -1.0001e-2 + 1.33391e-4 * T                                    + 5.50654e-7 * T  * T;
                 double dVp = -1.95301e-9 * P * T - 1.72834e-13 * P * P * T - 3.58922e-7 * P - 2.25341e-10 * P * P;
@@ -221,7 +221,7 @@ namespace OilGas.Data
                                           double flag)
             {
                 // Convert temperature to degF (make the following easier
-                T = T - Constants.F_TO_R;
+                T = T + Constants.F_TO_R;
                 double gamma_o = 141.5 / (API + 131.5);
 
                 // Standing Correlation
@@ -244,7 +244,7 @@ namespace OilGas.Data
                                        double flag)
             {
                 // Convert temperature to degF (make the following easier
-                T = T - Constants.F_TO_R;
+                T = T + Constants.F_TO_R;
                 double gamma_o = 141.5 / (API + 131.5);
                 // Glaso's Correlation
                 double c          = 2.9                                                                                   * Math.Pow(10, (-0.00027 * Rs));
@@ -264,7 +264,7 @@ namespace OilGas.Data
                                          double flag)
             {
                 // Convert temperature to degF (make the following easier
-                T = T - Constants.F_TO_R;
+                T = T + Constants.F_TO_R;
                 double gamma_o = 141.5 / (API + 131.5);
 
                 // Marhoun's Correlation
@@ -291,7 +291,7 @@ namespace OilGas.Data
                                           double SGg)
             {
                 // This correlation assumes T is in degF
-                T = T - Constants.F_TO_R;
+                T = T + Constants.F_TO_R;
 
                 double a = 0.00091 * T - 0.0125 * SGo_API;
 
@@ -310,7 +310,7 @@ namespace OilGas.Data
                                        double SGg)
             {
                 // This correlation assumes T is in degF
-                T = T - Constants.F_TO_R;
+                T = T + Constants.F_TO_R;
 
                 double x    = 2.8869 - Math.Sqrt(14.1811 - 3.3093 * Math.Log10(P));
                 double pbst = Math.Pow(10.0, x);
@@ -327,7 +327,7 @@ namespace OilGas.Data
                                           double SGg)
             {
                 // This correlation assumes T is in degF
-                T = T - Constants.F_TO_R;
+                T = T + Constants.F_TO_R;
 
                 double x = 4.561e-5 * Math.Pow(T, 1.3911) - 7.916e-4 * Math.Pow(SGo_API, 1.5410);
 
@@ -345,7 +345,7 @@ namespace OilGas.Data
                                               double SGg)
             {
                 // This correlation assumes T is in degF
-                T = T - Constants.F_TO_R;
+                T = T + Constants.F_TO_R;
 
                 // Correct gas specific gravity
                 double SGg_gs = correctGasSGVB(SGg, SGo_API, Constants.PSEPVB_DEF, Constants.TSEPVB_DEF);
@@ -375,7 +375,7 @@ namespace OilGas.Data
                                          double SGg)
             {
                 // This correlation assumes T is in degF
-                T = T - Constants.F_TO_R;
+                T = T + Constants.F_TO_R;
 
                 double a       = 185.843208;
                 double b       = 1.87784;
@@ -411,7 +411,7 @@ namespace OilGas.Data
                                           double SGg)
             {
                 // This correlation assumes T is in degF
-                T = T - Constants.F_TO_R;
+                T = T + Constants.F_TO_R;
 
                 double a = 0.00091 * T - 0.0125 * SGo_API;
                 double b = Math.Pow(10.0, a);
@@ -426,7 +426,7 @@ namespace OilGas.Data
                                           double SGg)
             {
                 // This correlation assumes T is in degF
-                T = T - Constants.F_TO_R;
+                T = T + Constants.F_TO_R;
 
                 double x = 4.561e-5 * Math.Pow(T, 1.3911) - 7.916e-4 * Math.Pow(SGo_API, 1.5410);
                 double b = Math.Pow(10.0, x);
@@ -442,7 +442,7 @@ namespace OilGas.Data
                                               double SGg)
             {
                 // This correlation assumes T is in degF
-                T = T - Constants.F_TO_R;
+                T = T + Constants.F_TO_R;
 
                 // Correct gas specific gravity
                 double SGg_gs = GasSolubility.correctGasSGVB(SGg, SGo_API, Constants.PSEPVB_DEF, Constants.TSEPVB_DEF);
@@ -473,7 +473,7 @@ namespace OilGas.Data
                                        double SGg)
             {
                 // This correlation assumes T is in degF
-                T = T - Constants.F_TO_R;
+                T = T + Constants.F_TO_R;
 
                 const double a = 0.816;
                 const double b = 0.172;
@@ -494,7 +494,7 @@ namespace OilGas.Data
                                          double SGg)
             {
                 // This correlation assumes T is in degF
-                T = T - Constants.F_TO_R;
+                T = T + Constants.F_TO_R;
 
                 double Rs = GasSolubility.Marhoun(P, T, SGo_API, SGg);
 
@@ -520,7 +520,7 @@ namespace OilGas.Data
                                           double SGg)
             {
                 // This correlation uses temperature in degF
-                T = T - Constants.F_TO_R;
+                T = T + Constants.F_TO_R;
 
                 const double a = 1.705e-7;
                 const double b = 0.69357;
@@ -540,7 +540,7 @@ namespace OilGas.Data
                                               double SGg)
             {
                 // VB correlation uses temperature in degF
-                T = T - Constants.F_TO_R;
+                T = T + Constants.F_TO_R;
 
                 // Correct gas specific gravity
                 double SGg_gs = GasSolubility.correctGasSGVB(SGg, SGo_API, Constants.PSEPVB_DEF, Constants.TSEPVB_DEF);
@@ -784,7 +784,7 @@ namespace OilGas.Data
                                                    double SGo_API)
                 {
                     // This correlation assumes T is in degF
-                    T = T - Constants.F_TO_R;
+                    T = T + Constants.F_TO_R;
 
                     double Z = 3.0324 - 0.02023 * SGo_API;
                     double Y = Math.Pow(10.0, Z);
@@ -798,7 +798,7 @@ namespace OilGas.Data
                                                      double SGo_API)
                 {
                     // This correlation assumes T is in degF
-                    T = T - Constants.F_TO_R;
+                    T = T + Constants.F_TO_R;
 
                     double X = 4.59388 * Math.Log10(T) - 22.82792;
 
@@ -810,7 +810,7 @@ namespace OilGas.Data
                                            double SGo_API)
                 {
                     // Glaso correlation uses temperature in degF
-                    T = T - Constants.F_TO_R;
+                    T = T + Constants.F_TO_R;
 
                     double c = 3.141e10 * Math.Pow(T, -3.444), d = 10.313 * Math.Log10(T) - 36.447;
 
@@ -822,7 +822,7 @@ namespace OilGas.Data
                                           double SGo_API)
                 {
                     // This correlation assumes T is in degF
-                    T = T - Constants.F_TO_R;
+                    T = T + Constants.F_TO_R;
 
                     double A = Math.Pow(10.0, 0.43 + 8.33 / SGo_API);
 
@@ -839,7 +839,7 @@ namespace OilGas.Data
                                         double S = 0.0)
             {
                 // Convert temperature to degF
-                T = T - Constants.F_TO_R;
+                T = T + Constants.F_TO_R;
 
                 double S2 = S  * S;
                 double S3 = S2 * S;
@@ -865,7 +865,7 @@ namespace OilGas.Data
                                                       double yH2S = 0.0)
             {
                 // This correlation is in terms of Fahrenheit
-                T = T - Constants.F_TO_R;
+                T = T + Constants.F_TO_R;
 
                 // Compute viscosity at atmospheric pressure and given temperature
                 double mu1uc  = (1.709e-5 - 2.062e-6 * SGg) * T + 8.118e-3 - 6.15e-3 * Math.Log10(SGg);

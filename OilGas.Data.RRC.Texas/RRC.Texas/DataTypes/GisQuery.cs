@@ -208,14 +208,14 @@ namespace OilGas.Data.RRC.Texas
                                            object         untypedValue,
                                            JsonSerializer serializer)
             {
-                if(untypedValue == null)
+                if(untypedValue is null)
                 {
                     serializer.Serialize(writer, null);
 
                     return;
                 }
 
-                var value = (long)untypedValue;
+                long value = (long)untypedValue;
                 serializer.Serialize(writer, value.ToString());
             }
 

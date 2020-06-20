@@ -1,9 +1,14 @@
 ﻿using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.Data;
-using System.Diagnostics;
 using System.IO;
+using System.Linq;
+using System.Net;
 using System.Runtime.CompilerServices;
+using System.Runtime.InteropServices;
+using System.Security.Cryptography.X509Certificates;
 using System.Threading.Tasks;
 
 using Windows.Data.Pdf;
@@ -14,7 +19,11 @@ using Windows.Storage;
 using Windows.Storage.Streams;
 
 using Engineering.DataSource;
+using Engineering.DataSource.CoordinateSystems;
+using Engineering.DataSource.OilGas;
 using Engineering.DataSource.Tools;
+
+using GeoSpatial;
 
 using Kokkos;
 
@@ -25,6 +34,18 @@ namespace RRC.Texas.Driver
 {
     internal class Program
     {
+        private const string OG_LEASE_CYCLE_DATA_HEADER = @"""OIL_GAS_CODE"", ""DISTRICT_NO"", ""LEASE_NO"", "                          +
+                                                          @"""CYCLE_YEAR"", ""CYCLE_MONTH"", ""CYCLE_YEAR_MONTH"", "                    +
+                                                          @"""LEASE_NO_DISTRICT_NO"", ""OPERATOR_NO"", ""FIELD_NO"", "                  +
+                                                          @"""FIELD_TYPE"", ""GAS_WELL_NO"", ""PROD_REPORT_FILED_FLAG"", "              +
+                                                          @"""LEASE_OIL_PROD_VOL"", ""LEASE_OIL_ALLOW"", ""LEASE_OIL_ENDING_BAL"", "    +
+                                                          @"""LEASE_GAS_PROD_VOL"", ""LEASE_GAS_ALLOW"", ""LEASE_GAS_LIFT_INJ_VOL"", "  +
+                                                          @"""LEASE_COND_PROD_VOL"", ""LEASE_COND_LIMIT"", ""LEASE_COND_ENDING_BAL"", " +
+                                                          @"""LEASE_CSGD_PROD_VOL"", ""LEASE_CSGD_LIMIT"", ""LEASE_CSGD_GAS_LIFT"", "   +
+                                                          @"""LEASE_OIL_TOT_DISP"", ""LEASE_GAS_TOT_DISP"", ""LEASE_COND_TOT_DISP"", "  +
+                                                          @"""LEASE_CSGD_TOT_DISP"", ""DISTRICT_NAME"", ""LEASE_NAME"", "               +
+                                                          @"""OPERATOR_NAME"", ""FIELD_NAME""";
+
         internal static readonly string BoolName = typeof(bool).Name;
 
         private static void QueryProductionByApi()
@@ -396,16 +417,13 @@ namespace RRC.Texas.Driver
             // "R:/*b.dbf" polygons
             // "R:/*p.dbf" polygons
 
-            string[] dbfTypes =
-            {
-                "*.dbf"
-            };
+            string[] dbfTypes = {"*b.dbf", "*l.dbf", "*s.dbf"};
 
             string[] files;
 
             foreach(string dbfType in dbfTypes)
             {
-                files = Directory.GetFiles("R:/", dbfType);
+                files = Directory.GetFiles("R:/dbase", dbfType);
 
                 DataTable dt;
                 DataTable dt_out = null;
@@ -413,6 +431,14 @@ namespace RRC.Texas.Driver
                 foreach(string file in files)
                 {
                     dt = Dbase.Load(file);
+
+                    for(int i = dt.Rows.Count - 1; i >= 0; --i)
+                    {
+                        if(dt.Rows[i]["API"] is string str && str.TrimEnd().Length < 8)
+                        {
+                            dt.Rows.RemoveAt(i);
+                        }
+                    }
 
                     if(dt_out == null)
                     {
@@ -424,15 +450,207 @@ namespace RRC.Texas.Driver
                     }
                 }
 
-                ToCSV(dt_out, Path.Combine("R:/", dbfType.Substring(1) + ".csv"));
+                ToCSV(dt_out, Path.Combine("R:/dbase", dbfType.Substring(1) + ".csv"));
             }
         }
 
-        [STAThread]
-        private static async Task Main(string[] args)
+        public static async Task LoadBase()
         {
-            RrcTexasDataAdapter adapter = new RrcTexasDataAdapter();
+            //RrcTexasDataAdapter adapter = new RrcTexasDataAdapter();
 
+            //int num_threads = 4;
+            //int num_numa    = 1;
+            //int device_id   = 0;
+            //int ndevices    = 1;
+            //int skip_device = 9999;
+
+            //InitArguments arguments = new InitArguments(num_threads, num_numa, device_id, ndevices, skip_device, false);
+
+            //List<string[]> rows;
+
+            //using(ScopeGuard.Get(arguments))
+            //{
+            //    using(MemoryMapped mm = new MemoryMapped("R:/s.dbf.csv"))
+            //    {
+            //        MappedCsvReader csvReader = new MappedCsvReader(mm);
+
+            //        (_, rows) = csvReader.ReadFile(1);
+            //    }
+            //}
+
+            //Dictionary<ApiNumber, WellS> wellS = new Dictionary<ApiNumber, WellS>();
+
+            //WellS well;
+
+            //foreach(string[] row in rows)
+            //{
+            //    if(row[2].Contains(" "))
+            //    {
+            //        continue;
+            //    }
+
+            //    well = new WellS(row);
+
+            //    if(!well.API.IsInCounty(CountyType.Kind.KARNES))
+            //    {
+            //        continue;
+            //    }
+
+            //    if(!wellS.TryAdd(well.API, well))
+            //    {
+            //        Console.WriteLine($"Updating {well.API}");
+            //        wellS[well.API] = well;
+            //    }
+            //}
+
+            //await adapter.UpdateLocationAsync(wellS);
+
+            await Task.FromResult(Task.CompletedTask);
+        }
+
+        public static void LoadWellDbf()
+        {
+            //int num_threads = 4;
+            //int num_numa = 1;
+            //int device_id = 0;
+            //int ndevices = 1;
+            //int skip_device = 9999;
+
+            //InitArguments arguments = new InitArguments(num_threads, num_numa, device_id, ndevices, skip_device, false);
+
+            //List<string[]> l_rows, s_rows, b_rows;
+
+            //using (ScopeGuard.Get(arguments))
+            //{
+            //    //using (MemoryMapped l_mm = new MemoryMapped("R:/dbase/l.dbf.csv"))
+            //    using (MemoryMapped s_mm = new MemoryMapped("R:/dbase/s.dbf.csv"))
+            //    using (MemoryMapped b_mm = new MemoryMapped("R:/dbase/b.dbf.csv"))
+            //    {
+            //        //MappedCsvReader csvReader = new MappedCsvReader(l_mm);
+            //        //(_, l_rows) = csvReader.ReadFile(1);
+
+            //        MappedCsvReader csvReader = new MappedCsvReader(s_mm);
+            //        (_, s_rows) = csvReader.ReadFile(1);
+
+            //        csvReader = new MappedCsvReader(b_mm);
+            //        (_, b_rows) = csvReader.ReadFile(1);
+
+            //        //Dictionary<ApiNumber, WellL> wellLs = new Dictionary<ApiNumber, WellL>();
+
+            //        //WellL welll;
+
+            //        //foreach (string[] row in l_rows)
+            //        //{
+            //        //    welll = new WellL(row);
+
+            //        //    if (!wellLs.TryAdd(welll.API, welll))
+            //        //    {
+            //        //        //Console.WriteLine($"Updating {welll.API}");
+            //        //        wellLs[welll.API] = welll;
+            //        //    }
+            //        //}
+
+            //        Dictionary<long, WellS> wellSs = new Dictionary<long, WellS>();
+
+            //        WellS wellS;
+
+            //        foreach (string[] row in s_rows)
+            //        {
+            //            wellS = new WellS(row);
+
+            //            if (!wellSs.TryAdd(wellS.SURFACE_ID, wellS))
+            //            {
+            //                //Console.WriteLine($"Updating {wellS.API}");
+            //                wellSs[wellS.SURFACE_ID] = wellS;
+            //            }
+            //        }
+
+            //        Dictionary<long, WellB> wellBs = new Dictionary<long, WellB>();
+
+            //        WellB wellB;
+
+            //        foreach (string[] row in b_rows)
+            //        {
+            //            wellB = new WellB(row);
+
+            //            if (!wellBs.TryAdd(wellB.BOTTOM_ID, wellB))
+            //            {
+            //                //Console.WriteLine($"Updating {wellB.API}");
+            //                wellBs[wellB.BOTTOM_ID] = wellB;
+            //            }
+            //        }
+
+            //        List<ShapeFileLocation> locations = new List<ShapeFileLocation>(wellLs.Count);
+
+            //        foreach (KeyValuePair<ApiNumber, WellL> row in wellLs)
+            //        {
+            //            if (wellSs.TryGetValue(row.Value.SURFACE_ID, out wellS))
+            //            {
+            //                locations.Add(wellBs.TryGetValue(row.Value.BOTTOM_ID, out wellB)
+            //                                  ? new ShapeFileLocation(row.Key, wellS.LAT83, wellS.LONG83, wellB.LAT83, wellB.LONG83)
+            //                                  : new ShapeFileLocation(row.Key, wellS.LAT83, wellS.LONG83, wellS.LAT83, wellS.LONG83));
+            //            }
+            //        }
+
+            //        RrcTexasDataAdapter adapter = new RrcTexasDataAdapter();
+            //        adapter.AddRange(locations);
+            //    }
+            //}
+        }
+
+        public static void FtpDirectory(string url)
+        {
+            FtpWebRequest listRequest = (FtpWebRequest)WebRequest.Create(url);
+            listRequest.Method = WebRequestMethods.Ftp.ListDirectoryDetails;
+            //listRequest.Credentials = credentials;
+
+            List<string> lines = new List<string>();
+
+            using(FtpWebResponse listResponse = (FtpWebResponse)listRequest.GetResponse())
+            using(Stream listStream = listResponse.GetResponseStream())
+            using(StreamReader listReader = new StreamReader(listStream))
+            {
+                while(!listReader.EndOfStream)
+                {
+                    lines.Add(listReader.ReadLine());
+                }
+            }
+
+            foreach(string line in lines)
+            {
+                string[] tokens = line.Split(new[] {' '}, 9, StringSplitOptions.RemoveEmptyEntries);
+
+                string name        = tokens[8];
+                string permissions = tokens[0];
+
+                //string localFilePath = Path.Combine(localPath, name);
+                string fileUrl = url + name;
+
+                if(permissions[0] == 'd' && url == "ftp://ftpe.rrc.texas.gov/")
+                {
+                    try
+                    {
+                        FtpDirectory(fileUrl + "/");
+                    }
+                    catch(Exception)
+                    {
+                        //
+                    }
+                }
+                else
+                {
+                    Console.WriteLine(fileUrl);
+                }
+            }
+        }
+
+        [DllImport("winmm.dll", CharSet = CharSet.Auto)]
+        private static extern bool PlaySound(string lpszName,
+                                             IntPtr hModule,
+                                             int    dwFlags);
+
+        public static void InterpTest()
+        {
             int num_threads = 4;
             int num_numa    = 1;
             int device_id   = 0;
@@ -441,49 +659,462 @@ namespace RRC.Texas.Driver
 
             InitArguments arguments = new InitArguments(num_threads, num_numa, device_id, ndevices, skip_device, false);
 
-            List<string[]> rows;
+            using(ScopeGuard.Get(arguments))
+            {
+                View<double, Cuda> xd = new View<double, Cuda>("src_lat_long", TestData.lng_lat_oil_api.Length, 2);
+                View<double, Cuda> zd = new View<double, Cuda>("oil_api",      TestData.lng_lat_oil_api.Length);
+
+                for(ulong i0 = 0; i0 < xd.Extent(0); ++i0)
+                {
+                    (double X, double Y) = CoordinateConverter.toWebMercator(TestData.lng_lat_oil_api[i0].lng, TestData.lng_lat_oil_api[i0].lat);
+                    xd[i0, 0]            = X;
+                    xd[i0, 1]            = Y;
+                    zd[i0]               = TestData.lng_lat_oil_api[i0].oil_api;
+
+                    Console.WriteLine($"{xd[i0, 0]} {xd[i0, 1]} {zd[i0]}");
+                }
+
+                View<double, Cuda> xi = new View<double, Cuda>("dest_lat_long", TestData.offset_lng_lat.Length, 2);
+
+                for(ulong i0 = 0; i0 < xi.Extent(0); ++i0)
+                {
+                    (double X, double Y) = CoordinateConverter.toWebMercator(TestData.offset_lng_lat[i0].lng, TestData.offset_lng_lat[i0].lat);
+                    xi[i0, 0]            = X;
+                    xi[i0, 1]            = Y;
+                }
+
+                View<double, Cuda> zi = InterpolationMethods<double, Cuda>.Shepard2d(xd, zd, 2.0, xi);
+
+                for(ulong i0 = 0; i0 < zi.Size(); ++i0)
+                {
+                    Console.WriteLine($"{xi[i0, 0]} {xi[i0, 1]} {zi[i0]}");
+                }
+            }
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+        public static void Interp(List<GeoPoint> lng_lat_oil_api,
+                                  List<GeoPoint> offset_lng_lat)
+        {
+            int num_threads = 4;
+            int num_numa    = 1;
+            int device_id   = 0;
+            int ndevices    = 1;
+            int skip_device = 9999;
+
+            InitArguments arguments = new InitArguments(num_threads, num_numa, device_id, ndevices, skip_device, false);
 
             using(ScopeGuard.Get(arguments))
             {
-                using(MemoryMapped mm = new MemoryMapped("R:/s.dbf.csv"))
-                {
-                    MappedCsvReader csvReader = new MappedCsvReader(mm);
+                View<double, Cuda> xd = new View<double, Cuda>("src_lat_long", lng_lat_oil_api.Count, 2);
+                View<double, Cuda> zd = new View<double, Cuda>("oil_api",      lng_lat_oil_api.Count);
 
-                    (_, rows) = csvReader.ReadFile(1);
+                for(int i0 = 0; i0 < (int)xd.Extent(0); ++i0)
+                {
+                    xd[i0, 0] = lng_lat_oil_api[i0].Easting;
+                    xd[i0, 1] = lng_lat_oil_api[i0].Northing;
+                    zd[i0]    = lng_lat_oil_api[i0].PropertyValue;
+                }
+
+                View<double, Cuda> xi = new View<double, Cuda>("dest_lat_long", offset_lng_lat.Count, 2);
+
+                for(int i0 = 0; i0 < (int)xi.Extent(0); ++i0)
+                {
+                    xi[i0, 0] = offset_lng_lat[i0].Easting;
+                    xi[i0, 1] = offset_lng_lat[i0].Northing;
+                }
+
+                View<double, Cuda> zi = InterpolationMethods<double, Cuda>.Shepard2d(xd, zd, 2.0, xi);
+
+                for(int i0 = 0; i0 < (int)zi.Size(); ++i0)
+                {
+                    offset_lng_lat[i0].PropertyValue = zi[i0];
                 }
             }
+        }
 
+        [STAThread]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+        private static void UpdateWells()
+        {
+            //Console.WriteLine("Building Tables");
 
-            Dictionary<ApiNumber, WellS> wellS = new Dictionary<ApiNumber, WellS>();
+            //using(RrcTexasDataAdapter rrc = new RrcTexasDataAdapter())
+            //{
+            //}
 
-            WellS well;
-            foreach(string[] row in rows)
+            //try
+            //{
+            //    Console.WriteLine("LoadTexasDbs");
+            //    RrcTexasDataAdapter.LoadTexasDbs(2);
+            //}
+            //catch(Exception ex)
+            //{
+            //    Console.WriteLine(ex);
+            //}
+
+            ImmutableList<ApiNumber> apis;
+
+            using (RrcTexasDataAdapter rrc = new RrcTexasDataAdapter())
             {
-                if(row[2].Contains(" "))
+                //rrc.ReIndexDb();
+
+                //rrc.Context.ChangeTracker.AutoDetectChangesEnabled = true;
+
+                apis = rrc.GetAllWells().Select(w => w.Api).ToImmutableList();
+            }
+
+            //if(apis is null)
+            //{
+            //    return;
+            //}
+
+            //Console.WriteLine($"Apis Count:{apis.Count}");
+
+            //try
+            //{
+            //    Console.WriteLine("LoadTexasDbs2");
+            //    RrcTexasDataAdapter.LoadTexasDbs2(apis, 2);
+            //}
+            //catch (Exception ex)
+            //{
+            //    Console.WriteLine(ex);
+            //}
+
+            ////EF.CompileQuery()
+
+            //try
+            //{
+            //    Console.WriteLine("LoadTexasDbs3");
+            //    RrcTexasDataAdapter.LoadTexasDbs3(apis, 2);
+            //}
+            //catch (Exception ex)
+            //{
+            //    Console.WriteLine(ex);
+            //}
+
+            //try
+            //{
+            //    Console.WriteLine("LoadTexasDbs4");
+            //    RrcTexasDataAdapter.LoadTexasDbs4(apis, 2);
+            //}
+            //catch(Exception ex)
+            //{
+            //    Console.WriteLine(ex);
+            //}
+
+            //try
+            //{
+            //    Console.WriteLine("LoadTexasDbs5");
+
+            //    using(TexasAggregateContext tac = new TexasAggregateContext())
+            //    {
+            //        tac.ChangeTracker.AutoDetectChangesEnabled = false;
+
+            //        ImmutableList<LeaseTestAggr> leaseTests = tac.LeaseTestAggrTable.Where(w => w.DISTRICT_NUMBER == 2).ToImmutableList();
+
+            //        RrcTexasDataAdapter.LoadTexasDbs5(leaseTests);
+
+            //        tac.Connection.Close();
+            //    }
+            //}
+            //catch(Exception ex)
+            //{
+            //    Console.WriteLine(ex);
+            //}
+
+            try
+            {
+                Console.WriteLine("LoadTexasDbs6");
+                RrcTexasDataAdapter.LoadTexasDbs6(apis);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex);
+            }
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+        private static void InterpWells()
+        {
+            using(RrcTexasDataAdapter rrc = new RrcTexasDataAdapter())
+            {
+                rrc.Context.ChangeTracker.AutoDetectChangesEnabled = false;
+
+                ImmutableList<ApiNumber> apis = rrc.GetAllWells().Select(w => w.Api).ToImmutableList();
+
+                if(apis is null)
                 {
-                    continue;
+                    return;
                 }
 
-                well = new WellS(row);
+                Console.WriteLine($"Apis Count:{apis.Count}");
 
-                if(!well.API.IsInCounty(CountyType.Kind.KARNES))
-                {
-                    continue;
-                }
+                List<GeoPoint> lng_lat_oil_apis = new List<GeoPoint>(100);
+                List<GeoPoint> offset_lng_lats  = new List<GeoPoint>(apis.Count);
 
-                if(!wellS.TryAdd(well.API, well))
-                {
-                    Console.WriteLine($"Updating {well.API}");
-                    wellS[well.API] = well;
-                }
+                Parallel.ForEach(Partitioner.Create(0, apis.Count, apis.Count / Environment.ProcessorCount),
+                                 row =>
+                                 {
+                                     int threadId = System.Threading.Thread.CurrentThread.ManagedThreadId;
+
+                                     using RrcTexasDataAdapter _context = new RrcTexasDataAdapter();
+
+                                     Well well;
+
+                                     for(int i = row.Item1; i < row.Item2; i++)
+                                     {
+                                         well = _context.GetWellByApi(apis[i]);
+
+                                         if(well.Location != null)
+                                         {
+                                             if(well.ReservoirData.Count            > 0     &&
+                                                well.ReservoirData[0].ReservoirName != null &&
+                                                well.ReservoirData[0].ReservoirName.Contains("Eagle", StringComparison.OrdinalIgnoreCase))
+                                             {
+                                                 if(well.ReservoirData[0].OilProperties?.Density != null)
+                                                 {
+                                                     lng_lat_oil_apis.Add(new GeoPoint(well.Api,
+                                                                                       well.Location!.Easting83!.Value,
+                                                                                       well.Location!.Northing83!.Value,
+                                                                                       well.ReservoirData[0]!.OilProperties!.Density.Value));
+                                                 }
+                                                 else
+                                                 {
+                                                     offset_lng_lats.Add(new GeoPoint(well.Api, well.Location!.Easting83!.Value, well.Location!.Northing83!.Value));
+                                                 }
+                                             }
+                                         }
+
+                                         if(i % 100 == 0)
+                                         {
+                                             Console.WriteLine($"{threadId}: {i - row.Item1}");
+                                         }
+                                     }
+
+                                     _context.CloseConnection();
+                                 });
+
+                Interp(lng_lat_oil_apis, offset_lng_lats);
+
+                Parallel.ForEach(Partitioner.Create(0, offset_lng_lats.Count, offset_lng_lats.Count / Environment.ProcessorCount),
+                                 row =>
+                                 {
+                                     int threadId = System.Threading.Thread.CurrentThread.ManagedThreadId;
+
+                                     using RrcTexasDataAdapter _context = new RrcTexasDataAdapter();
+
+                                     Well well;
+
+                                     for(int i = row.Item1; i < row.Item2; i++)
+                                     {
+                                         well = _context.GetWellByApi(apis[i]);
+
+                                         well.ReservoirData[0]!.OilProperties!.Density = offset_lng_lats[i].PropertyValue;
+
+                                         if(i % 100 == 0)
+                                         {
+                                             Console.WriteLine($"{threadId}: {i - row.Item1}");
+                                         }
+
+                                         _context.Update(well);
+                                     }
+
+                                     _context.Commit();
+                                     _context.CloseConnection();
+                                 });
+            }
+        }
+
+        [STAThread]
+        private static void Main(string[] args)
+        {
+
+        
+            RrcTexasDataAdapter adapter = new RrcTexasDataAdapter();
+
+            Well well = adapter.GetMonthlyProductionFromWebsiteByApi("42-255-35980-00-00").Result;
+
+            foreach (MonthlyProduction monthlyProduction in well.MonthlyProduction)
+            {
+                Console.WriteLine($"{monthlyProduction.Date}");
             }
 
 
-            await adapter.UpdateLocationAsync(wellS);
 
-            //adapter.UpdateLocationAsync(ApiNumber api,double latitude,  double longitude)
+            //docker build -t simplestaticblazor . docker run -it --rm -p 5000:80 simplestaticblazor
 
-            await Task.FromResult(Task.CompletedTask);
+            //UpdateWells();
+
+            //InterpWells();
+
+            //InterpTest();
+
+            //DbfClassTemplates.Run();
+
+            //Console.WriteLine("LoadWellDbf");
+            //using(TexasDumpDbContext tac = new TexasDumpDbContext())
+            //{
+            //    tac.LoadWellDbf();
+            //}
+
+            //Console.WriteLine("BuildLocationTable");
+
+            //using (TexasAggregateContext tac = new TexasAggregateContext())
+            //{
+            //    //tac.BuildWellTestAggrTable();
+            //    //tac.BuildWellProductionAggrTable();
+            //    //tac.FixProductionAggrTable();
+            //    tac.BuildLeaseTestAggrTable();
+            //}
+
+            //using (TexasWellboreContext twc = new TexasWellboreContext())
+            //{
+            //    //WellBoreTechnicalDataRoot wellBoreTechnicalDataRoot = twc.ByApi("42-123-32754-00-00");
+
+            //    //var wellBoreCompletionInformations = wellBoreTechnicalDataRoot.WellBoreCompletionInformation;
+
+            //    twc.ChangeTracker.AutoDetectChangesEnabled = false;
+
+            //    twc.LoadFieldInformation_dbf900(@"R:\dbf900.ebc.0", @"R:\dbf900.ebc.1", @"R:\dbf900.ebc.2", @"R:\dbf900.ebc.3", @"R:\dbf900.ebc.4");
+
+            //    twc.ChangeTracker.AutoDetectChangesEnabled = true;
+            //}
+
+            //using (TexasAggregateContext tac = new TexasAggregateContext())
+            //{
+            //    tac.BuildWellProductionAggrTable();
+            //}
+
+            //FileUtilities.SplitFile(@"D:\OilGasData\RRC\dbf900.ebc", @"D:\OilGasData\RRC\Parts", 247, 132, 4);
+
+            //TexasDumpDbContext.SplitFile(@"T:\flf900.ebc", @"D:\OilGasData\RRC\Parts", 240, 134, 4);
+            //TexasDumpWLDbContext.SplitFile(@"T:\wlf100.ebc", @"D:\OilGasData\RRC\Parts", 228, 143, 4);
+            //TexasDumpWLDbContext.SplitFile(@"T:\wlf101.ebc", @"D:\OilGasData\RRC\Parts", 228, 143, 4);
+
+            //WLClassTemplates.Run();
+
+            //using (TexasDumpWLDbContext tdc = new TexasDumpWLDbContext())
+            //{
+            //    tdc.ChangeTracker.AutoDetectChangesEnabled = false;
+
+            //    //tdc.LoadFieldInformation_olf(@"R:\olf001l.ebc");
+            //    //tdc.LoadFieldInformation_olf(@"R:\olf003l.ebc");
+            //    //tdc.LoadFieldInformation_olf(@"R:\olf004l.ebc");
+            //    //tdc.LoadFieldInformation_olf(@"R:\olf005l.ebc");
+            //    //tdc.LoadFieldInformation_olf(@"R:\olf007l.ebc");
+            //    //tdc.LoadFieldInformation_olf(@"R:\olf008l.ebc");
+            //    //tdc.LoadFieldInformation_olf(@"R:\olf009l.ebc");
+            //    //tdc.LoadFieldInformation_olf(@"R:\olf010l.ebc");
+            //    //tdc.LoadFieldInformation_olf(@"R:\olf011l.ebc");
+            //    //tdc.LoadFieldInformation_olf(@"R:\olf013l.ebc");
+            //    //tdc.LoadFieldInformation_olf(@"R:\olf014l.ebc");
+
+            //    //tdc.LoadFieldInformation_gsf(@"R:\gsf001l.ebc");
+            //    //tdc.LoadFieldInformation_gsf(@"R:\gsf002l.ebc");
+            //    //tdc.LoadFieldInformation_gsf(@"R:\gsf003l.ebc");
+
+            //    //tdc.LoadFieldInformation_wlf100(@"R:\wlf100.ebc.0", @"R:\wlf100.ebc.1", @"R:\wlf100.ebc.2", @"R:\wlf100.ebc.3", @"R:\wlf100.ebc.4");
+            //    //tdc.LoadFieldInformation_wlf101(@"T:\wlf101.ebc");
+
+            //    tdc.ChangeTracker.AutoDetectChangesEnabled = true;
+            //}
+
+            //TexasDumpDbContext.FixQuotes(@$"R:/OG_FIELD_DW_DATA_TABLE.dsv" );
+
+            //TexasDumpDbContext.FixQuotes(@$"R:/OG_OPERATOR_DW_DATA_TABLE.dsv" );
+
+            //TexasDumpDbContext.FixQuotes(@$"R:/OG_REGULATORY_LEASE_DW_DATA_TABLE.dsv" );
+
+            //Console.WriteLine(@$"T:/_OgLeaseCycleData__202005251120.csv");
+            //TexasDumpDbContext.RemoveIdColumn(@$"T:/_OgLeaseCycleData__202005251120.csv");
+
+            //Parallel.ForEach(Partitioner.Create(90, 115),
+            //                 row =>
+            //                 {
+            //                     for(int i = row.Item1; i < row.Item2; i++)
+            //                     {
+            //                         Console.WriteLine(@$"T:/_OgLeaseCycleData__202005251120_{i}.csv");
+            //                         TexasDumpDbContext.RemoveIdColumn(@$"T:/_OgLeaseCycleData__202005251120_{i}.csv");
+            //                     }
+            //                 });
+
+            //for (int i = 7; i < 90; ++i)
+            //{
+            //    Console.WriteLine(@$"T:/_OgLeaseCycleData__202005251120_{i}.csv");
+            //    TexasDumpDbContext.RemoveIdColumn(@$"T:/_OgLeaseCycleData__202005251120_{i}.csv");
+            //}
+
+            //using (TexasDumpDbContext tdc = new TexasDumpDbContext())
+            //{
+
+            //    tdc.ChangeTracker.AutoDetectChangesEnabled = false;
+
+            //    //tdc.LoadOgRegulatoryLeaseDwDsv(@"R:/OG_REGULATORY_LEASE_DW_DATA_TABLE.dsv");
+            //    tdc.LoadOgFieldDwDsv(@"R:/OG_FIELD_DW_DATA_TABLE.dsv");
+            //    //tdc.LoadOgOperatorDwDsv(@"R:/OG_OPERATOR_DW_DATA_TABLE.dsv");
+
+            //    //tdc.LoadOgFieldCycleDsv(@"R:/OG_FIELD_CYCLE_DATA_TABLE.dsv");
+            //    //tdc.LoadOgWellCompletionDataDsv(@"R:/OG_WELL_COMPLETION_DATA_TABLE.dsv");
+
+            //    //Console.WriteLine(@"T:/OG_LEASE_CYCLE_DATA_TABLE.dsv.0");tdc.LoadOgLeaseCycleDataDsv(@"T:/OG_LEASE_CYCLE_DATA_TABLE.dsv.0", 1);
+            //    //Console.WriteLine(@"T:/OG_LEASE_CYCLE_DATA_TABLE.dsv.1");tdc.LoadOgLeaseCycleDataDsv(@"T:/OG_LEASE_CYCLE_DATA_TABLE.dsv.1", 0);
+            //    //4343241
+
+            //    //for (int i = 1; i < 40; ++i)
+            //    //{
+            //    //    Console.WriteLine(@$"T:/OG_LEASE_CYCLE_DATA_TABLE.dsv.{i}");
+            //    //    //tdc.LoadOgLeaseCycleDataDsv(@$"T:/OG_LEASE_CYCLE_DATA_TABLE.dsv.{i}", 0);
+            //    //    TexasDumpDbContext.FixLineEnding(@$"T:/OG_LEASE_CYCLE_DATA_TABLE.dsv.{i}");
+            //    //    //tdc.CopyFileToDb("OgLeaseCycleData", OG_LEASE_CYCLE_DATA_HEADER, @$"T:/OG_LEASE_CYCLE_DATA_TABLE.dsv.{i}", "}", false);
+            //    //    //TexasDumpDbContext.FixQuotes(@$"T:/OG_LEASE_CYCLE_DATA_TABLE.dsv.{i}");
+            //    //}
+
+            //    //Console.WriteLine(@"R:\flf900.ebc.0"); tdc.LoadFieldInformation_flf900(@"T:\flf900.ebc.0");
+            //    //Console.WriteLine(@"R:\flf900.ebc.1"); tdc.LoadFieldInformation_flf900(@"T:\flf900.ebc.1");
+            //    //Console.WriteLine(@"R:\flf900.ebc.2"); tdc.LoadFieldInformation_flf900(@"T:\flf900.ebc.2");
+            //    //Console.WriteLine(@"R:\flf900.ebc.3"); tdc.LoadFieldInformation_flf900(@"T:\flf900.ebc.3");
+            //    ////tdc.LoadFieldInformation_flf900(@"R:\flf900.ebc.4");
+
+            //    tdc.ChangeTracker.AutoDetectChangesEnabled = true;
+            //}
+
+            //TexasDumpDbContext.SplitFileByLineEnding(@"T:\OG_LEASE_CYCLE_DATA_TABLE.dsv", @"D:\OilGasData\RRC\Parts", 50);
+
+            //TexasDumpDbContext.SplitFile(@"T:\flf900.ebc", @"D:\OilGasData\RRC\Parts", 240, 134, 4);
+
+            //FtpDirectory("ftp://ftpe.rrc.texas.gov/");
+
+            //RrcTexasDataAdapter adapter = new RrcTexasDataAdapter();
+
+            //adapter.ConvertLocations();
+
+            //ConvertToUtf8(@"R:/flf900.ebc", @"T:/flf900.txt");
+
+            //List<Well> wells = adapter.GetAllWellsIncluding().ToList();
+
+            //List<Well> wellsByApi;
+            //Well wellByApi;
+            //foreach(Well well in wells)
+            //{
+            //    wellsByApi = adapter.GetWellsByApi(well.Api).ToList();
+
+            //}
+
+            //List<Well> wells = (await adapter.GetWellsByCountyAsync("Karnes")).Where(w => w.CompletionDetails.LateralLength != null).Where(w => w.MonthlyProduction.Count == 0).ToList();
+
+            //foreach(Well well in wells)
+            //{
+            //    if(well.Api == "42-255-35980-00-00")
+            //    {
+            //        continue;
+            //    }
+
+            //    Console.WriteLine($"{well.Api}");
+            //    await adapter.GetMonthlyProductionByApi(well.Api);
+            //}
+
+            //await Task.FromResult(Task.CompletedTask);
 
             //for(int i = 0; i < dt.Rows.Count; i++)
             //{
@@ -544,6 +1175,8 @@ namespace RRC.Texas.Driver
 
             //TestDb1();
             //TestDb2();
+
+            PlaySound(@"C:\Windows\Media\tada.wav", IntPtr.Zero, 0);
 
 #if DEBUG
             Console.WriteLine("press any key to exit.");

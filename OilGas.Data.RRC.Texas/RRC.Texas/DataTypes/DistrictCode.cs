@@ -83,7 +83,7 @@ namespace OilGas.Data.RRC.Texas
 
         private static Kind FromName(string kind)
         {
-            switch(kind)
+            switch(kind.Trim())
             {
                 case "None Selected": return Kind.None_Selected;
                 case "01":            return Kind.One;

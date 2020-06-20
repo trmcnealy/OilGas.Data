@@ -1,0 +1,100 @@
+﻿WITH AggrRecord AS (
+    SELECT "Api", "DISTRICT_NO","LEASE_NO","WELL_NO"
+    FROM "ProductionAggr"
+), GasRecord AS (
+    SELECT
+        "GasWellRootSegment"."WL_GAS_OR_OIL" AS "FIELD_CLASS",
+        "GasWellRootSegment"."WL_GAS_NUMERIC_DISTRICT" AS "DISTRICT_NUMBER",
+        "GasWellRootSegment"."WL_GAS_RRC_ID" AS "LEASE_NUMBER",
+        "GasWellRootSegment"."WL_GAS_WELL_NUMBER" AS "WELL_NUMBER",
+        COALESCE("GasFormG1Segment"."WL_GAS_G1_SIWH", "GasFormG10Segment"."WL_G10_SIWH") AS "SIWH",
+        COALESCE("GasFormG1Segment"."WL_GAS_G1_BHP", "GasFormG10Segment"."WL_G10_BHP") AS "AVG_RESERVOIR_BHP",
+        COALESCE("GasFormG1Segment"."WL_GAS_G1_GAS_GRAVITY", "GasFormG10Segment"."WL_G10_GAS_GRAVITY") AS "GAS_GRAVITY",
+        COALESCE("GasFormG1Segment"."WL_GAS_G1_COND_GRAVITY", "GasFormG10Segment"."WL_G10_COND_GRAVITY") AS "OIL_GRAVITY",
+        COALESCE("GasFormG1Segment"."WL_GAS_G1_GOR", "GasFormG10Segment"."WL_G10_RATIO") AS "SOLUTION_GAS_OIL_RATIO"
+    FROM "GasWellRootSegment"
+    LEFT JOIN "GasFormG1Segment"
+    ON "GasWellRootSegment"."GasFormG1SegmentId"="GasFormG1Segment"."Id"
+    LEFT JOIN "GasFormG10Segment"
+    ON "GasWellRootSegment"."GasFormG10SegmentId"="GasFormG10Segment"."Id"
+    WHERE "GasFormG1Segment"."WL_GAS_G1_GAS_GRAVITY" IS NOT NULL AND "GasFormG10Segment"."WL_G10_GAS_GRAVITY" IS NOT NULL
+), OilRecord AS (
+    SELECT
+        "WellTestAggr"."FL_DISTRICT" AS "DISTRICT_NUMBER",
+	    "WellTestAggr"."FL_RESERVOIR_NUMBER" AS "RESERVOIR_NUMBER",
+	    "WellTestAggr"."FL_FIELD_CLASS" AS "FIELD_CLASS",
+	    "WellTestAggr"."FL_RESERVOIR_NAME" AS "RESERVOIR_NAME",
+	    "WellTestAggr"."FL_OIL_DISC_WELL_GRAVITY" AS "OIL_GRAVITY",
+	    "WellTestAggr"."FL_RRCID_DETERMINING_WELL" AS "LEASE_NUMBER",
+	    "WellTestAggr"."FL_G_1_GAS_GRAVITY" AS "GAS_GRAVITY",
+	    "WellTestAggr"."FL_AVG_RESERVOIR_BHP" AS "AVG_RESERVOIR_BHP",
+	    "WellTestAggr"."FL_AVG_RESERVOIR_BH_TEMP" AS "AVG_RESERVOIR_BH_TEMP",
+	    "WellTestAggr"."FL_FORMATION_VOLUME_FACTOR" AS "FORMATION_VOLUME_FACTOR",
+	    "WellTestAggr"."FL_SOLUTION_GAS_OIL_RATIO" AS "SOLUTION_GAS_OIL_RATIO"
+    FROM "WellTestAggr"
+    WHERE "WellTestAggr"."FL_RRCID_DETERMINING_WELL" IS NOT NULL
+), GasOilRecord AS (
+    SELECT
+        COALESCE(GasRecord."FIELD_CLASS", OilRecord."FIELD_CLASS") AS "FIELD_CLASS",
+        COALESCE(GasRecord."DISTRICT_NUMBER", OilRecord."DISTRICT_NUMBER") AS "DISTRICT_NUMBER",
+        COALESCE(GasRecord."LEASE_NUMBER", OilRecord."LEASE_NUMBER") AS "LEASE_NUMBER",
+        GasRecord."WELL_NUMBER" AS "WELL_NUMBER",
+	    OilRecord."RESERVOIR_NUMBER" AS "RESERVOIR_NUMBER",
+	    OilRecord."RESERVOIR_NAME" AS "RESERVOIR_NAME",
+        GasRecord."SIWH" AS "SIWH",
+        COALESCE(GasRecord."AVG_RESERVOIR_BHP", OilRecord."AVG_RESERVOIR_BHP") AS "AVG_RESERVOIR_BHP",
+        OilRecord."AVG_RESERVOIR_BH_TEMP" AS "AVG_RESERVOIR_BH_TEMP",
+	    OilRecord."FORMATION_VOLUME_FACTOR" AS "FORMATION_VOLUME_FACTOR",
+        COALESCE(GasRecord."GAS_GRAVITY", OilRecord."GAS_GRAVITY") AS "GAS_GRAVITY",
+        COALESCE(GasRecord."OIL_GRAVITY", OilRecord."OIL_GRAVITY") AS "OIL_GRAVITY",
+        COALESCE(GasRecord."SOLUTION_GAS_OIL_RATIO", OilRecord."SOLUTION_GAS_OIL_RATIO") AS "SOLUTION_GAS_OIL_RATIO"
+       FROM GasRecord
+       LEFT JOIN OilRecord
+       ON (
+           GasRecord."DISTRICT_NUMBER"=OilRecord."DISTRICT_NUMBER" AND GasRecord."LEASE_NUMBER"=OilRecord."LEASE_NUMBER"
+       ) 
+    UNION
+       SELECT
+        COALESCE(GasRecord."FIELD_CLASS", OilRecord."FIELD_CLASS") AS "FIELD_CLASS",
+        COALESCE(GasRecord."DISTRICT_NUMBER", OilRecord."DISTRICT_NUMBER") AS "DISTRICT_NUMBER",
+        COALESCE(GasRecord."LEASE_NUMBER", OilRecord."LEASE_NUMBER") AS "LEASE_NUMBER",
+        GasRecord."WELL_NUMBER" AS "WELL_NUMBER",
+	    OilRecord."RESERVOIR_NUMBER" AS "RESERVOIR_NUMBER",
+	    OilRecord."RESERVOIR_NAME" AS "RESERVOIR_NAME",
+        GasRecord."SIWH" AS "SIWH",
+        COALESCE(GasRecord."AVG_RESERVOIR_BHP", OilRecord."AVG_RESERVOIR_BHP") AS "AVG_RESERVOIR_BHP",
+        OilRecord."AVG_RESERVOIR_BH_TEMP" AS "AVG_RESERVOIR_BH_TEMP",
+	    OilRecord."FORMATION_VOLUME_FACTOR" AS "FORMATION_VOLUME_FACTOR",
+        COALESCE(GasRecord."GAS_GRAVITY", OilRecord."GAS_GRAVITY") AS "GAS_GRAVITY",
+        COALESCE(GasRecord."OIL_GRAVITY", OilRecord."OIL_GRAVITY") AS "OIL_GRAVITY",
+        COALESCE(GasRecord."SOLUTION_GAS_OIL_RATIO", OilRecord."SOLUTION_GAS_OIL_RATIO") AS "SOLUTION_GAS_OIL_RATIO"
+       FROM GasRecord
+       RIGHT JOIN OilRecord
+       ON (
+           GasRecord."DISTRICT_NUMBER"=OilRecord."DISTRICT_NUMBER" AND GasRecord."LEASE_NUMBER"=OilRecord."LEASE_NUMBER"
+       )
+)
+SELECT
+    AggrRecord."Api",
+    AggrRecord."DISTRICT_NO" AS "DISTRICT_NUMBER",
+    AggrRecord."LEASE_NO" AS "LEASE_NUMBER",
+    AggrRecord."WELL_NO" AS "WELL_NUMBER",    
+    GasOilRecord."FIELD_CLASS",
+    GasOilRecord."RESERVOIR_NUMBER",
+    GasOilRecord."RESERVOIR_NAME",
+    GasOilRecord."SIWH",
+    GasOilRecord."AVG_RESERVOIR_BHP",
+    GasOilRecord."AVG_RESERVOIR_BH_TEMP",
+    GasOilRecord."FORMATION_VOLUME_FACTOR",
+    GasOilRecord."GAS_GRAVITY",
+    GasOilRecord."OIL_GRAVITY",
+    GasOilRecord."SOLUTION_GAS_OIL_RATIO"
+FROM AggrRecord
+RIGHT JOIN GasOilRecord
+ON (
+    AggrRecord."DISTRICT_NO"=GasOilRecord."DISTRICT_NUMBER" AND AggrRecord."LEASE_NO"=GasOilRecord."LEASE_NUMBER" AND AggrRecord."WELL_NO" LIKE GasOilRecord."WELL_NUMBER"
+)
+OR (
+    AggrRecord."DISTRICT_NO"=GasOilRecord."DISTRICT_NUMBER" AND AggrRecord."LEASE_NO"=GasOilRecord."LEASE_NUMBER"
+)
+WHERE AggrRecord."Api" IS NOT NULL

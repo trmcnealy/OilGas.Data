@@ -418,7 +418,7 @@ namespace OilGas.Data.RRC.Texas
             if(reader.TokenType == JsonToken.Null)
                 return null;
 
-            var  value = serializer.Deserialize<string>(reader);
+            string  value = serializer.Deserialize<string>(reader);
             long l;
 
             if(Int64.TryParse(value, out l))
@@ -433,14 +433,14 @@ namespace OilGas.Data.RRC.Texas
                                        object         untypedValue,
                                        JsonSerializer serializer)
         {
-            if(untypedValue == null)
+            if(untypedValue is null)
             {
                 serializer.Serialize(writer, null);
 
                 return;
             }
 
-            var value = (long)untypedValue;
+            long value = (long)untypedValue;
             serializer.Serialize(writer, value.ToString());
 
             return;

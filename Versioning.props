@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup Label="UserMacros">
-    <PACKAGE_VERSION>1.10.0</PACKAGE_VERSION>
+    <PACKAGE_VERSION>1.10.5</PACKAGE_VERSION>
   </PropertyGroup>
   <PropertyGroup Label="UserMacros">
     <OILGAS_VERSION>$(PACKAGE_VERSION)</OILGAS_VERSION>
