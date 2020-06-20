@@ -5,5 +5,5 @@
 </a>
 
 <a href="https://mybinder.org/v2/gh/trmcnealy/JupyterNotebooks/master?filepath=TexasOilGasProduction.ipynb">
-	<img src="https://raw.githubusercontent.com/trmcnealy/JupyterNotebooks/master/Notebooks/TexasOilGasProduction.png" width="100%" height="100%">
+	<img src="https://raw.githubusercontent.com/trmcnealy/JupyterNotebooks/master/Notebooks/Images/TexasOilGasProduction.png" width="100%" height="100%">
 </a>
