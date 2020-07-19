@@ -18,7 +18,7 @@ namespace OilGas.Data.RRC.Texas
 
         public static LeaseType Oil
         {
-            [MethodImpl(MethodImplOptions.AggressiveInlining)]
+            [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
             get { return OilType; }
         }
 
@@ -26,7 +26,7 @@ namespace OilGas.Data.RRC.Texas
 
         public static LeaseType Gas
         {
-            [MethodImpl(MethodImplOptions.AggressiveInlining)]
+            [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
             get { return GasType; }
         }
 
@@ -34,7 +34,7 @@ namespace OilGas.Data.RRC.Texas
 
         public static LeaseType Both
         {
-            [MethodImpl(MethodImplOptions.AggressiveInlining)]
+            [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
             get { return BothType; }
         }
 

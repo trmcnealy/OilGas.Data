@@ -58,8 +58,8 @@ namespace OilGas.Data
     /// </summary>
     public sealed class OilGasDbContext : DbContext
     {
-        public const string DefaultDbName = "R:\\OilGas.db";
-        public const string InMemoryName  = ":memory:";
+        public const string DefaultDbName = "C:\\OilGas.db";
+        //public const string InMemoryName  = ":memory:";
 
         private static readonly IMemoryCache _cache = new MemoryCache(new MemoryCacheOptions());
 
@@ -113,7 +113,7 @@ namespace OilGas.Data
             : base(new DbContextOptionsBuilder<OilGasDbContext>().UseLazyLoadingProxies()
                                                                  .UseMemoryCache(_cache)
                                                                  .UseNpgsql(connection)
-                                                                 .EnableSensitiveDataLogging()
+                                                                 //.EnableSensitiveDataLogging()
                                                                   /*.LogTo(Console.WriteLine, LogLevel.Information)*/
                                                                  .Options)
         {
@@ -651,7 +651,7 @@ namespace OilGas.Data
 
         public List<Well> GetWellsByCounty(string county)
         {
-            List<Well> wells = GetAllWellsIncluding().Where(w => w.Location.County == county.ToUpper()).ToList();
+            List<Well> wells = Wells.Where(w => w.Location.County.ToUpper() == county.ToUpper()).ToList();
 
             return wells;
         }

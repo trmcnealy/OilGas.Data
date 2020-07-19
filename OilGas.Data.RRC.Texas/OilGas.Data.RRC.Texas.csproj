@@ -2,7 +2,7 @@
   <Import Project="..\Versioning.props" />
 
   <PropertyGroup>
-    <TargetFrameworks>netcoreapp3.1</TargetFrameworks>
+    <TargetFramework>netcoreapp3.1</TargetFramework>
     <!-- <UseWPF>true</UseWPF> -->
     <PublishReadyToRun>true</PublishReadyToRun>
     <PublishReadyToRunEmitSymbols>true</PublishReadyToRunEmitSymbols>
@@ -45,18 +45,17 @@
   
   <ItemGroup>
     <PackageReference Include="Microsoft.Data.Analysis" Version="0.4.0" />
-    <PackageReference Include="Microsoft.EntityFrameworkCore" Version="3.1.4" />
-    <PackageReference Include="Microsoft.EntityFrameworkCore.Proxies" Version="3.1.4" />
-    <PackageReference Include="Microsoft.Extensions.Primitives" Version="3.1.4" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore" Version="3.1.5" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Proxies" Version="3.1.5" />
+    <PackageReference Include="Microsoft.Extensions.Primitives" Version="3.1.5" />
     <PackageReference Include="Npgsql" Version="4.1.3.1" />
     <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="3.1.4" />
     <PackageReference Include="VegaLite.NET" Version="1.3.22" />
-    <PackageReference Include="Newtonsoft.Json" Version="12.0.3" />
+    <PackageReference Include="System.Text.Json" Version="4.7.2" />
     <PackageReference Include="Microsoft.Windows.SDK.Contracts" Version="10.0.18362.2005" />
   </ItemGroup>
   
   <ItemGroup>
-    <ProjectReference Include="..\..\DataStorage\Engineering.DataSource\Engineering.DataSource.csproj" />
     <ProjectReference Include="..\OilGas.Data\OilGas.Data.csproj" />
   </ItemGroup>
 

@@ -319,7 +319,7 @@ namespace OilGas.Data
 #if NETCOREAPP
         [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
 #else
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
 #endif
         private static void Initialize(out ulong v1,
                                        out ulong v2,
@@ -335,7 +335,7 @@ namespace OilGas.Data
 #if NETCOREAPP
         [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
 #else
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
 #endif
         public static uint RotateLeft(uint value,
                                       int  offset) =>
@@ -344,7 +344,7 @@ namespace OilGas.Data
 #if NETCOREAPP
         [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
 #else
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
 #endif
         public static ulong RotateLeft(ulong value,
                                        int   offset) =>
@@ -353,7 +353,7 @@ namespace OilGas.Data
 #if NETCOREAPP
         [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
 #else
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
 #endif
         private static ulong Round(ulong hash,
                                    ulong input)
@@ -366,7 +366,7 @@ namespace OilGas.Data
 #if NETCOREAPP
         [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
 #else
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
 #endif
         private static ulong QueueRound(ulong hash,
                                         ulong queuedValue)
@@ -379,7 +379,7 @@ namespace OilGas.Data
 #if NETCOREAPP
         [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
 #else
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
 #endif
         private static ulong MixState(ulong v1,
                                       ulong v2,
@@ -404,7 +404,7 @@ namespace OilGas.Data
 #if NETCOREAPP
         [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
 #else
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
 #endif
         private static ulong MixFinal(ulong hash)
         {

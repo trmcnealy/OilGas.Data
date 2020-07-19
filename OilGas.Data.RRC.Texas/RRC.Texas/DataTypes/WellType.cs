@@ -14,11 +14,11 @@ namespace OilGas.Data.RRC.Texas
 
         public string Value
         {
-            [MethodImpl(MethodImplOptions.AggressiveInlining)]
+            [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
             get { return _value; }
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         private WellType(string value)
         {
             _value = value;
@@ -28,7 +28,7 @@ namespace OilGas.Data.RRC.Texas
 
         public static WellType None_Selected
         {
-            [MethodImpl(MethodImplOptions.AggressiveInlining)]
+            [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
             get { return None_SelectedType; }
         }
 
@@ -36,7 +36,7 @@ namespace OilGas.Data.RRC.Texas
 
         public static WellType ABANDONED
         {
-            [MethodImpl(MethodImplOptions.AggressiveInlining)]
+            [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
             get { return ABANDONEDType; }
         }
 
@@ -44,7 +44,7 @@ namespace OilGas.Data.RRC.Texas
 
         public static WellType BRINE_MINING
         {
-            [MethodImpl(MethodImplOptions.AggressiveInlining)]
+            [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
             get { return BRINE_MININGType; }
         }
 
@@ -52,7 +52,7 @@ namespace OilGas.Data.RRC.Texas
 
         public static WellType DOMESTIC_USE_WELL
         {
-            [MethodImpl(MethodImplOptions.AggressiveInlining)]
+            [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
             get { return DOMESTIC_USE_WELLType; }
         }
 
@@ -60,7 +60,7 @@ namespace OilGas.Data.RRC.Texas
 
         public static WellType GAS_STRG_INJECTION
         {
-            [MethodImpl(MethodImplOptions.AggressiveInlining)]
+            [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
             get { return GAS_STRG_INJECTIONType; }
         }
 
@@ -68,7 +68,7 @@ namespace OilGas.Data.RRC.Texas
 
         public static WellType GAS_STRG_SALT_FORMATION
         {
-            [MethodImpl(MethodImplOptions.AggressiveInlining)]
+            [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
             get { return GAS_STRG_SALT_FORMATIONType; }
         }
 
@@ -76,7 +76,7 @@ namespace OilGas.Data.RRC.Texas
 
         public static WellType GEOTHERMAL_WELL
         {
-            [MethodImpl(MethodImplOptions.AggressiveInlining)]
+            [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
             get { return GEOTHERMAL_WELLType; }
         }
 
@@ -84,7 +84,7 @@ namespace OilGas.Data.RRC.Texas
 
         public static WellType GAS_STRG_WITHDRAWAL
         {
-            [MethodImpl(MethodImplOptions.AggressiveInlining)]
+            [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
             get { return GAS_STRG_WITHDRAWALType; }
         }
 
@@ -92,7 +92,7 @@ namespace OilGas.Data.RRC.Texas
 
         public static WellType HISTORY
         {
-            [MethodImpl(MethodImplOptions.AggressiveInlining)]
+            [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
             get { return HISTORYType; }
         }
 
@@ -100,7 +100,7 @@ namespace OilGas.Data.RRC.Texas
 
         public static WellType INJECTION
         {
-            [MethodImpl(MethodImplOptions.AggressiveInlining)]
+            [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
             get { return INJECTIONType; }
         }
 
@@ -108,7 +108,7 @@ namespace OilGas.Data.RRC.Texas
 
         public static WellType LPG_STORAGE
         {
-            [MethodImpl(MethodImplOptions.AggressiveInlining)]
+            [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
             get { return LPG_STORAGEType; }
         }
 
@@ -116,7 +116,7 @@ namespace OilGas.Data.RRC.Texas
 
         public static WellType LEASE_USE_WELL
         {
-            [MethodImpl(MethodImplOptions.AggressiveInlining)]
+            [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
             get { return LEASE_USE_WELLType; }
         }
 
@@ -124,7 +124,7 @@ namespace OilGas.Data.RRC.Texas
 
         public static WellType NO_PRODUCTION
         {
-            [MethodImpl(MethodImplOptions.AggressiveInlining)]
+            [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
             get { return NO_PRODUCTIONType; }
         }
 
@@ -132,7 +132,7 @@ namespace OilGas.Data.RRC.Texas
 
         public static WellType OBSERVATION
         {
-            [MethodImpl(MethodImplOptions.AggressiveInlining)]
+            [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
             get { return OBSERVATIONType; }
         }
 
@@ -140,7 +140,7 @@ namespace OilGas.Data.RRC.Texas
 
         public static WellType OTHER_TYPE_SERVICE
         {
-            [MethodImpl(MethodImplOptions.AggressiveInlining)]
+            [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
             get { return OTHER_TYPE_SERVICEType; }
         }
 
@@ -148,7 +148,7 @@ namespace OilGas.Data.RRC.Texas
 
         public static WellType PROD_FACTOR_WELL
         {
-            [MethodImpl(MethodImplOptions.AggressiveInlining)]
+            [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
             get { return PROD_FACTOR_WELLType; }
         }
 
@@ -156,7 +156,7 @@ namespace OilGas.Data.RRC.Texas
 
         public static WellType PARTIAL_PLUG
         {
-            [MethodImpl(MethodImplOptions.AggressiveInlining)]
+            [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
             get { return PARTIAL_PLUGType; }
         }
 
@@ -164,7 +164,7 @@ namespace OilGas.Data.RRC.Texas
 
         public static WellType PRODUCING
         {
-            [MethodImpl(MethodImplOptions.AggressiveInlining)]
+            [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
             get { return PRODUCINGType; }
         }
 
@@ -172,7 +172,7 @@ namespace OilGas.Data.RRC.Texas
 
         public static WellType SWR_10_WELL
         {
-            [MethodImpl(MethodImplOptions.AggressiveInlining)]
+            [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
             get { return SWR_10_WELLType; }
         }
 
@@ -180,7 +180,7 @@ namespace OilGas.Data.RRC.Texas
 
         public static WellType SEALED
         {
-            [MethodImpl(MethodImplOptions.AggressiveInlining)]
+            [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
             get { return SEALEDType; }
         }
 
@@ -188,7 +188,7 @@ namespace OilGas.Data.RRC.Texas
 
         public static WellType SHUT_IN
         {
-            [MethodImpl(MethodImplOptions.AggressiveInlining)]
+            [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
             get { return SHUT_INType; }
         }
 
@@ -196,7 +196,7 @@ namespace OilGas.Data.RRC.Texas
 
         public static WellType SHUT_IN_MULTI_COMPL
         {
-            [MethodImpl(MethodImplOptions.AggressiveInlining)]
+            [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
             get { return SHUT_IN_MULTI_COMPLType; }
         }
 
@@ -204,7 +204,7 @@ namespace OilGas.Data.RRC.Texas
 
         public static WellType TEMP_ABANDONED
         {
-            [MethodImpl(MethodImplOptions.AggressiveInlining)]
+            [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
             get { return TEMP_ABANDONEDType; }
         }
 
@@ -212,7 +212,7 @@ namespace OilGas.Data.RRC.Texas
 
         public static WellType TRAINING
         {
-            [MethodImpl(MethodImplOptions.AggressiveInlining)]
+            [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
             get { return TRAININGType; }
         }
 
@@ -220,7 +220,7 @@ namespace OilGas.Data.RRC.Texas
 
         public static WellType WATER_SUPPLY
         {
-            [MethodImpl(MethodImplOptions.AggressiveInlining)]
+            [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
             get { return WATER_SUPPLYType; }
         }
 
@@ -228,11 +228,11 @@ namespace OilGas.Data.RRC.Texas
 
         public static WellType NOT_ELIGIBLE_FOR_ALLOWABLE
         {
-            [MethodImpl(MethodImplOptions.AggressiveInlining)]
+            [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
             get { return NOT_ELIGIBLE_FOR_ALLOWABLEType; }
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public IEnumerator<WellType> GetEnumerator()
         {
             yield return None_Selected;
@@ -263,31 +263,31 @@ namespace OilGas.Data.RRC.Texas
             yield return NOT_ELIGIBLE_FOR_ALLOWABLE;
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         IEnumerator IEnumerable.GetEnumerator()
         {
             return GetEnumerator();
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public override string ToString()
         {
             return _value;
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public static implicit operator string(WellType welltype)
         {
             return welltype.Value;
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public static implicit operator WellType(string value)
         {
             return new WellType(value);
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public bool Equals(WellType other)
         {
             if(ReferenceEquals(null,
@@ -305,7 +305,7 @@ namespace OilGas.Data.RRC.Texas
             return Value == other.Value;
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public override bool Equals(object obj)
         {
             if(ReferenceEquals(null,
@@ -323,13 +323,13 @@ namespace OilGas.Data.RRC.Texas
             return obj is WellType kind && Equals(kind);
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public override int GetHashCode()
         {
             return Value.GetHashCode();
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public static bool operator ==(WellType left,
                                        WellType right)
         {
@@ -337,21 +337,21 @@ namespace OilGas.Data.RRC.Texas
                           right);
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public static bool operator ==(WellType left,
                                        string   right)
         {
             return left?.Value == right;
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public static bool operator ==(string   left,
                                        WellType right)
         {
             return left == right?.Value;
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public static bool operator !=(WellType left,
                                        WellType right)
         {
@@ -359,14 +359,14 @@ namespace OilGas.Data.RRC.Texas
                            right);
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public static bool operator !=(WellType left,
                                        string   right)
         {
             return left?.Value != right;
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public static bool operator !=(string   left,
                                        WellType right)
         {

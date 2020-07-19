@@ -16,7 +16,7 @@ namespace OilGas.Data
 #if NETCOREAPP
         [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
 #else
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
 #endif
         internal static bool IsValidPath(string path)
         {
@@ -31,7 +31,7 @@ namespace OilGas.Data
 #if NETCOREAPP
         [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
 #else
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
 #endif
         internal static string GetHomePath()
         {
@@ -77,7 +77,7 @@ namespace OilGas.Data
 #if NETCOREAPP
         [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
 #else
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
 #endif
         internal static string GetDbPath(string homePath,
                                          string fileName)

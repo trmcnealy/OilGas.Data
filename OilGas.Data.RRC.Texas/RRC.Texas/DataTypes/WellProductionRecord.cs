@@ -77,7 +77,7 @@ namespace OilGas.Data.RRC.Texas
 #if NETCOREAPP
         [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
 #else
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
 #endif
         public object[] ToArray()
         {
@@ -92,7 +92,7 @@ namespace OilGas.Data.RRC.Texas
 #if NETCOREAPP
         [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
 #else
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
 #endif
         public IEnumerable<object> ToEnumerable()
         {

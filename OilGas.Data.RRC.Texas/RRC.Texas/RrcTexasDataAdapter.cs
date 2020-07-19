@@ -174,7 +174,7 @@ namespace OilGas.Data.RRC.Texas
                 productionData.Add(new SpecificLeaseProductionQueryData(api, entry));
             }
 
-            Well well = ConvertFrom(lease, productionData, lease.DistrictCode);
+            Well? well = ConvertFrom(lease, productionData, lease.DistrictCode);
 
             return well;
         }
@@ -272,7 +272,7 @@ namespace OilGas.Data.RRC.Texas
         //}
 
         [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
-        internal Well ConvertFrom(LeaseReport                                   leaseReport,
+        internal Well? ConvertFrom(LeaseReport                                   leaseReport,
                                   IEnumerable<SpecificLeaseProductionQueryData> queryData,
                                   int                                           district)
         {
@@ -289,7 +289,7 @@ namespace OilGas.Data.RRC.Texas
             List<MonthlyProduction>    monthlyProduction    = new List<MonthlyProduction>();
             List<CumulativeProduction> cumulativeProduction = new List<CumulativeProduction>();
 
-            SpecificLeaseProductionQueryData operatorDataRow = null;
+            SpecificLeaseProductionQueryData? operatorDataRow = null;
 
             foreach(SpecificLeaseProductionQueryData dataRow in dataRows)
             {
@@ -324,26 +324,31 @@ namespace OilGas.Data.RRC.Texas
                 ++month;
             }
 
-            Company company = GetOperator(int.Parse(operatorDataRow.Operator_No)) ?? new Company(operatorDataRow.Operator_Name, operatorDataRow.Operator_No);
-
-            //_context.AddorUpdate(company);
-
-            Field field = GetField(long.Parse(operatorDataRow.Field_No), district) ?? new Field(operatorDataRow.Field_Name, long.Parse(operatorDataRow.Field_No), district);
-
-            //_context.AddorUpdate(field);
-
-            Well well = new Well(operatorDataRow.Api)
+            if(operatorDataRow != null)
             {
-                Number               = leaseReport.Number,
-                Lease                = new Lease(leaseReport.Name, leaseReport.LeaseNumber),
-                Company              = company,
-                Field                = field,
-                Name                 = leaseReport.Name,
-                MonthlyProduction    = monthlyProduction,
-                CumulativeProduction = cumulativeProduction
-            };
+                Company company = GetOperator(int.Parse(operatorDataRow.Operator_No)) ?? new Company(operatorDataRow.Operator_Name, operatorDataRow.Operator_No);
 
-            return well;
+                //_context.AddorUpdate(company);
+
+                Field field = GetField(long.Parse(operatorDataRow.Field_No), district) ?? new Field(operatorDataRow.Field_Name, long.Parse(operatorDataRow.Field_No), district);
+
+                //_context.AddorUpdate(field);
+
+                Well well = new Well(operatorDataRow.Api)
+                {
+                    Number               = leaseReport.Number,
+                    Lease                = new Lease(leaseReport.Name, leaseReport.LeaseNumber),
+                    Company              = company,
+                    Field                = field,
+                    Name                 = leaseReport.Name,
+                    MonthlyProduction    = monthlyProduction,
+                    CumulativeProduction = cumulativeProduction
+                };
+
+                return well;
+            }
+
+            return null;
         }
 
 // [MethodImpl(MethodImplOptions.AggressiveInlining |
@@ -969,7 +974,10 @@ namespace OilGas.Data.RRC.Texas
 
                                          if(wellBoreTechnicalDataRoot.WellBoreOldLocation != null && wellBoreTechnicalDataRoot.WellBoreOldLocation.WB_LEASE_NAME != null && well.Name is null)
                                          {
-                                             well.Name = well.Lease.Name = wellBoreTechnicalDataRoot.WellBoreOldLocation.WB_LEASE_NAME;
+                                             if(well.Lease != null)
+                                             {
+                                                 well.Name = well.Lease.Name = wellBoreTechnicalDataRoot.WellBoreOldLocation.WB_LEASE_NAME;
+                                             }
                                          }
 
                                          if(wellBoreTechnicalDataRoot.WellBoreCompletionInformation != null && wellBoreTechnicalDataRoot.WellBoreCompletionInformation.Count > 0)
@@ -1578,11 +1586,14 @@ namespace OilGas.Data.RRC.Texas
 
                                          gasFieldPvt(ref reservoirData, wellTest.FL_G_1_GAS_GRAVITY, wellTest.FL_AVG_RESERVOIR_BHP, wellTest.FL_AVG_RESERVOIR_BH_TEMP);
 
-                                         reservoirData.ReservoirProperties = new ReservoirProperties
+                                         if(reservoirData != null)
                                          {
-                                             InitialPressure = wellTest.FL_AVG_RESERVOIR_BHP.IsNotNullOrZero() ? wellTest.FL_AVG_RESERVOIR_BHP : null,
-                                             Temperature     = wellTest.FL_AVG_RESERVOIR_BH_TEMP.IsNotNullOrZero() ? wellTest.FL_AVG_RESERVOIR_BH_TEMP : null
-                                         };
+                                             reservoirData.ReservoirProperties = new ReservoirProperties
+                                             {
+                                                 InitialPressure = wellTest.FL_AVG_RESERVOIR_BHP.IsNotNullOrZero() ? wellTest.FL_AVG_RESERVOIR_BHP : null,
+                                                 Temperature     = wellTest.FL_AVG_RESERVOIR_BH_TEMP.IsNotNullOrZero() ? wellTest.FL_AVG_RESERVOIR_BH_TEMP : null
+                                             };
+                                         }
 
                                          Console.WriteLine($"{well.Api}");
 
@@ -1667,7 +1678,7 @@ namespace OilGas.Data.RRC.Texas
 
                                          gasLeasePvt(ref reservoirData, leaseTest.GAS_GRAVITY, leaseTest.AVG_RESERVOIR_BHP, leaseTest.AVG_RESERVOIR_BH_TEMP);
 
-                                         if(reservoirData.ReservoirProperties is null)
+                                         if(reservoirData != null && reservoirData.ReservoirProperties is null)
                                          {
                                              reservoirData.ReservoirProperties = new ReservoirProperties
                                              {
@@ -1676,7 +1687,7 @@ namespace OilGas.Data.RRC.Texas
                                          }
                                          else
                                          {
-                                             if(reservoirData.ReservoirProperties.InitialPressure.IsNullOrLessThanZero())
+                                             if(reservoirData?.ReservoirProperties != null && reservoirData.ReservoirProperties.InitialPressure.IsNullOrLessThanZero())
                                              {
                                                  if(leaseTest.AVG_RESERVOIR_BHP.IsNotNullOrLessThanZero())
                                                  {
@@ -1684,7 +1695,7 @@ namespace OilGas.Data.RRC.Texas
                                                  }
                                              }
 
-                                             if(reservoirData.ReservoirProperties.Temperature.IsNullOrLessThanZero())
+                                             if(reservoirData?.ReservoirProperties != null && reservoirData.ReservoirProperties.Temperature.IsNullOrLessThanZero())
                                              {
                                                  if(leaseTest.AVG_RESERVOIR_BH_TEMP.IsNotNullOrLessThanZero())
                                                  {

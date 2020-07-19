@@ -11,19 +11,18 @@ using System.Runtime.InteropServices;
 using System.Security.Cryptography.X509Certificates;
 using System.Threading.Tasks;
 
-using Windows.Data.Pdf;
-using Windows.Globalization;
-using Windows.Graphics.Imaging;
-using Windows.Media.Ocr;
-using Windows.Storage;
-using Windows.Storage.Streams;
+//using Windows.Data.Pdf;
+//using Windows.Globalization;
+//using Windows.Graphics.Imaging;
+//using Windows.Media.Ocr;
+//using Windows.Storage;
+//using Windows.Storage.Streams;
 
 using Engineering.DataSource;
 using Engineering.DataSource.CoordinateSystems;
+using Engineering.DataSource.GeoSpatial;
 using Engineering.DataSource.OilGas;
 using Engineering.DataSource.Tools;
-
-using GeoSpatial;
 
 using Kokkos;
 
@@ -178,47 +177,47 @@ namespace RRC.Texas.Driver
             //adapter.Backup();
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
-        private static IReadOnlyList<OcrLine> ReadPdf(string pdfFile)
-        {
-            StorageFile file = StorageFile.GetFileFromPathAsync(pdfFile).GetAwaiter().GetResult();
+        //[MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+        //private static IReadOnlyList<OcrLine> ReadPdf(string pdfFile)
+        //{
+        //    StorageFile file = StorageFile.GetFileFromPathAsync(pdfFile).GetAwaiter().GetResult();
 
-            PdfDocument pdfDocument = PdfDocument.LoadFromFileAsync(file).GetAwaiter().GetResult();
+        //    PdfDocument pdfDocument = PdfDocument.LoadFromFileAsync(file).GetAwaiter().GetResult();
 
-            if(pdfDocument == null)
-            {
-                throw new NullReferenceException(nameof(pdfDocument));
-            }
+        //    if(pdfDocument == null)
+        //    {
+        //        throw new NullReferenceException(nameof(pdfDocument));
+        //    }
 
-            uint pageCount = pdfDocument.PageCount;
+        //    uint pageCount = pdfDocument.PageCount;
 
-            if(pageCount >= 1)
-            {
-                using(PdfPage page = pdfDocument.GetPage(0))
-                {
-                    Language  ocrLanguage = new Language("en-US");
-                    OcrEngine ocrEngine   = OcrEngine.TryCreateFromUserProfileLanguages() ?? OcrEngine.TryCreateFromLanguage(ocrLanguage);
+        //    if(pageCount >= 1)
+        //    {
+        //        using(PdfPage page = pdfDocument.GetPage(0))
+        //        {
+        //            Language  ocrLanguage = new Language("en-US");
+        //            OcrEngine ocrEngine   = OcrEngine.TryCreateFromUserProfileLanguages() ?? OcrEngine.TryCreateFromLanguage(ocrLanguage);
 
-                    InMemoryRandomAccessStream stream = new InMemoryRandomAccessStream();
+        //            InMemoryRandomAccessStream stream = new InMemoryRandomAccessStream();
 
-                    page.RenderToStreamAsync(stream).GetAwaiter().GetResult();
+        //            page.RenderToStreamAsync(stream).GetAwaiter().GetResult();
 
-                    BitmapDecoder decoder = BitmapDecoder.CreateAsync(stream).GetAwaiter().GetResult();
+        //            BitmapDecoder decoder = BitmapDecoder.CreateAsync(stream).GetAwaiter().GetResult();
 
-                    SoftwareBitmap bitmap = decoder.GetSoftwareBitmapAsync().GetAwaiter().GetResult(); //.GetSoftwareBitmapAsync(BitmapPixelFormat.Rgba16, BitmapAlphaMode.Straight);
+        //            SoftwareBitmap bitmap = decoder.GetSoftwareBitmapAsync().GetAwaiter().GetResult(); //.GetSoftwareBitmapAsync(BitmapPixelFormat.Rgba16, BitmapAlphaMode.Straight);
 
-                    Console.WriteLine($"{pdfFile}:{bitmap.PixelWidth}x{bitmap.PixelHeight}");
+        //            Console.WriteLine($"{pdfFile}:{bitmap.PixelWidth}x{bitmap.PixelHeight}");
 
-                    OcrResult ocrResult = ocrEngine.RecognizeAsync(bitmap).GetAwaiter().GetResult();
+        //            OcrResult ocrResult = ocrEngine.RecognizeAsync(bitmap).GetAwaiter().GetResult();
 
-                    IReadOnlyList<OcrLine> lines = ocrResult.Lines;
+        //            IReadOnlyList<OcrLine> lines = ocrResult.Lines;
 
-                    return lines;
-                }
-            }
+        //            return lines;
+        //        }
+        //    }
 
-            return null;
-        }
+        //    return null;
+        //}
 
         private static void LoadCsvData()
         {
@@ -925,10 +924,43 @@ namespace RRC.Texas.Driver
                                  });
             }
         }
+        
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+        private static void MonthlyToDaily()
+        {
+            RrcTexasDataAdapter adapter = new RrcTexasDataAdapter();
+
+            Well well = adapter.GetWellByApi("42-255-31196-00-00");
+
+            List<MonthlyProduction> monthlyProduction = well.MonthlyProduction.OrderBy(o => o.Date).ToList();
+
+            foreach (MonthlyProduction production in monthlyProduction)
+            {
+                Console.WriteLine(production);
+            }
+
+
+            List<DailyProduction> dailyProduction = Production.Convert(monthlyProduction);
+
+            foreach (DailyProduction production in dailyProduction)
+            {
+                Console.WriteLine(production);
+            }
+        }
+
 
         [STAThread]
         private static void Main(string[] args)
         {
+
+            OilGasDbContext adapter = new OilGasDbContext();
+
+            string query = SqlQuery.Select("Id").From("Well").ToString();
+
+
+
+
 
         
             //RrcTexasDataAdapter adapter = new RrcTexasDataAdapter();
@@ -946,7 +978,7 @@ namespace RRC.Texas.Driver
 
             //UpdateWells();
 
-            InterpWells();
+            //InterpWells();
 
             //InterpTest();
 

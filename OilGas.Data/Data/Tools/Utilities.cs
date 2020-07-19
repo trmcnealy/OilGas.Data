@@ -8,7 +8,7 @@ namespace OilGas.Data
 #if NETCOREAPP
         [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
 #else
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
 #endif
         public static float[] CumulativeSum(float[] rate)
         {
@@ -27,7 +27,7 @@ namespace OilGas.Data
 #if NETCOREAPP
         [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
 #else
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
 #endif
         public static double _scan(double lhs,
                                    double rhs)
@@ -39,7 +39,7 @@ namespace OilGas.Data
 #if NETCOREAPP
         [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
 #else
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
 #endif
         public static double[] CumulativeSum(double[] rate, int startIndex = 0, bool parallel = false)
         {
@@ -66,7 +66,7 @@ namespace OilGas.Data
 #if NETCOREAPP
         [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
 #else
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
 #endif
         public static float[] CumulativeAvgSum(float[] rate,
                                                float[] days)
@@ -86,7 +86,7 @@ namespace OilGas.Data
 #if NETCOREAPP
         [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
 #else
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
 #endif
         public static double[] CumulativeAvgSum(double[] rate,
                                                 double[] days)
@@ -106,7 +106,7 @@ namespace OilGas.Data
 #if NETCOREAPP
         [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
 #else
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
 #endif
         public static float[] CumulativeSum(float[] rate,
                                             float[] rateOverride,
@@ -132,7 +132,7 @@ namespace OilGas.Data
 #if NETCOREAPP
         [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
 #else
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
 #endif
         public static double[] CumulativeSum(double[] rate,
                                              double[] rateOverride,

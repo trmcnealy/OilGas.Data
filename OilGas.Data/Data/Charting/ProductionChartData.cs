@@ -4,6 +4,8 @@ using System.Diagnostics;
 using System.Linq;
 using System.Runtime.CompilerServices;
 
+using Engineering.DataSource.Tools;
+
 using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
 
@@ -146,7 +148,7 @@ namespace OilGas.Data.Charting
 //#if NETCOREAPP
 //        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
 //#else
-//        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+//        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
 //#endif
 //        public ProductionChartCollection(IEnumerable<ProductionChartData> collection) : base(collection)
 //        {
@@ -157,7 +159,7 @@ namespace OilGas.Data.Charting
 #if NETCOREAPP
             [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
 #else
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
 #endif
             get { return _dataSources[label]; }
         }
@@ -168,7 +170,7 @@ namespace OilGas.Data.Charting
 #if NETCOREAPP
             [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
 #else
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
 #endif
             get { return _dataSources[label][index]; }
         }
@@ -176,7 +178,7 @@ namespace OilGas.Data.Charting
 #if NETCOREAPP
         [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
 #else
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
 #endif
         public ProductionChartCollection()
         {
@@ -186,7 +188,7 @@ namespace OilGas.Data.Charting
 #if NETCOREAPP
         [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
 #else
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
 #endif
         public ProductionChartCollection(int capacity)
         {
@@ -196,7 +198,7 @@ namespace OilGas.Data.Charting
 #if NETCOREAPP
         [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
 #else
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
 #endif
         public void Add(ProductionChartData productionChartData)
         {
@@ -226,7 +228,7 @@ namespace OilGas.Data.Charting
 #if NETCOREAPP
         [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
 #else
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
 #endif
         public void Add(string label,
                         double day,
@@ -262,7 +264,7 @@ namespace OilGas.Data.Charting
 #if NETCOREAPP
         [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
 #else
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
 #endif
         public void Add(string label,
                         double day,
@@ -299,7 +301,7 @@ namespace OilGas.Data.Charting
 #if NETCOREAPP
         [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
 #else
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
 #endif
         public static implicit operator ProductionChartData[](ProductionChartCollection productionChartCollection)
         {
@@ -316,7 +318,7 @@ namespace OilGas.Data.Charting
 #if NETCOREAPP
         [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
 #else
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
 #endif
         public void BuildCumulativeProduction(int startIndex = 0)
         {
@@ -358,7 +360,7 @@ namespace OilGas.Data.Charting
 #if NETCOREAPP
         [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
 #else
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
 #endif
         public void ToMonthlyProduction(DateTime startDate,
                                         int      dayOffset)
@@ -407,7 +409,7 @@ namespace OilGas.Data.Charting
 #if NETCOREAPP
         [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
 #else
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
 #endif
         public static Specification DefaultSpecification(string datasetName)
         {

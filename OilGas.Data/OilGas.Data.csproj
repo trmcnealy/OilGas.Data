@@ -2,7 +2,7 @@
   <Import Project="..\Versioning.props" />
 
   <PropertyGroup>
-    <TargetFrameworks>netcoreapp3.1</TargetFrameworks>
+    <TargetFramework>netcoreapp3.1</TargetFramework>
    <!-- <TargetFrameworks>netstandard2.1;netcoreapp3.1</TargetFrameworks>
      <UseWPF>true</UseWPF> -->
     <GeneratePackageOnBuild Condition="'$(Configuration)'!='Release'">false</GeneratePackageOnBuild>
@@ -15,6 +15,7 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="Data\Charting\TimeSeries.cs" />
     <Compile Remove="Data\Persistence\DatabaseSettings.cs" />
     <Compile Remove="Data\Persistence\DataTableAttribute.cs" />
     <Compile Remove="Data\Persistence\FrameAdapter.cs" />
@@ -29,6 +30,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <None Include="Data\Charting\TimeSeries.cs" />
     <None Include="Data\Persistence\DatabaseSettings.cs" />
     <None Include="Data\Persistence\MappedCsvReader.cs" />
     <None Include="Data\Persistence\OldDataBase.cs" />
@@ -47,19 +49,19 @@
   </ItemGroup>
   
   <ItemGroup>
-    <PackageReference Include="Kokkos.NET" Version="0.7.0" />
-    <PackageReference Include="Microsoft.EntityFrameworkCore" Version="3.1.4" />
-    <PackageReference Include="Microsoft.EntityFrameworkCore.Proxies" Version="3.1.4" />
-    <PackageReference Include="Microsoft.Extensions.Primitives" Version="3.1.4" />
+    <PackageReference Include="Kokkos.NET" Version="0.7.2" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore" Version="3.1.5" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Proxies" Version="3.1.5" />
+    <PackageReference Include="Microsoft.Extensions.Primitives" Version="3.1.5" />
     <PackageReference Include="Npgsql" Version="4.1.3.1" />
     <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="3.1.4" />
-    <PackageReference Include="Microsoft.Extensions.Caching.Memory" Version="3.1.4" />
+    <PackageReference Include="Microsoft.Extensions.Caching.Memory" Version="3.1.5" />
     <PackageReference Include="ParallelExtensionsCore" Version="1.3.0" />
     <PackageReference Include="Microsoft.Data.Analysis" Version="0.4.0" />
     <PackageReference Include="System.Memory" Version="4.5.4" />
-    <PackageReference Include="System.Text.Encoding.CodePages" Version="4.7.0" />
+    <PackageReference Include="System.Text.Encoding.CodePages" Version="4.7.1" />
     <PackageReference Include="VegaLite.NET" Version="1.3.22" />
-    <PackageReference Include="Newtonsoft.Json" Version="12.0.3" />
+    <PackageReference Include="System.Text.Json" Version="4.7.2" />
     <PackageReference Include="Microsoft.Windows.SDK.Contracts" Version="10.0.18362.2005" />
   </ItemGroup>
   

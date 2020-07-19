@@ -15,8 +15,9 @@
     <copyright>© Timothy R. McNealy</copyright>
     <tags></tags>
     <dependencies>
-      <group targetFramework=".NETCoreApp3.1">
-        <dependency id="Kokkos.NET" version="0.7.0" />
+      <group targetFramework="netcoreapp3.1">
+        <dependency id="Kokkos.NET" version="0.7.2" />
+        <dependency id="Engineering.DataSource" version="1.2.0" />
         <dependency id="Npgsql" version="4.1.3.1" />
         <dependency id="Npgsql.EntityFrameworkCore.PostgreSQL" version="5.0.0-preview3" />
         <dependency id="Microsoft.Extensions.Caching.Memory" version="3.1.3" />
@@ -36,11 +37,9 @@
     <file src="D:\TFS_Sources\Github\Compilation\trmcnealy\trmcnealy.github.io\assets\nindra.png"
           target="" />
 
-    <file src="D:\TFS_Sources\Github\Compilation\trmcnealy\DataStorage\Engineering.DataSource\bin\Release\netcoreapp3.1\Engineering.DataSource.dll"
+    <file src="D:\TFS_Sources\Github\Compilation\trmcnealy\OilGas.Data\bin\Release\netcoreapp3.1\OilGas.Data.dll"
           target="lib\netcoreapp3.1" />
-    <file src="D:\TFS_Sources\Github\Compilation\trmcnealy\OilGas.Data\OilGas.Data.RRC.Texas\bin\Release\netcoreapp3.1\OilGas.Data.dll"
-          target="lib\netcoreapp3.1" />
-    <file src="D:\TFS_Sources\Github\Compilation\trmcnealy\OilGas.Data\OilGas.Data.RRC.Texas\bin\Release\netcoreapp3.1\OilGas.Data.RRC.Texas.dll"
+    <file src="D:\TFS_Sources\Github\Compilation\trmcnealy\OilGas.Data\bin\Release\netcoreapp3.1\OilGas.Data.RRC.Texas.dll"
           target="lib\netcoreapp3.1" />
   </files>
 </package>

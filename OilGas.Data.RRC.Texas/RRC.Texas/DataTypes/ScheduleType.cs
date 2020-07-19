@@ -14,11 +14,11 @@ namespace OilGas.Data.RRC.Texas
 
         public string Value
         {
-            [MethodImpl(MethodImplOptions.AggressiveInlining)]
+            [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
             get { return _value; }
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         private ScheduleType(string value)
         {
             _value = value;
@@ -28,7 +28,7 @@ namespace OilGas.Data.RRC.Texas
 
         public static ScheduleType Current
         {
-            [MethodImpl(MethodImplOptions.AggressiveInlining)]
+            [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
             get { return CurrentType; }
         }
 
@@ -36,7 +36,7 @@ namespace OilGas.Data.RRC.Texas
 
         public static ScheduleType Historical
         {
-            [MethodImpl(MethodImplOptions.AggressiveInlining)]
+            [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
             get { return HistoricalType; }
         }
 
@@ -44,11 +44,11 @@ namespace OilGas.Data.RRC.Texas
 
         public static ScheduleType Both
         {
-            [MethodImpl(MethodImplOptions.AggressiveInlining)]
+            [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
             get { return BothType; }
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public IEnumerator<ScheduleType> GetEnumerator()
         {
             yield return Current;
@@ -56,31 +56,31 @@ namespace OilGas.Data.RRC.Texas
             yield return Both;
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         IEnumerator IEnumerable.GetEnumerator()
         {
             return GetEnumerator();
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public override string ToString()
         {
             return _value;
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public static implicit operator string(ScheduleType scheduletype)
         {
             return scheduletype.Value;
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public static implicit operator ScheduleType(string value)
         {
             return new ScheduleType(value);
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public bool Equals(ScheduleType other)
         {
             if(ReferenceEquals(null,
@@ -98,7 +98,7 @@ namespace OilGas.Data.RRC.Texas
             return Value == other.Value;
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public override bool Equals(object obj)
         {
             if(ReferenceEquals(null,
@@ -116,13 +116,13 @@ namespace OilGas.Data.RRC.Texas
             return obj is ScheduleType kind && Equals(kind);
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public override int GetHashCode()
         {
             return Value.GetHashCode();
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public static bool operator ==(ScheduleType left,
                                        ScheduleType right)
         {
@@ -130,21 +130,21 @@ namespace OilGas.Data.RRC.Texas
                           right);
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public static bool operator ==(ScheduleType left,
                                        string       right)
         {
             return left?.Value == right;
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public static bool operator ==(string       left,
                                        ScheduleType right)
         {
             return left == right?.Value;
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public static bool operator !=(ScheduleType left,
                                        ScheduleType right)
         {
@@ -152,14 +152,14 @@ namespace OilGas.Data.RRC.Texas
                            right);
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public static bool operator !=(ScheduleType left,
                                        string       right)
         {
             return left?.Value != right;
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public static bool operator !=(string       left,
                                        ScheduleType right)
         {
