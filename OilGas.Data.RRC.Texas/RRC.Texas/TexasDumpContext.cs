@@ -23,7 +23,7 @@ using Npgsql;
 
 namespace OilGas.Data.RRC.Texas
 {
-    /// <summary>psql --username=trmcnealy --password --host=timothyrmcnealy.com --port=5432 --dbname=TexasDump</summary>
+    /// <summary>psql --username= --password --host=timothyrmcnealy.com --port=5432 --dbname=TexasDump</summary>
     public sealed class TexasDumpDbContext : DbContext
     {
         public const string Host = "timothyrmcnealy.com";

@@ -113,7 +113,7 @@ namespace OilGas.Data.RRC.Texas
         WB14B2RM = 28
     }
 
-    /// <summary>psql --username=trmcnealy --password --host=timothyrmcnealy.com --port=5432 --dbname=TexasWellbore</summary>
+    /// <summary>psql --username= --password --host=timothyrmcnealy.com --port=5432 --dbname=TexasWellbore</summary>
     public sealed class TexasWellboreContext : DbContext
     {
         public const string Host = "timothyrmcnealy.com";
