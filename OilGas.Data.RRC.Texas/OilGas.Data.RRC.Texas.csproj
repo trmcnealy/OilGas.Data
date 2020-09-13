@@ -1,19 +1,24 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
-  <Import Project="..\Versioning.props" />
+  <Import Project="$([MSBuild]::GetPathOfFileAbove(GlobalVersioning.props))" />
 
   <PropertyGroup>
+    <Version>$(OILGAS_DATA_RRC_TEXAS_VERSION)</Version>
     <TargetFramework>netcoreapp3.1</TargetFramework>
     <!-- <UseWPF>true</UseWPF> -->
     <PublishReadyToRun>true</PublishReadyToRun>
     <PublishReadyToRunEmitSymbols>true</PublishReadyToRunEmitSymbols>
     <PublishTrimmed>true</PublishTrimmed>
-    <RootNamespace>OilGas.Data</RootNamespace> 
-    <NuspecFile>OilGas.Data.nuspec</NuspecFile>
-    <Version>$(OILGAS_VERSION)</Version>
+    <RootNamespace>OilGas.Data</RootNamespace>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
-    <GeneratePackageOnBuild>false</GeneratePackageOnBuild>
+  </PropertyGroup>
+  
+  <PropertyGroup>
+    <NuspecFile>OilGas.Data.nuspec</NuspecFile>
+    <NuspecProperties>$(NUGET_PROPERTIES)</NuspecProperties>
+    <GeneratePackageOnBuild Condition="'$(Configuration)'!='Release'">false</GeneratePackageOnBuild>
+    <GeneratePackageOnBuild Condition="'$(Configuration)'=='Release'">true</GeneratePackageOnBuild>
     <PackageOutputPath Condition="'$(PACKAGE_CACHE)'!=''">$(PACKAGE_CACHE)</PackageOutputPath>
-    <PackageOutputPath Condition="'$(PACKAGE_CACHE)'==''">$(OutputPath)</PackageOutputPath>
+    <PackageOutputPath Condition="'$(PACKAGE_CACHE)'==''">$(OutputPath)</PackageOutputPath>  
   </PropertyGroup>
 
   <ItemGroup>
@@ -45,10 +50,10 @@
   
   <ItemGroup>
     <PackageReference Include="Microsoft.Data.Analysis" Version="0.4.0" />
-    <PackageReference Include="Microsoft.EntityFrameworkCore" Version="3.1.5" />
-    <PackageReference Include="Microsoft.EntityFrameworkCore.Proxies" Version="3.1.5" />
-    <PackageReference Include="Microsoft.Extensions.Primitives" Version="3.1.5" />
-    <PackageReference Include="Npgsql" Version="4.1.3.1" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore" Version="3.1.6" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Proxies" Version="3.1.6" />
+    <PackageReference Include="Microsoft.Extensions.Primitives" Version="3.1.6" />
+    <PackageReference Include="Npgsql" Version="4.1.4" />
     <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="3.1.4" />
     <PackageReference Include="VegaLite.NET" Version="1.3.22" />
     <PackageReference Include="System.Text.Json" Version="4.7.2" />
@@ -104,8 +109,8 @@
     <Folder Include="RRC.Texas\DataTypes\Dbf900\" />
   </ItemGroup>
 
-  <Target Name="PostBuild" AfterTargets="PostBuildEvent" Condition="'$(Configuration)'=='Release'">
-    <Exec Command="NuGet.exe pack &quot;$(ProjectDir)OilGas.Data.nuspec&quot; -Properties Configuration=$(Configuration);Platform=$(Platform);Version=$(OILGAS_VERSION);RuntimeVersion=$(RUNTIME_OILGAS_VERSION) -OutputDirectory C:\AssemblyCache\_packages&#xD;&#xA;&#xA;rd /s /q C:\Users\tehgo\.nuget\packages\oilgas.net" />
+  <Target Name="PostBuild" AfterTargets="PostBuildEvent" Condition="'$(Configuration)'==''">
+    <Exec Command="::NuGet.exe pack &quot;$(ProjectDir)OilGas.Data.nuspec&quot; -Properties Configuration=$(Configuration);Platform=$(Platform);Version=$(OILGAS_VERSION);RuntimeVersion=$(RUNTIME_OILGAS_VERSION) -OutputDirectory C:\AssemblyCache\_packages&#xD;&#xA;&#xA;rd /s /q C:\Users\tehgo\.nuget\packages\oilgas.net" />
   </Target>
 
 </Project>

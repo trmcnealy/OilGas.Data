@@ -3,6 +3,7 @@ using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Data;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 
@@ -58,6 +59,8 @@ namespace OilGas.Data
     /// </summary>
     public sealed class OilGasDbContext : DbContext
     {
+        public const string Host = "timothyrmcnealy.com";
+        public const string Port = "15432";
         public const string DefaultDbName = "C:\\OilGas.db";
         //public const string InMemoryName  = ":memory:";
 
@@ -103,6 +106,11 @@ namespace OilGas.Data
 
         public NpgsqlConnection Connection { get; }
 
+        public static readonly ILoggerFactory DbLoggerFactory = LoggerFactory.Create(builder => { builder.AddFilter((category, level) =>
+                                                                                                                        category == DbLoggerCategory.Database.Command.Name
+                                                                                                                     && level    == LogLevel.Information)
+                                                                                                         .AddConsole(); });
+
         /// <summary>var connString = "Host=myserver;Username=mylogin;Password=mypass;Database=mydatabase";</summary>
         public OilGasDbContext()
             : this(CreateAndOpen())
@@ -114,7 +122,7 @@ namespace OilGas.Data
                                                                  .UseMemoryCache(_cache)
                                                                  .UseNpgsql(connection)
                                                                  //.EnableSensitiveDataLogging()
-                                                                  /*.LogTo(Console.WriteLine, LogLevel.Information)*/
+                                                                 //.UseLoggerFactory(DbLoggerFactory)
                                                                  .Options)
         {
             Connection = connection;
@@ -129,24 +137,24 @@ namespace OilGas.Data
 
             //command.ExecuteNonQuery();
 
-            Database.EnsureCreated();
+            //Database.EnsureCreated();
         }
 
         private static NpgsqlConnection CreateAndOpen()
         {
-            //NpgsqlConnection connection = new NpgsqlConnection($"Host=timothyrmcnealy.com;Port=5432;Username={Encryption.Username};Password={Encryption.Password};Database=OilGas");
+            //NpgsqlConnection connection = new NpgsqlConnection($"Host={Host};Port={Port};Username={Encryption.Username};Password={Encryption.Password};Database=OilGas");
 
             NpgsqlConnection connection;
 
             try
             {
-                connection = new NpgsqlConnection($"Host=timothyrmcnealy.com;Port=5432;Username={Encryption.Username};Password={Encryption.Password};Database=OilGas");
+                connection = new NpgsqlConnection($"Host={Host};Port={Port};Username={Encryption.Username};Password={Encryption.Password};Database=OilGas");
 
                 connection.Open();
             }
             catch(Exception)
             {
-                connection = new NpgsqlConnection("Host=timothyrmcnealy.com;Port=5432;Username=db_user;Password=dbAccess;Database=OilGas");
+                connection = new NpgsqlConnection($"Host={Host};Port={Port};Username=db_user;Password=dbAccess;Database=OilGas");
 
                 connection.Open();
             }
@@ -613,7 +621,21 @@ namespace OilGas.Data
 
         private IQueryable<Well> GetAllWellsIncluding()
         {
-            return Wells.AsQueryable();
+            return Wells;
+                //.Include(w => w.Location)
+                //.Include(w => w.Lease)
+                //.Include(w => w.Field)
+                //.Include(w => w.Company)
+                //.Include(w => w.WellboreDetails)
+                //.Include(w => w.CompletionDetails).ThenInclude(c => c.PerforationIntervals)
+                //.Include(w => w.ReservoirData).ThenInclude(r => r.ReservoirProperties)
+                //.Include(w => w.ReservoirData).ThenInclude(r => r.GasProperties)
+                //.Include(w => w.ReservoirData).ThenInclude(r => r.OilProperties)
+                //.Include(w => w.ReservoirData).ThenInclude(r => r.WaterProperties)
+                //.Include(w => w.DirectionalSurvey)
+                //.Include(w => w.DailyProduction)
+                //.Include(w => w.MonthlyProduction)
+                //.Include(w => w.CumulativeProduction);
         }
 
         private async Task<IQueryable<Well>> GetAllWellsIncludingAsync()

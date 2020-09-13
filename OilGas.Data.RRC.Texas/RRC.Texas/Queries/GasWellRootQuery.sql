@@ -18,4 +18,4 @@ WHERE (
 )
 OR (
     "GasWellRootSegment"."WL_GAS_NUMERIC_DISTRICT"={0} AND "GasWellRootSegment"."WL_GAS_RRC_ID"={1}
-)
+);

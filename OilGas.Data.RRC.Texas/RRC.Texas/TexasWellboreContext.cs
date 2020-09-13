@@ -116,6 +116,9 @@ namespace OilGas.Data.RRC.Texas
     /// <summary>psql --username=trmcnealy --password --host=timothyrmcnealy.com --port=5432 --dbname=TexasWellbore</summary>
     public sealed class TexasWellboreContext : DbContext
     {
+        public const string Host = "timothyrmcnealy.com";
+        public const string Port = "15432";
+
         private static readonly IMemoryCache _cache = new MemoryCache(new MemoryCacheOptions());
 
         public DbSet<WellBoreH15Remarks> WellBoreH15RemarksTable { get; set; }
@@ -202,13 +205,13 @@ namespace OilGas.Data.RRC.Texas
 
             try
             {
-                connection = new NpgsqlConnection($"Host=timothyrmcnealy.com;Port=5432;Username={Encryption.Username};Password={Encryption.Password};Database=TexasWellbore");
+                connection = new NpgsqlConnection($"Host={Host};Port={Port};Username={Encryption.Username};Password={Encryption.Password};Database=TexasWellbore");
 
                 connection.Open();
             }
             catch(Exception)
             {
-                connection = new NpgsqlConnection("Host=timothyrmcnealy.com;Port=5432;Username=db_user;Password=dbAccess;Database=TexasWellbore");
+                connection = new NpgsqlConnection($"Host={Host};Port={Port};Username=db_user;Password=dbAccess;Database=TexasWellbore");
 
                 connection.Open();
             }

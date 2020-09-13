@@ -8,6 +8,7 @@ using System.Linq;
 using System.Net;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
+using System.Security;
 using System.Security.Cryptography.X509Certificates;
 using System.Threading.Tasks;
 
@@ -643,7 +644,7 @@ namespace RRC.Texas.Driver
             }
         }
 
-        [DllImport("winmm.dll", CharSet = CharSet.Auto)]
+        [SuppressGCTransition, SuppressUnmanagedCodeSecurity, DllImport("winmm.dll", CharSet = CharSet.Auto)]
         private static extern bool PlaySound(string lpszName,
                                              IntPtr hModule,
                                              int    dwFlags);
@@ -953,10 +954,16 @@ namespace RRC.Texas.Driver
         [STAThread]
         private static void Main(string[] args)
         {
+            RrcTexasDataAdapter.FixLocations();
+            
+            
 
-            OilGasDbContext adapter = new OilGasDbContext();
+            //OilGasDbContext adapter = new OilGasDbContext();
+            //adapter.ChangeTracker.AutoDetectChangesEnabled = false;
 
-            string query = SqlQuery.Select("Id").From("Well").ToString();
+            //List<Well> wells = adapter.GetAllWells();
+
+            //string query = SqlQuery.Select("Id").From("Well").ToString();
 
 
 

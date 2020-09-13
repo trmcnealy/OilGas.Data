@@ -18,6 +18,9 @@ namespace OilGas.Data.RRC.Texas
 {
     public sealed class TexasAggregateContext : DbContext, IPostgresDbContext
     {
+        public const string Host = "timothyrmcnealy.com";
+        public const string Port = "15432";
+
         public DbSet<ProductionAggr> ProductionAggrTable { get; set; }
 
         public DbSet<WellProductionAggr> WellProductionAggrTable { get; set; }
@@ -49,13 +52,13 @@ namespace OilGas.Data.RRC.Texas
 
             try
             {
-                connection = new NpgsqlConnection($"Host=timothyrmcnealy.com;Port=5432;Username={Encryption.Username};Password={Encryption.Password};Database=TexasAggr");
+                connection = new NpgsqlConnection($"Host={Host};Port={Port};Username={Encryption.Username};Password={Encryption.Password};Database=TexasAggr");
 
                 connection.Open();
             }
             catch(Exception)
             {
-                connection = new NpgsqlConnection("Host=timothyrmcnealy.com;Port=5432;Username=db_user;Password=dbAccess;Database=TexasAggr");
+                connection = new NpgsqlConnection($"Host={Host};Port={Port};Username=db_user;Password=dbAccess;Database=TexasAggr");
 
                 connection.Open();
             }

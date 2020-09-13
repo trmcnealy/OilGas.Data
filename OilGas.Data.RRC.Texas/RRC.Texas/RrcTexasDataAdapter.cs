@@ -169,7 +169,7 @@ namespace OilGas.Data.RRC.Texas
 
             List<SpecificLeaseProductionQueryData> productionData = new List<SpecificLeaseProductionQueryData>(data.rows.Count);
 
-            foreach (string[] entry in data.rows)
+            foreach(string[] entry in data.rows)
             {
                 productionData.Add(new SpecificLeaseProductionQueryData(api, entry));
             }
@@ -273,8 +273,8 @@ namespace OilGas.Data.RRC.Texas
 
         [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         internal Well? ConvertFrom(LeaseReport                                   leaseReport,
-                                  IEnumerable<SpecificLeaseProductionQueryData> queryData,
-                                  int                                           district)
+                                   IEnumerable<SpecificLeaseProductionQueryData> queryData,
+                                   int                                           district)
         {
             List<SpecificLeaseProductionQueryData> dataRows = queryData.ToList();
 
@@ -351,20 +351,20 @@ namespace OilGas.Data.RRC.Texas
             return null;
         }
 
-// [MethodImpl(MethodImplOptions.AggressiveInlining |
-// MethodImplOptions.AggressiveOptimization)] public async Task<Well>
-// GetDirectionalSurvey(Well well)
-// {
-//     List<DirectionalSurveyReport> directionalSurveyReport = await
-//     QueryBuilder.CompletionReportQueryByApi(well.Api);
-//
-//     double min = directionalSurveyReport.Min(ds => ds.From);
-//     double max = directionalSurveyReport.Max(ds => ds.To);
-//
-//     well.DirectionalSurvey = new DirectionalSurvey(min, max);
-//
-//     return well;
-// }
+        // [MethodImpl(MethodImplOptions.AggressiveInlining |
+        // MethodImplOptions.AggressiveOptimization)] public async Task<Well>
+        // GetDirectionalSurvey(Well well)
+        // {
+        //     List<DirectionalSurveyReport> directionalSurveyReport = await
+        //     QueryBuilder.CompletionReportQueryByApi(well.Api);
+        //
+        //     double min = directionalSurveyReport.Min(ds => ds.From);
+        //     double max = directionalSurveyReport.Max(ds => ds.To);
+        //
+        //     well.DirectionalSurvey = new DirectionalSurvey(min, max);
+        //
+        //     return well;
+        // }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public async Task UpdateLocationAsync(Dictionary<ApiNumber, WellS> wellS)
@@ -450,50 +450,50 @@ namespace OilGas.Data.RRC.Texas
             return well;
         }
 
-// public async Task<Location> GetLocationByApi(ApiNumber api)
-//{
-//    //try
-//    //{
-//    //    Registry record = await FracFocusRegistry.FirstAsync(w =>
-//    w.ApiNumber == api);
+        // public async Task<Location> GetLocationByApi(ApiNumber api)
+        //{
+        //    //try
+        //    //{
+        //    //    Registry record = await FracFocusRegistry.FirstAsync(w =>
+        //    w.ApiNumber == api);
 
-//    //    if(record != null)
-//    //    {
-//    //        return new WellLocation(record.Latitude, record.Longitude,
-//    record.Projection);
-//    //    }
-//    //}
-//    //catch(Exception ex)
-//    //{
-//    //    Debug.WriteLine(ex.Message);
-//    //}
+        //    //    if(record != null)
+        //    //    {
+        //    //        return new WellLocation(record.Latitude, record.Longitude,
+        //    record.Projection);
+        //    //    }
+        //    //}
+        //    //catch(Exception ex)
+        //    //{
+        //    //    Debug.WriteLine(ex.Message);
+        //    //}
 
-//    return null;
-//}
+        //    return null;
+        //}
 
-//[MethodImpl(MethodImplOptions.AggressiveInlining |
-//MethodImplOptions.AggressiveOptimization)] public void Optimize()
-//{
-//    _context.Optimize();
-//}
+        //[MethodImpl(MethodImplOptions.AggressiveInlining |
+        //MethodImplOptions.AggressiveOptimization)] public void Optimize()
+        //{
+        //    _context.Optimize();
+        //}
 
-//[MethodImpl(MethodImplOptions.AggressiveInlining |
-//MethodImplOptions.AggressiveOptimization)] public void Compact()
-//{
-//    _context.Compact();
-//}
+        //[MethodImpl(MethodImplOptions.AggressiveInlining |
+        //MethodImplOptions.AggressiveOptimization)] public void Compact()
+        //{
+        //    _context.Compact();
+        //}
 
-//[MethodImpl(MethodImplOptions.AggressiveInlining |
-//MethodImplOptions.AggressiveOptimization)] public void Backup()
-//{
-//    _context.Backup();
-//}
+        //[MethodImpl(MethodImplOptions.AggressiveInlining |
+        //MethodImplOptions.AggressiveOptimization)] public void Backup()
+        //{
+        //    _context.Backup();
+        //}
 
-//[MethodImpl(MethodImplOptions.AggressiveInlining |
-//MethodImplOptions.AggressiveOptimization)] public void LoadDb(string filePath)
-//{
-//    _context.LoadDb(filePath);
-//}
+        //[MethodImpl(MethodImplOptions.AggressiveInlining |
+        //MethodImplOptions.AggressiveOptimization)] public void LoadDb(string filePath)
+        //{
+        //    _context.LoadDb(filePath);
+        //}
 
         [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public void LoadOperatorsCsv(string filePath)
@@ -710,23 +710,23 @@ namespace OilGas.Data.RRC.Texas
             }
         }
 
-//[MethodImpl(MethodImplOptions.AggressiveInlining |
-//MethodImplOptions.AggressiveOptimization)] public async Task
-// UpdateAllWellsMonthlyProductionAsync()
-//{
-//    List<ApiNumber> wellApis = _context.Wells.Select(p => p.Api).ToList();
+        //[MethodImpl(MethodImplOptions.AggressiveInlining |
+        //MethodImplOptions.AggressiveOptimization)] public async Task
+        // UpdateAllWellsMonthlyProductionAsync()
+        //{
+        //    List<ApiNumber> wellApis = _context.Wells.Select(p => p.Api).ToList();
 
-//    foreach(ApiNumber api in wellApis)
-//    {
-//        try
-//        {
-//            await GetMonthlyProductionByApi(api);
-//        }
-//        catch(Exception)
-//        {
-//            //
-//    }
-//}
+        //    foreach(ApiNumber api in wellApis)
+        //    {
+        //        try
+        //        {
+        //            await GetMonthlyProductionByApi(api);
+        //        }
+        //        catch(Exception)
+        //        {
+        //            //
+        //    }
+        //}
 
         [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public async Task UpdateAllWellsLocationsAsync()
@@ -1172,7 +1172,10 @@ namespace OilGas.Data.RRC.Texas
                                                                               SURFACE_LAT83,
                                                                               SURFACE_LONG83,
                                                                               CountyType.GetName(well.Api.GetCountyCode()),
-                                                                              "TEXAS") {DistrictNumber = (short)districtNumber};
+                                                                              "TEXAS")
+                                                 {
+                                                     DistrictNumber = (short)districtNumber
+                                                 };
 
                                                  _context.Update(well);
                                              }
@@ -1186,6 +1189,272 @@ namespace OilGas.Data.RRC.Texas
                                  }
 
                                  tac.Connection.Close();
+
+                                 _context.Commit();
+                                 _context.CloseConnection();
+                             });
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+        public static void LoadAllLocations()
+        {
+            ImmutableList<ApiNumber> apis;
+
+            using(TexasDumpDbContext tdc = new TexasDumpDbContext())
+            {
+                tdc.ChangeTracker.AutoDetectChangesEnabled = false;
+                apis                                       = tdc.WellSTable.Select(w => new ApiNumber(w.API)).ToImmutableList();
+                tdc.Connection.Close();
+            }
+
+            loadAllLocations(apis);
+        }
+
+        /// <summary>
+        /// Location
+        /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+        private static void loadAllLocations(ImmutableList<ApiNumber> apis)
+        {
+            ImmutableList<WellS> WellSList;
+            ImmutableList<WellB> WellBList;
+
+            using(TexasDumpDbContext tdc = new TexasDumpDbContext())
+            {
+                tdc.ChangeTracker.AutoDetectChangesEnabled = false;
+                WellSList                                  = tdc.WellSTable.ToImmutableList();
+                WellBList                                  = tdc.WellBTable.ToImmutableList();
+                tdc.Connection.Close();
+            }
+
+            Console.WriteLine("Building WellS");
+
+            Dictionary<ApiNumber, WellS> WellSDictionary = new Dictionary<ApiNumber, WellS>(WellSList.Count);
+
+            foreach(WellS wellS in WellSList)
+            {
+                if(!WellSDictionary.ContainsKey(wellS.API))
+                {
+                    WellSDictionary.Add(new ApiNumber(wellS.API), wellS);
+                }
+                else if(WellSDictionary[wellS.API].Id < wellS.Id)
+                {
+                    WellSDictionary[wellS.API] = wellS;
+                }
+            }
+
+            WellSList.Clear();
+
+            ImmutableDictionary<ApiNumber, WellS> WellSs = WellSDictionary.ToImmutableDictionary();
+
+            WellSDictionary.Clear();
+
+            Console.WriteLine("Building WellB");
+
+            Dictionary<ApiNumber, WellB> WellBDictionary = new Dictionary<ApiNumber, WellB>(WellBList.Count);
+
+            foreach(WellB wellB in WellBList)
+            {
+                if(!WellBDictionary.ContainsKey(wellB.API))
+                {
+                    WellBDictionary.Add(new ApiNumber(wellB.API), wellB);
+                }
+                else if(WellBDictionary[wellB.API].Id < wellB.Id)
+                {
+                    WellBDictionary[wellB.API] = wellB;
+                }
+            }
+
+            WellBList.Clear();
+
+            ImmutableDictionary<ApiNumber, WellB> WellBs = WellBDictionary.ToImmutableDictionary();
+
+            WellBDictionary.Clear();
+
+            Console.WriteLine("Building ShapeFileLocation");
+
+            ImmutableList<ShapeFileLocation> ShapeFileLocationList;
+
+            using(RrcTexasDataAdapter _context = new RrcTexasDataAdapter())
+            {
+                _context.Context.ChangeTracker.AutoDetectChangesEnabled = false;
+                ShapeFileLocationList                                   = _context.Context.ShapeFileLocations.ToImmutableList();
+            }
+
+            Dictionary<ApiNumber, ShapeFileLocation> ShapeFileLocationDictionary = new Dictionary<ApiNumber, ShapeFileLocation>(ShapeFileLocationList.Count);
+
+            foreach(ShapeFileLocation shapeFileLocation in ShapeFileLocationList)
+            {
+                ShapeFileLocationDictionary.Add(new ApiNumber(shapeFileLocation.Api), shapeFileLocation);
+            }
+
+            ShapeFileLocationList.Clear();
+
+            ImmutableDictionary<ApiNumber, ShapeFileLocation> ShapeFileLocations = ShapeFileLocationDictionary.ToImmutableDictionary();
+
+            ShapeFileLocationDictionary.Clear();
+
+            Console.WriteLine("Loading all Locations");
+
+            Parallel.ForEach(Partitioner.Create(0, apis.Count, apis.Count / Environment.ProcessorCount),
+                             row =>
+                             {
+                                 int threadId = System.Threading.Thread.CurrentThread.ManagedThreadId;
+
+                                 using RrcTexasDataAdapter _context = new RrcTexasDataAdapter();
+
+                                 double? SURFACE_LONG27;
+                                 double? SURFACE_LAT27;
+                                 double? SURFACE_LONG83;
+                                 double? SURFACE_LAT83;
+                                 double? BOTTOM_LONG27;
+                                 double? BOTTOM_LAT27;
+                                 double? BOTTOM_LONG83;
+                                 double? BOTTOM_LAT83;
+
+                                 bool               newLocation;
+                                 ShapeFileLocation? shapeFileLocation;
+                                 WellS?             wellSLocation;
+
+                                 for(int i = row.Item1; i < row.Item2; i++)
+                                 {
+                                     if(!ShapeFileLocations.ContainsKey(apis[i]))
+                                     {
+                                         newLocation    = false;
+                                         SURFACE_LONG27 = null;
+                                         SURFACE_LAT27  = null;
+                                         SURFACE_LONG83 = null;
+                                         SURFACE_LAT83  = null;
+
+                                         wellSLocation = WellSs[apis[i]];
+
+                                         // lateralLengthMaybe = null;
+
+                                         if(!(wellSLocation is null))
+                                         {
+                                             SURFACE_LONG27 = wellSLocation.LONG27;
+                                             SURFACE_LAT27  = wellSLocation.LAT27;
+                                             SURFACE_LONG83 = wellSLocation.LONG83;
+                                             SURFACE_LAT83  = wellSLocation.LAT83;
+
+                                             newLocation = true;
+                                         }
+
+                                         if(WellBs.TryGetValue(apis[i], out WellB wellBLocation))
+                                         {
+                                             BOTTOM_LONG27 = wellBLocation.LONG27;
+                                             BOTTOM_LAT27  = wellBLocation.LAT27;
+                                             BOTTOM_LONG83 = wellBLocation.LONG83;
+                                             BOTTOM_LAT83  = wellBLocation.LAT83;
+                                         }
+                                         else
+                                         {
+                                             BOTTOM_LONG27 = 0.0;
+                                             BOTTOM_LAT27  = 0.0;
+                                             BOTTOM_LONG83 = 0.0;
+                                             BOTTOM_LAT83  = 0.0;
+                                         }
+
+                                         if(newLocation)
+                                         {
+                                             shapeFileLocation = new ShapeFileLocation(apis[i],
+                                                                                       SURFACE_LAT27,
+                                                                                       SURFACE_LONG27,
+                                                                                       BOTTOM_LAT27,
+                                                                                       BOTTOM_LONG27,
+                                                                                       SURFACE_LAT83,
+                                                                                       SURFACE_LONG83,
+                                                                                       BOTTOM_LAT83,
+                                                                                       BOTTOM_LONG83);
+
+                                             //Console.WriteLine(shapeFileLocation);
+
+                                             _context.Add(shapeFileLocation);
+                                         }
+                                     }
+                                     else
+                                     {
+                                         shapeFileLocation = ShapeFileLocations[apis[i]];
+
+                                         if(shapeFileLocation.BottomLatitude27  == 0.0 ||
+                                            shapeFileLocation.BottomLongitude27 == 0.0 ||
+                                            shapeFileLocation.BottomLatitude83  == 0.0 ||
+                                            shapeFileLocation.BottomLongitude83 == 0.0)
+                                         {
+                                             _context.Context.ShapeFileLocations.Update(new ShapeFileLocation(shapeFileLocation.Id,
+                                                                                                              shapeFileLocation.Api,
+                                                                                                              shapeFileLocation.SurfaceLatitude27,
+                                                                                                              shapeFileLocation.SurfaceLongitude27,
+                                                                                                              shapeFileLocation.SurfaceLatitude27,
+                                                                                                              shapeFileLocation.SurfaceLongitude27,
+                                                                                                              shapeFileLocation.SurfaceLatitude83,
+                                                                                                              shapeFileLocation.SurfaceLongitude83,
+                                                                                                              shapeFileLocation.SurfaceLatitude83,
+                                                                                                              shapeFileLocation.SurfaceLongitude83));
+                                         }
+                                     }
+
+                                     if((i - row.Item1) % 100 == 0)
+                                     {
+                                         Console.WriteLine($"{threadId}: {i - row.Item1}");
+                                     }
+                                 }
+
+                                 _context.Commit();
+                                 _context.CloseConnection();
+                             });
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+        public static void FixLocations()
+        {
+            Console.WriteLine("Building ShapeFileLocation");
+
+            ImmutableList<ShapeFileLocation> ShapeFileLocationList;
+
+            using(RrcTexasDataAdapter _context = new RrcTexasDataAdapter())
+            {
+                _context.Context.ChangeTracker.AutoDetectChangesEnabled = false;
+                ShapeFileLocationList                                   = _context.Context.ShapeFileLocations.ToImmutableList();
+            }
+
+            Console.WriteLine("Loading all Locations");
+
+            Parallel.ForEach(Partitioner.Create(0, ShapeFileLocationList.Count, ShapeFileLocationList.Count / Environment.ProcessorCount),
+                             row =>
+                             {
+                                 int threadId = System.Threading.Thread.CurrentThread.ManagedThreadId;
+
+                                 using RrcTexasDataAdapter _context = new RrcTexasDataAdapter();
+
+                                 ShapeFileLocation shapeFileLocation;
+
+                                 for(int i = row.Item1; i < row.Item2; i++)
+                                 {
+                                     shapeFileLocation = ShapeFileLocationList[i];
+
+                                     if(shapeFileLocation.BottomLatitude27  == 0.0 ||
+                                        shapeFileLocation.BottomLongitude27 == 0.0 ||
+                                        shapeFileLocation.BottomLatitude83  == 0.0 ||
+                                        shapeFileLocation.BottomLongitude83 == 0.0)
+                                     {
+                                         _context.Context.ShapeFileLocations.Update(new ShapeFileLocation(shapeFileLocation.Id,
+                                                                                                          shapeFileLocation.Api,
+                                                                                                          shapeFileLocation.SurfaceLatitude27,
+                                                                                                          shapeFileLocation.SurfaceLongitude27,
+                                                                                                          shapeFileLocation.SurfaceLatitude27,
+                                                                                                          shapeFileLocation.SurfaceLongitude27,
+                                                                                                          shapeFileLocation.SurfaceLatitude83,
+                                                                                                          shapeFileLocation.SurfaceLongitude83,
+                                                                                                          shapeFileLocation.SurfaceLatitude83,
+                                                                                                          shapeFileLocation.SurfaceLongitude83));
+                                     }
+
+                                     if((i - row.Item1) % 100 == 0)
+                                     {
+                                         Console.WriteLine($"{threadId}: {i - row.Item1}");
+                                     }
+                                 }
 
                                  _context.Commit();
                                  _context.CloseConnection();

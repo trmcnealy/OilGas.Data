@@ -1,6 +1,10 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
+  <Import Project="$([MSBuild]::GetPathOfFileAbove(GlobalVersioning.props))" />
+
+
   <PropertyGroup>
+    <Version>$(OILGAS_DATA_FRACFOCUS_VERSION)</Version>
     <TargetFramework>netcoreapp3.1</TargetFramework>
     <!-- <UseWPF>true</UseWPF> -->
     <PublishReadyToRun>true</PublishReadyToRun>

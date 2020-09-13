@@ -1,18 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
-  <PropertyGroup Label="UserMacros">
-    <PACKAGE_VERSION>1.10.5</PACKAGE_VERSION>
-  </PropertyGroup>
-  <PropertyGroup Label="UserMacros">
-    <OILGAS_VERSION>$(PACKAGE_VERSION)</OILGAS_VERSION>
-    <RUNTIME_OILGAS_VERSION>$(PACKAGE_VERSION)</RUNTIME_OILGAS_VERSION>
-  </PropertyGroup>
-  <ItemGroup>
-    <BuildMacro Include="OILGAS_VERSION">
-      <Value>$(OILGAS_VERSION)</Value>
-    </BuildMacro>
-    <BuildMacro Include="RUNTIME_OILGAS_VERSION">
-      <Value>$(RUNTIME_OILGAS_VERSION)</Value>
-    </BuildMacro>
-  </ItemGroup>
+  
+  <Import Project="$([MSBuild]::GetDirectoryNameOfFileAbove($(MSBuildThisFileDirectory), GlobalVersioning.props))\GlobalVersioning.props" />
+
 </Project>

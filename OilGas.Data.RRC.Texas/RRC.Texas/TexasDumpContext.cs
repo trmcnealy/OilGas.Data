@@ -26,6 +26,9 @@ namespace OilGas.Data.RRC.Texas
     /// <summary>psql --username=trmcnealy --password --host=timothyrmcnealy.com --port=5432 --dbname=TexasDump</summary>
     public sealed class TexasDumpDbContext : DbContext
     {
+        public const string Host = "timothyrmcnealy.com";
+        public const string Port = "15432";
+
         //ON CONFLICT "Unique_Idx" DO NOTHING
 
         private static readonly Regex fixQuotesRegex1 = new Regex("'([a-zA-Z0-9]+)'",  RegexOptions.Multiline | RegexOptions.ExplicitCapture | RegexOptions.Compiled);
@@ -84,7 +87,7 @@ namespace OilGas.Data.RRC.Texas
         {
             Connection = connection;
 
-            Database.EnsureCreated();
+            //Database.EnsureCreated();
         }
 
         private static NpgsqlConnection CreateAndOpen()
@@ -93,13 +96,13 @@ namespace OilGas.Data.RRC.Texas
 
             try
             {
-                connection = new NpgsqlConnection($"Host=timothyrmcnealy.com;Port=5432;Username={Encryption.Username};Password={Encryption.Password};Database=TexasDump");
+                connection = new NpgsqlConnection($"Host={Host};Port={Port};Username={Encryption.Username};Password={Encryption.Password};Database=TexasDump");
 
                 connection.Open();
             }
             catch(Exception)
             {
-                connection = new NpgsqlConnection("Host=timothyrmcnealy.com;Port=5432;Username=db_user;Password=dbAccess;Database=TexasDump");
+                connection = new NpgsqlConnection($"Host={Host};Port={Port};Username=db_user;Password=dbAccess;Database=TexasDump");
 
                 connection.Open();
             }

@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
+using System.Security;
 
 namespace OilGas.Data
 {
@@ -28,7 +29,7 @@ namespace OilGas.Data
 
         internal const int BCRYPT_USE_SYSTEM_PREFERRED_RNG = 0x00000002;
 
-        [DllImport("BCrypt.dll",
+        [SuppressGCTransition, SuppressUnmanagedCodeSecurity, DllImport("BCrypt.dll",
                    CharSet = CharSet.Unicode)]
         internal static extern unsafe NTSTATUS BCryptGenRandom(IntPtr hAlgorithm,
                                                                byte*  pbBuffer,

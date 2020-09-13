@@ -1,13 +1,13 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
-  <Import Project="..\Versioning.props" />
+  <Import Project="$([MSBuild]::GetPathOfFileAbove(GlobalVersioning.props))" />
 
   <PropertyGroup>
+    <Version>$(OILGAS_VERSION)</Version>
     <TargetFramework>netcoreapp3.1</TargetFramework>
    <!-- <TargetFrameworks>netstandard2.1;netcoreapp3.1</TargetFrameworks>
      <UseWPF>true</UseWPF> -->
     <GeneratePackageOnBuild Condition="'$(Configuration)'!='Release'">false</GeneratePackageOnBuild>
     <RootNamespace>OilGas</RootNamespace>
-    <Version>$(OILGAS_VERSION)</Version>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     <GeneratePackageOnBuild>false</GeneratePackageOnBuild>
     <PackageOutputPath Condition="'$(PACKAGE_CACHE)'!=''">$(PACKAGE_CACHE)</PackageOutputPath>
@@ -49,13 +49,16 @@
   </ItemGroup>
   
   <ItemGroup>
-    <PackageReference Include="Kokkos.NET" Version="0.7.2" />
-    <PackageReference Include="Microsoft.EntityFrameworkCore" Version="3.1.5" />
-    <PackageReference Include="Microsoft.EntityFrameworkCore.Proxies" Version="3.1.5" />
-    <PackageReference Include="Microsoft.Extensions.Primitives" Version="3.1.5" />
-    <PackageReference Include="Npgsql" Version="4.1.3.1" />
+    <PackageReference Include="Engineering.DataSource" Version="$(ENGINEERING_DATASOURCE_VERSION)" />
+    <PackageReference Include="Kokkos.NET" Version="$(KOKKOS_VERSION)" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore" Version="3.1.6" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Proxies" Version="3.1.6" />
+    <PackageReference Include="Microsoft.Extensions.Logging" Version="3.1.6" />
+    <PackageReference Include="Microsoft.Extensions.Logging.Console" Version="3.1.6" />
+    <PackageReference Include="Microsoft.Extensions.Primitives" Version="3.1.6" />
+    <PackageReference Include="Npgsql" Version="4.1.4" />
     <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="3.1.4" />
-    <PackageReference Include="Microsoft.Extensions.Caching.Memory" Version="3.1.5" />
+    <PackageReference Include="Microsoft.Extensions.Caching.Memory" Version="3.1.6" />
     <PackageReference Include="ParallelExtensionsCore" Version="1.3.0" />
     <PackageReference Include="Microsoft.Data.Analysis" Version="0.4.0" />
     <PackageReference Include="System.Memory" Version="4.5.4" />
@@ -63,10 +66,6 @@
     <PackageReference Include="VegaLite.NET" Version="1.3.22" />
     <PackageReference Include="System.Text.Json" Version="4.7.2" />
     <PackageReference Include="Microsoft.Windows.SDK.Contracts" Version="10.0.18362.2005" />
-  </ItemGroup>
-  
-  <ItemGroup>
-    <ProjectReference Include="..\..\DataStorage\Engineering.DataSource\Engineering.DataSource.csproj" />
   </ItemGroup>
 
   <ItemGroup>
